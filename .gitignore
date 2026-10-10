@@ -1,0 +1,11 @@
+# Live ExamTopics login cookie. Never commit; see EXAM_SOURCES.example.md
+EXAM_SOURCES.md
+
+# Raw pages kept by `python3 tools/examtopics.py --cache .cache`
+.cache/
+
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+.claude/settings.local.json

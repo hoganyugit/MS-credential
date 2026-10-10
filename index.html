@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cert Prep</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232a78d6'/%3E%3Cpath d='M9 16.5l4.5 4.5L23 11.5' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/app.css">
+  <script>
+    try {
+      var theme = (JSON.parse(localStorage.getItem('certprep.v1') || '{}').settings || {}).theme;
+      if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+      <span class="brand-name">Cert Prep</span>
+    </a>
+    <nav class="exam-tabs" id="examTabs" aria-label="Exams"></nav>
+    <div class="topbar-right">
+      <form class="search" id="searchForm" role="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input type="search" id="searchInput" placeholder="Search questions" aria-label="Search all questions" autocomplete="off">
+        <kbd>/</kbd>
+      </form>
+      <button class="icon-btn" id="helpBtn" type="button" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg>
+      </button>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Change theme"></button>
+      <a class="icon-btn guide-btn" href="#/guide" aria-label="Guide" title="指南 · Microsoft concept guide">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 8.5 4.5 4 4.5v13c4.5 0 6.5.5 8 2 1.5-1.5 3.5-2 8-2v-13c-4.5 0-6.5.5-8 2z"/><path d="M12 6.5v13"/></svg>
+      </a>
+      <a class="icon-btn" href="#/settings" aria-label="Settings" title="Settings">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <main id="app" tabindex="-1"></main>
+
+  <div id="tooltip" role="tooltip" hidden></div>
+
+  <dialog id="lightbox" aria-label="Exhibit">
+    <button class="icon-btn lb-close" type="button" aria-label="Close">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="lb-scroll"><img alt=""></div>
+  </dialog>
+
+  <dialog id="helpDialog" aria-labelledby="helpTitle">
+    <div class="dialog-body">
+      <h2 id="helpTitle">Keyboard shortcuts</h2>
+      <div class="shortcuts">
+        <span><kbd>A</kbd>–<kbd>F</kbd> or <kbd>1</kbd>–<kbd>6</kbd></span><span>Select an answer</span>
+        <span><kbd>Enter</kbd></span><span>Check answer / reveal / next question</span>
+        <span><kbd>←</kbd> <kbd>→</kbd></span><span>Previous / next question</span>
+        <span>Drag &amp; drop</span><span>Drag a tile into a box, or press <kbd>Enter</kbd> on a tile and then on a box. <kbd>Delete</kbd> removes a placed tile</span>
+        <span><kbd>Y</kbd> <kbd>N</kbd></span><span>Self-grade an answer you checked against the image</span>
+        <span><kbd>M</kbd></span><span>Flag / mark the question for review</span>
+        <span><kbd>S</kbd></span><span>Show or hide the case-study scenario</span>
+        <span><kbd>/</kbd></span><span>Search</span>
+        <span><kbd>Esc</kbd></span><span>Close panels</span>
+      </div>
+    </div>
+    <div class="dialog-actions"><button class="btn" type="button" data-close>Close</button></div>
+  </dialog>
+
+  <dialog id="askDialog">
+    <div class="dialog-body">
+      <h2 id="askTitle"></h2>
+      <p id="askText" class="muted"></p>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn" type="button" value="cancel" id="askCancel">Cancel</button>
+      <button class="btn primary" type="button" value="ok" id="askOk">OK</button>
+    </div>
+  </dialog>
+
+  <script src="data/bank.js"></script>
+  <script src="data/areas.js"></script>
+  <script src="data/tags.js"></script>
+  <script src="data/reviewed.js"></script>
+  <script src="data/guide.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
