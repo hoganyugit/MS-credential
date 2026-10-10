@@ -1329,3 +1329,14 @@ a.chip.term:hover { background: var(--accent-wash-2); color: var(--accent-ink); 
   .guide-search { padding-left: 12px; }
   .guide-search .btn { padding: 0 12px; }
 }
+
+/* Phones: a vertical-stack grid with an implicit `auto` column grows to the min-content width of its
+   widest child (a table with nowrap headers, a diagram row), overflowing the viewport while the top bar
+   stays viewport-wide. One explicit column that may shrink keeps every guide block inside its parent. */
+.guide-body, .guide-section, .guide-card, a.guide-chapter, .toc-group, .callout, .diagram, .dg-layer,
+.dg-box, .dg-col-head, .dg-step, .gloss-list, .gloss-group, .gloss-entry, .term-pop { grid-template-columns: minmax(0, 1fr); }
+.guide-prose, .dg-box, .dg-col, .dg-step, .gloss-head, .tp-body, .diagram figcaption { min-width: 0; overflow-wrap: break-word; }
+.guide-prose code { overflow-wrap: anywhere; }
+@media (max-width: 560px) {
+  .guide-prose th { white-space: normal; }
+}
