@@ -372,8 +372,17 @@ def parse_chapter(path, n):
     return {
         'id': cid, 'n': n, 'title': meta.get('title', cid), 'short': meta.get('short', meta.get('title', cid)),
         'intro': meta.get('intro', ''), 'exams': meta.get('exams', []), 'practice': practice,
+        'skills': meta.get('skills', ''),  # exam slug whose skills-measured sub-areas the sections follow (ids a1, b2, …)
         'lead_md': lead_md, 'sections': sections, 'file': path.name,
     }
+
+
+def load_skill_areas(slug):
+    """Sub-area ids (lower case) of data/skills/<slug>.md, or None when there is no such outline."""
+    p = ROOT / 'data' / 'skills' / f'{slug}.md'
+    if not p.exists():
+        return None
+    return {m.lower() for m in re.findall(r'^## ([A-Z]\d+)\. ', p.read_text(encoding='utf-8'), re.M)}
 
 
 def load_kps():
@@ -427,6 +436,17 @@ def main():
             for name in names:
                 if name not in kps[slug]:
                     err(f'{c["file"]}: practice kp {name!r} not a {slug} knowledge point')
+        if c['skills']:
+            areas = load_skill_areas(c['skills'])
+            if areas is None:
+                err(f'{c["file"]}: skills {c["skills"]!r} has no data/skills/{c["skills"]}.md')
+            else:
+                ids = {s['id'] for s in c['sections']}
+                for a in sorted(areas - ids):
+                    err(f'{c["file"]}: skills chapter lacks a section {{#{a}}} for sub-area {a.upper()}')
+                for s in sorted(ids - areas):
+                    if re.match(r'^[a-z]\d+$', s):
+                        err(f'{c["file"]}: section {{#{s}}} is not a {c["skills"]} sub-area')
         del c['file']
 
     # which chapters mention which terms (for the glossary "appears in" links)

@@ -19,7 +19,7 @@ If you'd rather serve it (for example to use it from your phone on the same netw
 | Where | What it does |
 |---|---|
 | **Dashboard** | Today's count, streak, reviews due, 7-day accuracy, a mastery bar per exam, and an activity heatmap. |
-| **Exam page** | Coverage and accuracy by topic and question type, case-study groups, and mock exam score history. |
+| **Exam page** | **Official skills measured**: Microsoft's blueprint for the exam (functional groups with their weight, sub-areas, every objective bullet with a Chinese gloss), each objective with the bank questions that test it, your accuracy on them, a practice button, and links to the Guide chapter and Learn page that explain it; objectives with no question are marked, so you know where ExamTopics is blind. Plus coverage and accuracy by topic, knowledge point and question type, case-study groups, and mock exam score history. |
 | **Practice** | Answer, then **Check**. Afterwards you see the answer key, the community vote split, the most-upvoted discussion comments, and "Look it up" links into Microsoft Learn for the terms the question turns on. Choices and tiles are shuffled each attempt (letters stay as printed), so you learn the idea, not the position. |
 | **Drag & drop / hotspot** | Real interactive questions rebuilt from the ExamTopics screenshots: drag tiles into boxes (or click a tile, then a box), drag steps into order, pick from drop-down menus, answer Yes/No grids, fill blanks inside code. Each box is marked right or wrong, with the right answer shown in place. The original images are one click away under **Original ExamTopics images**. |
 | **Review due** | Spaced repetition. A wrong answer comes back after ten minutes; right answers come back after 1, 3, 7, then 21 days, most overdue first. A question counts as *mastered* after three spaced correct answers. |
@@ -54,11 +54,40 @@ an opinion and read the explanation and the discussion.
 breaks accuracy down by knowledge point, the practice builder and Browse can filter by it, and
 mock results report it.
 
+**Official skills measured.** `data/skills/<exam>.md` holds Microsoft's skills-measured outline
+for each exam (from the study guides; AB-100's is the version effective October 14, 2026), with
+ids (`A`, `A1`, `A1.3`), a Chinese gloss per bullet and optional `guide:` / `learn:` links.
+`data/skillmap/<exam>.json` maps every bank question to the objectives it tests (first one
+primary; written by an AI mapping pass, fix by hand). `python3 tools/build_skills.py` compiles
+both into `data/skills.js` and refuses unknown ids or questions. The app uses it for the exam
+page card, the objective chip on every question card (click it to practice that objective), the
+"Official skill area" filter in the practice builder, the mock exam's **Follow the official
+blueprint** option (questions drawn per group by the midpoint of its official weight), and the
+mock result breakdown by skill group.
+
+**Supplementary questions.** `data/extra/<exam>.md` holds questions written for this app in the
+official exam style, for objectives the ExamTopics bank covers thinly, each with an explanation and
+Microsoft Learn references. `python3 tools/build_extra.py` compiles them into `data/extra.js`
+(ids 9620001…, 9100001…, 9103001…; display numbers from 1001) and refuses a missing reference, an
+unknown knowledge point or objective, or an answer that is not among the options. They appear
+with a **Supplement** chip and are graded against their authored answer. There are 94 of them
+(AB-620 18, AB-100 46, AI-103 30), including one new case study per exam with six questions each
+(`data/extra/<exam>-cases.md`: a `## Case:` block whose body opens beside the questions, as the
+real case studies do).
+
 **Guide.** The guide is written in Markdown in `data/guide/` (one file per chapter plus
 `glossary-*.md`) and compiled to `data/guide.js` by `python3 tools/build_guide.py`. The build
 refuses to run on an unknown `[[term]]` link, a glossary entry without a Microsoft Learn `ref`,
 or a practice knowledge point that does not exist in `data/reviewed.js`, so the guide cannot
 drift from the question bank. Term marking in questions can be turned off in Settings.
+A chapter whose front matter says `skills: <exam slug>` follows that exam's official outline:
+its sections are the sub-areas (`{#a1}`, `{#b2}`…), the build checks that none is missing, and the
+app adds a practice row to every section with the bank questions on that sub-area. Chapter 7
+(出题规律) is the pattern analysis of all 378 questions: for each exam, the question formats and
+stem formulas, the recurring "requirement wording → correct answer" decision rules, distractor
+patterns, hot and cold objectives, how case-study requirement lines become questions, and
+tactics; every question number in it links to the question. Chapters 8–10 walk the official
+outlines objective by objective, each bullet with what the examiner expects and its Learn sources.
 
 **Disputed answers.** ExamTopics' suggested answer is sometimes wrong. Settings can switch
 grading to the (pooled) community vote, used when at least 3 votes are in and there is no tie,
@@ -122,6 +151,10 @@ of its choices, falls back to the image with self-grading.
 - `data/tags.js`: skill areas for exams whose ExamTopics listing has no topics (AI-103), keyed by question ID
 - `data/reviewed.js`: the reviewed answer, explanation, confidence and knowledge point for every question
 - `data/guide/`: the concept guide sources (Markdown); `data/guide.js`: the compiled guide loaded by the app
+- `data/skills/`: the official skills-measured outlines; `data/skillmap/`: question → objective maps; `data/skills.js`: compiled
+- `data/extra/`: supplementary questions in the official style; `data/extra.js`: compiled
 - `EXAM_SOURCES.example.md`: the exam URLs and a placeholder for the ExamTopics cookie; copy it to `EXAM_SOURCES.md` (git-ignored) before a refresh
 - `tools/examtopics.py`: scraper and parser that produces `data/`
 - `tools/build_guide.py`: compiles `data/guide/*.md` into `data/guide.js`
+- `tools/build_skills.py`: compiles `data/skills/*.md` and `data/skillmap/*.json` into `data/skills.js`
+- `tools/build_extra.py`: compiles `data/extra/*.md` into `data/extra.js`

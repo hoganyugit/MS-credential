@@ -1340,3 +1340,37 @@ a.chip.term:hover { background: var(--accent-wash-2); color: var(--accent-ink); 
 @media (max-width: 560px) {
   .guide-prose th { white-space: normal; }
 }
+
+/* official skills measured (exam page) */
+details.skill-group { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+details.skill-group > summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: minmax(0, 1fr) 120px 64px; gap: 6px 16px; align-items: center; padding: 12px 14px; }
+details.skill-group > summary::-webkit-details-marker { display: none; }
+details.skill-group > summary .name { font-weight: 600; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; min-width: 0; }
+details.skill-group > summary .name-text { flex: 1 1 160px; min-width: 0; }
+details.skill-group > summary .name > svg { width: 16px; height: 16px; flex: none; color: var(--ink-3); transition: transform 0.15s; }
+details.skill-group[open] > summary .name > svg { transform: rotate(180deg); }
+details.skill-group > summary .meta { grid-column: 1 / -1; font-size: 12.5px; color: var(--ink-2); margin-top: -4px; }
+details.skill-group > summary .acc { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.skill-area { padding: 8px 14px 12px; border-top: 1px solid var(--line); }
+.skill-area-head { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; margin: 6px 0 4px; font-weight: 600; }
+.obj-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-top: 1px dashed var(--line); }
+.obj-row:first-of-type { border-top: 0; }
+.obj-id { font-family: var(--mono); font-size: 12px; color: var(--ink-3); padding-top: 3px; flex: none; min-width: 34px; }
+.obj-main { min-width: 0; flex: 1; display: grid; gap: 2px; }
+.obj-text { font-size: 14px; }
+.obj-zh { font-size: 12.5px; color: var(--ink-2); }
+.obj-links { display: flex; gap: 12px; font-size: 12.5px; margin-top: 2px; }
+.obj-links a { display: inline-flex; align-items: center; gap: 3px; }
+.obj-links svg { width: 13px; height: 13px; }
+.obj-row.gap .obj-text { color: var(--ink-2); }
+.obj-row > .btn, .obj-row > .chip { flex: none; }
+.chip.obj { background: var(--fill); color: var(--ink-2); max-width: 100%; white-space: normal; height: auto; min-height: 24px; padding: 2px 9px; }
+@media (max-width: 520px) {
+  details.skill-group > summary { grid-template-columns: minmax(0, 1fr) 56px; }
+  details.skill-group > summary .meter { display: none; }
+  .obj-row { flex-wrap: wrap; }
+  .obj-row > .btn, .obj-row > .chip { margin-left: 44px; }
+}
+.skill-practice { margin: -4px 0 12px; padding: 8px 12px; border-radius: 10px; background: var(--fill); }
+button.chip.obj { cursor: pointer; font: inherit; border: 1px solid transparent; text-align: left; }
+button.chip.obj:hover { background: var(--accent-wash); color: var(--accent-ink); }

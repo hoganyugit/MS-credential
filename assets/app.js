@@ -110,6 +110,20 @@
 
   const BANK = window.BANK;
   const EXAMS = (BANK && BANK.exams) || [];
+  // data/extra.js: supplementary questions written in the official style for objectives the ExamTopics bank
+  // does not cover. They join their exam here, flagged q.extra, with their answer areas and reviewed entries.
+  const EXTRA = window.EXTRA || {};
+  for (const ex of EXTRA.exams || []) {
+    const exam = EXAMS.find(e => e.code === ex.code);
+    if (!exam) continue;
+    for (const q of ex.questions) {
+      q.extra = true;
+      exam.questions.push(q);
+    }
+    exam.cases = Object.assign(exam.cases || {}, ex.cases || {});
+  }
+  window.AREAS = Object.assign(window.AREAS || {}, EXTRA.areas || {});
+  window.REVIEWED = Object.assign(window.REVIEWED || {}, EXTRA.reviewed || {});
   const QUESTIONS = new Map();
   for (const exam of EXAMS) {
     exam.slug = exam.code.toLowerCase();
@@ -135,7 +149,7 @@
       exam.topics = t.areas.map(a => ({ n: a.n, name: a.name }));
       exam.topicName = Object.fromEntries(exam.topics.map(x => [x.n, x.name]));
       exam.tagged = true;
-      for (const q of exam.questions) q.topic = t.tags[q.id] || 0;
+      for (const q of exam.questions) q.topic = t.tags[q.id] || (q.extra ? q.topic : 0) || 0;
     }
     const byN = new Map(exam.questions.map(q => [q.n, q]));
     for (const q of exam.questions) q.siblings = (q.variants || []).map(n => byN.get(n)).filter(Boolean);
@@ -158,6 +172,35 @@
       if (q.kp) kps.set(q.kp, (kps.get(q.kp) || 0) + 1);
     }
     exam.kps = [...kps.keys()].sort((a, b) => kps.get(b) - kps.get(a));
+  }
+
+  // data/skills.js: the official "skills measured" outline of each exam (functional groups with their weight,
+  // sub-areas, objective bullets) and the map from question ID to the objectives it tests. Attached as
+  // exam.skills / q.sk; exam.objective resolves an id ("B", "B1", "B1.2") to its outline entry.
+  const SKILLS = window.SKILLS || { exams: {}, map: {} };
+  for (const exam of EXAMS) {
+    exam.skills = SKILLS.exams[exam.code] || null;
+    exam.objective = new Map();
+    for (const g of (exam.skills || { groups: [] }).groups) {
+      exam.objective.set(g.id, { group: g });
+      for (const a of g.areas) {
+        exam.objective.set(a.id, { group: g, area: a });
+        for (const b of a.bullets) exam.objective.set(b.id, { group: g, area: a, bullet: b });
+      }
+    }
+    for (const q of exam.questions) {
+      const ids = SKILLS.map[q.id] || (q.review && q.review.sk) || [];
+      q.sk = ids.filter(id => exam.objective.has(id));
+    }
+  }
+  // "A" matches every objective of group A, "A1" every bullet of sub-area A1, "A1.3" only itself.
+  const inScope = (id, scope) => id === scope || (scope.length === 1 ? id[0] === scope : id.startsWith(scope + '.'));
+  const skillQuestions = (exam, scope) => exam.questions.filter(q => q.sk.some(id => inScope(id, scope)));
+  function skillTitle(exam, scope) {
+    const o = exam.objective.get(scope);
+    if (!o) return scope;
+    const node = o.bullet || o.area || o.group;
+    return `${node.id} ${o.bullet ? node.text : node.title}`;
   }
 
   const TYPE_LABEL = {
@@ -243,7 +286,7 @@
   // ================================================================== store
 
   const STORE_KEY = 'certprep.v1';
-  const DEFAULTS = { key: 'reviewed', theme: 'auto', mockSize: 50, mockMinutes: 100, mockImages: true, mockLock: true, shuffle: true, terms: true };
+  const DEFAULTS = { key: 'reviewed', theme: 'auto', mockSize: 50, mockMinutes: 100, mockImages: true, mockLock: true, mockWeighted: true, shuffle: true, terms: true };
 
   const store = (() => {
     let data = null;
@@ -1199,6 +1242,17 @@
       multiTopic(q.exam) && q.topic ? h('span', { class: 'chip', title: topicLabel(q.exam, q.topic), text: q.exam.tagged ? q.exam.topicName[q.topic] : `Topic ${q.topic}` }) : null,
       h('span', { class: 'chip', text: TYPE_LABEL[q.type] || q.type }),
       q.kp && mode !== 'mock' ? h('span', { class: 'chip kp', title: 'Knowledge point', text: q.kp }) : null,
+      mode !== 'mock' ? q.sk.slice(0, 2).map(id => {
+        const o = q.exam.objective.get(id);
+        if (!o || !o.bullet) return null;
+        const n = skillQuestions(q.exam, id).length;
+        return h('button', {
+          class: 'chip obj', type: 'button', text: `${o.bullet.id} ${o.bullet.text}`,
+          title: `Official objective · ${o.group.id}. ${o.group.title} › ${o.area.id}. ${o.area.title}${o.bullet.zh ? '\n' + o.bullet.zh : ''}\nClick to practice the ${plural(n, 'question')} on it`,
+          onclick: () => startSession(q.exam, { mode: 'practice', title: `${o.bullet.id} ${o.bullet.text}`, ids: skillQuestions(q.exam, id).map(x => x.id) }),
+        });
+      }) : null,
+      q.extra && mode !== 'mock' ? h('span', { class: 'chip accent', title: 'Written for this app in the official style, for an objective ExamTopics does not cover; not an ExamTopics question', text: 'Supplement' }) : null,
       q.siblings.length && mode !== 'mock' ? h('a', {
         class: 'chip variants', href: `#/q/${q.exam.slug}/${q.n}`,
         title: 'ExamTopics lists this question again with reshuffled choices. Votes are pooled across the copies; click to read them side by side.',
@@ -1382,7 +1436,7 @@
         f.append(h('section', { class: 'section' }, h('h3', { text: 'Why' }),
           h('div', { class: 'explain' }, why,
             h('div', { class: 'row small muted' }, confidenceChip(k.review.confidence),
-              h('span', { text: k.review.verdict === 'corrected' ? 'This reviewed answer differs from the one ExamTopics shows.' : 'The reviewed answer agrees with ExamTopics.' }),
+              h('span', { text: q.extra ? 'Written for this app from the Microsoft Learn pages linked here; not an ExamTopics question.' : k.review.verdict === 'corrected' ? 'This reviewed answer differs from the one ExamTopics shows.' : 'The reviewed answer agrees with ExamTopics.' }),
               k.review.ref ? h('a', { href: k.review.ref, target: '_blank', rel: 'noopener noreferrer' }, 'Reference ', icon('external')) : null))));
       }
       if (q.explanation) {
@@ -1394,7 +1448,7 @@
       if (terms.length) {
         const search = t => `https://learn.microsoft.com/en-us/search/?terms=${encodeURIComponent(t)}`;
         f.append(h('section', { class: 'section' }, h('h3', { text: 'Look it up' }),
-          h('p', { class: 'small muted', text: `${q.explanation ? 'Check the documentation for the terms this question turns on.' : 'ExamTopics gives no explanation, so read the discussion and check the documentation for the terms this question turns on.'}` }),
+          h('p', { class: 'small muted', text: `${q.explanation || q.extra ? 'Check the documentation for the terms this question turns on.' : 'ExamTopics gives no explanation, so read the discussion and check the documentation for the terms this question turns on.'}` }),
           h('div', { class: 'row terms' },
             terms.map(t => h('a', { class: 'chip', href: search(t), target: '_blank', rel: 'noopener noreferrer' }, t, icon('external'))),
             h('a', { class: 'btn sm', href: search(terms.join(' ')), target: '_blank', rel: 'noopener noreferrer' }, 'Search Microsoft Learn', icon('external')))));
@@ -1429,7 +1483,7 @@
         sec.append(h('div', { class: 'keys' },
           h('div', { class: 'key reviewed' + (k.source === 'reviewed' ? ' active' : '') },
             h('div', { class: 'label' }, 'Reviewed answer', k.source === 'reviewed' ? h('span', { class: 'chip accent', text: 'Used for grading' }) : null, confidenceChip(k.review.confidence)),
-            h('div', { class: 'small', text: diff ? `Differs from ExamTopics on ${plural(diff, 'box', 'boxes')}; each box above shows both.` : 'Agrees with the ExamTopics answer for every box.' }))));
+            h('div', { class: 'small', text: q.extra ? 'Authored for this app, with its Learn references under Why.' : diff ? `Differs from ExamTopics on ${plural(diff, 'box', 'boxes')}; each box above shows both.` : 'Agrees with the ExamTopics answer for every box.' }))));
       }
       if (k.community) {
         const boxes = k.official.filter((v, i) => v !== k.community[i]).length;
@@ -1449,8 +1503,8 @@
       } else if (!k.review) {
         sec.append(h('p', { class: 'small muted', text: 'Graded against the answer ExamTopics shows. No upvoted comment disputes it.' }));
       }
-      const originals = [area.area, ...Object.keys(area.exhibits || {})];
-      sec.append(h('details', { class: 'originals' },
+      const originals = [area.area, ...Object.keys(area.exhibits || {})].filter(Boolean);
+      if (originals.length) sec.append(h('details', { class: 'originals' },
         h('summary', null, icon('image'), 'Original ExamTopics images'),
         h('div', { class: 'rich' },
           h('p', { class: 'small muted', text: 'The interactive question was transcribed from these images. If something looks off, trust the images.' }),
@@ -1469,11 +1523,11 @@
           k.review ? h('div', { class: 'key reviewed' + (k.source === 'reviewed' ? ' active' : '') },
             h('div', { class: 'label' }, 'Reviewed answer', k.source === 'reviewed' ? usedTag.cloneNode(true) : null),
             h('div', { class: 'val', text: k.reviewed }),
-            h('div', { class: 'small muted' }, confidenceChip(k.review.confidence), k.review.verdict === 'corrected' ? ' differs from ExamTopics' : ' agrees with ExamTopics')) : null,
-          h('div', { class: 'key' + (usedOfficial ? ' active' : '') },
+            h('div', { class: 'small muted' }, confidenceChip(k.review.confidence), q.extra ? ' authored for this app' : k.review.verdict === 'corrected' ? ' differs from ExamTopics' : ' agrees with ExamTopics')) : null,
+          q.extra ? null : h('div', { class: 'key' + (usedOfficial ? ' active' : '') },
             h('div', { class: 'label' }, 'ExamTopics answer', usedOfficial ? usedTag.cloneNode(true) : null),
             h('div', { class: 'val', text: k.official || '—' })),
-          h('div', { class: 'key' + (usedCommunity ? ' active' : '') },
+          q.extra ? null : h('div', { class: 'key' + (usedCommunity ? ' active' : '') },
             h('div', { class: 'label' }, 'Community vote', usedCommunity ? usedTag.cloneNode(true) : null),
             h('div', { class: 'val', text: k.community || (k.split ? k.split.join(' / ') : '—') }),
             h('div', { class: 'small muted', text: !total ? 'No votes yet' : k.split ? `Tied · ${plural(total, 'vote')}` : `${k.top ? `${k.top.p}% of ` : ''}${plural(total, 'vote')}` }))));
@@ -1667,7 +1721,7 @@
         h('div', { class: 'row' }, h('span', { class: 'chip accent', text: `第 ${c.n} 章` }), c.exams.map(examChip)),
         h('h2', { text: c.title }),
         h('p', { class: 'muted', text: c.intro }),
-        h('div', { class: 'small muted', text: `${c.sections.length} 节${practiceCount(c) ? ` · ${practiceCount(c)} 组练习题` : ''}` })))),
+        h('div', { class: 'small muted', text: `${c.sections.length} 节${practiceCount(c) ? ` · ${practiceCount(c)} 组练习题` : ''}${c.skills && examBySlug(c.skills) && examBySlug(c.skills).skills ? ` · 官方考纲 ${examBySlug(c.skills).skills.groups.reduce((n, g) => n + g.areas.reduce((m, a) => m + a.bullets.length, 0), 0)} 条逐条讲解，每节可直接练题` : ''}` })))),
       h('div', { class: 'grid-2' },
         h('div', { class: 'card stack' }, h('h2', { text: '怎么用' }),
           h('ul', { class: 'guide-howto' },
@@ -1696,6 +1750,21 @@
         })))));
   }
 
+  // A chapter that follows an exam's skills-measured outline (front matter "skills: ab-620") has one section per
+  // sub-area, with ids a1, b2, …: each gets the bank's questions on that sub-area to practice.
+  function skillPracticeRow(ch, s) {
+    const exam = ch.skills && examBySlug(ch.skills);
+    if (!exam || !exam.skills || !/^[a-z]\d+$/.test(s.id)) return null;
+    const scope = s.id.toUpperCase();
+    const qs = skillQuestions(exam, scope);
+    const st = stats(qs);
+    return h('div', { class: 'row skill-practice' },
+      h('span', { class: 'small muted', text: qs.length ? `题库里 ${qs.length} 题考这个子领域${st.seen ? `，已做 ${st.seen}${st.attempts ? `，正确率 ${pct(st.correct, st.attempts)}%` : ''}` : ''}` : '题库里还没有这个子领域的题' }),
+      h('span', { class: 'spacer' }),
+      qs.length ? h('button', { class: 'btn sm', type: 'button', onclick: () => startSession(exam, { mode: 'practice', title: `${scope} ${skillTitle(exam, scope).replace(/^\S+\s/, '')}`, ids: qs.map(q => q.id) }) }, icon('play'), '练这一节') : null,
+      h('a', { class: 'btn sm ghost', href: `#/exam/${exam.slug}` }, `${exam.code} 考纲总览`));
+  }
+
   function viewGuideChapter(id, sectionId) {
     const ch = chapterById(id);
     if (!ch) return navigate('#/guide');
@@ -1719,6 +1788,7 @@
       ch.lead ? h('div', { class: 'guide-prose', html: ch.lead }) : null,
       ch.sections.map(s => h('section', { class: 'guide-section', id: `sec-${s.id}` },
         h('h2', null, h('a', { href: `#/guide/${ch.id}/${s.id}`, text: s.title })),
+        skillPracticeRow(ch, s),
         h('div', { class: 'guide-prose', html: s.html }))),
       terms.length ? h('section', { class: 'guide-section' }, h('h2', { text: '本章术语' }),
         h('div', { class: 'row terms' }, terms.map(t => h('a', { class: 'chip term', 'data-term': t.id, href: `#/guide/glossary/${t.id}`, 'data-tip': t.zh }, t.term)))) : null,
@@ -2158,6 +2228,7 @@
     let list = exam.questions.filter(q =>
       (!f.topic || q.topic === Number(f.topic)) &&
       (!f.kp || q.kp === f.kp) &&
+      (!f.sk || q.sk.some(id => inScope(id, f.sk))) &&
       (!f.type || (f.type === 'choice' ? q.choices.length > 0 : f.type === 'interactive' ? interactive(q) : f.type === 'self' ? selfGraded(q) : q.type === f.type)) &&
       (f.pool === 'new' ? status(q) === 'new'
         : f.pool === 'mistakes' ? isMistake(q)
@@ -2210,6 +2281,7 @@
         tile('Due for review', st.due, st.due ? 'Ready now' : 'Nothing due'),
         tile('Best mock exam', best == null ? '—' : best, best == null ? 'No mock exams yet' : plural(mocks.length, 'attempt'), best == null ? null : '%')),
       h('div', { class: 'grid-2' }, h('div', { class: 'card stack' }, h('h2', { text: 'Progress' }), masteryBar(st)), planCard(exam)),
+      skillsCard(exam),
       h('section', { class: 'section' }, h('h2', { text: 'Study' }), h('div', { class: 'quick-actions' },
         live ? quickAction({ iconName: 'play', title: 'Resume session', sub: `${s.title} · ${s.i + 1} of ${s.ids.length}`, href: `#/s/${exam.slug}`, primary: true }) : null,
         quickAction({
@@ -2277,6 +2349,8 @@
       select('Questions', 'pool', [['all', 'All'], ['new', 'Not seen yet'], ['mistakes', 'Mistakes'], ['due', 'Due for review'], ['flagged', 'Flagged']]),
       multiTopic(exam) ? select('Topic', 'topic', [['', 'All topics'], ...exam.topics.map(t => [String(t.n), topicLabel(exam, t.n)])]) : null,
       exam.kps.length ? select('Knowledge point', 'kp', [['', 'All knowledge points'], ...exam.kps.map(kp => [kp, kp])]) : null,
+      exam.skills ? select('Official skill area', 'sk', [['', 'All skill areas'], ...exam.skills.groups.flatMap(g => [
+        [g.id, `${g.id}. ${g.title} (${g.pct[0]}–${g.pct[1]}%)`], ...g.areas.map(a => [a.id, ` ${a.id}. ${a.title}`])])]) : null,
       select('Type', 'type', [['', 'All types'], ['choice', 'Multiple choice (any)'], ['interactive', 'Drag & drop and hotspot'],
         ...(exam.questions.some(selfGraded) ? [['self', 'Graded by you (image only)']] : []), ...types]),
       select('Order', 'order', [['seq', 'In order'], ['shuffle', 'Shuffled']]),
@@ -2289,7 +2363,7 @@
     form.addEventListener('submit', ev => {
       ev.preventDefault();
       const f = read();
-      const parts = [f.pool !== 'all' ? POOL_TITLE[f.pool] : 'Custom set', f.topic ? `Topic ${f.topic}` : '', f.kp || '', f.type ? (TYPE_LABEL[f.type] || TYPE_GROUP[f.type]) : ''];
+      const parts = [f.pool !== 'all' ? POOL_TITLE[f.pool] : 'Custom set', f.topic ? `Topic ${f.topic}` : '', f.kp || '', f.sk ? skillTitle(exam, f.sk) : '', f.type ? (TYPE_LABEL[f.type] || TYPE_GROUP[f.type]) : ''];
       startSession(exam, { key: f.mode === 'read' ? 'read' : exam.code, mode: f.mode, title: parts.filter(Boolean).join(' · '), ids: buildPool(exam, f) });
     });
     update();
@@ -2311,6 +2385,69 @@
           h('span', { class: 'acc', text: st.attempts ? `${pct(st.correct, st.attempts)}%` : '—' }),
           h('div', { class: 'meta', text: `${plural(st.total, 'question')} · ${st.seen} seen · ${st.mastered} mastered` }));
       })));
+  }
+
+  // The official blueprint: Microsoft's "skills measured" for the exam, each objective with the questions that
+  // test it and your results on them. An objective with no questions is where the ExamTopics bank is blind,
+  // so the Guide and the official Learn material matter most there.
+  function skillsCard(exam) {
+    const sk = exam.skills;
+    if (!sk) return null;
+    const mapped = exam.questions.filter(q => q.sk.length);
+    const bullets = sk.groups.flatMap(g => g.areas.flatMap(a => a.bullets));
+    const gaps = bullets.filter(b => !skillQuestions(exam, b.id).length).length;
+    const practice = (scope, title) => startSession(exam, { mode: 'practice', title, ids: skillQuestions(exam, scope).map(q => q.id) });
+    const accText = st => (st.attempts ? `${pct(st.correct, st.attempts)}%` : '—');
+    const bulletRow = b => {
+      const qs = skillQuestions(exam, b.id);
+      const st = stats(qs);
+      return h('div', { class: 'obj-row' + (qs.length ? '' : ' gap') },
+        h('span', { class: 'obj-id', text: b.id }),
+        h('div', { class: 'obj-main' },
+          h('div', { class: 'obj-text', text: b.text }),
+          b.zh ? h('div', { class: 'obj-zh', text: b.zh }) : null,
+          b.guide.length || b.learn.length ? h('div', { class: 'obj-links' },
+            b.guide.map(ref => h('a', { href: `#/guide/${ref}` }, icon('guide'), '指南')),
+            b.learn.map((u, i) => h('a', { href: u, target: '_blank', rel: 'noopener noreferrer' }, `Learn${b.learn.length > 1 ? ' ' + (i + 1) : ''}`, icon('external')))) : null),
+        qs.length ? h('button', {
+          class: 'btn sm', type: 'button', title: `Practice the ${plural(qs.length, 'question')} on this objective`,
+          onclick: () => practice(b.id, `${b.id} ${b.text}`),
+        }, h('span', { class: 'count', text: String(qs.length) }), accText(st)) : h('span', { class: 'chip warn', title: 'No ExamTopics question tests this objective yet', text: 'No questions' }));
+    };
+    const areaBlock = a => {
+      const qs = skillQuestions(exam, a.id);
+      const st = stats(qs);
+      return h('div', { class: 'skill-area' },
+        h('div', { class: 'skill-area-head' },
+          h('span', { text: `${a.id}. ${a.title}` }),
+          h('span', { class: 'small muted', text: `${plural(qs.length, 'question')}${st.attempts ? ` · ${accText(st)} accuracy` : ''}` }),
+          h('span', { class: 'spacer' }),
+          qs.length ? h('button', { class: 'btn sm ghost', type: 'button', onclick: () => practice(a.id, `${a.id} ${a.title}`) }, icon('play'), 'Practice') : null),
+        a.bullets.map(bulletRow));
+    };
+    const groupBlock = g => {
+      const qs = skillQuestions(exam, g.id);
+      const st = stats(qs);
+      const share = mapped.length ? pct(qs.length, mapped.length) : 0;
+      return h('details', { class: 'skill-group' },
+        h('summary', null,
+          h('span', { class: 'name' }, icon('chevDown'), h('span', { class: 'name-text', text: `${g.id}. ${g.title}` }), h('span', { class: 'chip accent', title: 'Official weight of this group on the exam', text: `${g.pct[0]}–${g.pct[1]}%` })),
+          meter(st.seen, st.total, `${g.title}: ${st.seen} of ${st.total} seen`),
+          h('span', { class: 'acc', text: accText(st) }),
+          h('div', { class: 'meta', text: `${plural(qs.length, 'question')} in the bank (${share}% of mapped questions vs ${g.pct[0]}–${g.pct[1]}% on the exam) · ${st.seen} seen · ${st.mastered} mastered` })),
+        g.areas.map(areaBlock));
+    };
+    return h('div', { class: 'card stack' },
+      h('div', null,
+        h('div', { class: 'section-head' },
+          h('h2', { text: 'Official skills measured' }),
+          h('span', { class: 'spacer' }),
+          h('a', { href: sk.source, target: '_blank', rel: 'noopener noreferrer', class: 'small' }, 'Study guide', icon('external'))),
+        h('p', { class: 'small muted', style: 'margin-top:4px' },
+          `Microsoft's blueprint for ${exam.code}, as of ${fmtDay(parseDay(sk.asof))}. ${plural(mapped.length, 'question')} of ${exam.questions.length} are mapped to its ${plural(bullets.length, 'objective')}; ` +
+          `${gaps ? `${gaps} objectives have no question in the bank yet, so study those from the Guide and Learn.` : 'every objective has at least one question.'} ` +
+          'Open a group to see each objective, practice it, or jump to where it is explained.')),
+      h('div', { class: 'stack', style: 'gap:10px' }, sk.groups.map(groupBlock)));
   }
 
   function casesCard(exam) {
@@ -2392,6 +2529,35 @@
 
   // ================================================================== views: mock exam
 
+  // A mock exam can follow the official blueprint: each skill group gets its share of the questions by the
+  // midpoint of its weight range, drawn at random from the questions mapped to it (by their primary objective).
+  // Unmapped questions and any shortfall in a group are filled from whatever is left.
+  function pickWeighted(exam, pool, size) {
+    const groups = exam.skills.groups;
+    const byGroup = new Map(groups.map(g => [g.id, []]));
+    const rest = [];
+    for (const q of shuffle(pool)) {
+      const g = q.sk[0] ? q.sk[0][0] : null;
+      if (byGroup.has(g)) byGroup.get(g).push(q);
+      else rest.push(q);
+    }
+    const mids = groups.map(g => (g.pct[0] + g.pct[1]) / 2);
+    const total = mids.reduce((a, b) => a + b, 0);
+    const picked = [];
+    const leftover = [];
+    groups.forEach((g, i) => {
+      const want = Math.round((size * mids[i]) / total);
+      const list = byGroup.get(g.id);
+      picked.push(...list.slice(0, want));
+      leftover.push(...list.slice(want));
+    });
+    for (const q of shuffle([...rest, ...leftover])) {
+      if (picked.length >= size) break;
+      picked.push(q);
+    }
+    return shuffle(picked.slice(0, size));
+  }
+
   function viewMockSetup(exam) {
     if (!exam) return navigate('#/');
     setTabs(exam.slug);
@@ -2411,6 +2577,8 @@
         `Include drag & drop and hotspot questions (${exhibits} of ${total})${manual ? ` — ${manual} of them you grade yourself after the exam` : ''}`),
       series ? h('label', { class: 'check' }, h('input', { type: 'checkbox', name: 'lock', checked: S.settings.mockLock }),
         `Lock series questions once you move on, as in the real exam (${series} in this exam)`) : null,
+      exam.skills ? h('label', { class: 'check' }, h('input', { type: 'checkbox', name: 'weighted', checked: S.settings.mockWeighted !== false }),
+        `Follow the official blueprint: ${exam.skills.groups.map(g => `${g.title} ${g.pct[0]}–${g.pct[1]}%`).join(', ')}`) : null,
       h('div', { class: 'row' }, h('button', { class: 'btn primary lg', type: 'submit' }, icon('play'), 'Start mock exam')));
 
     form.addEventListener('submit', async ev => {
@@ -2421,12 +2589,13 @@
       const images = f.get('images') === 'on';
       const topic = f.get('topic');
       const lock = series ? f.get('lock') === 'on' : S.settings.mockLock;
-      Object.assign(S.settings, { mockSize: size, mockMinutes: minutes, mockImages: images, mockLock: lock });
+      const weighted = !!exam.skills && f.get('weighted') === 'on';
+      Object.assign(S.settings, { mockSize: size, mockMinutes: minutes, mockImages: images, mockLock: lock, mockWeighted: exam.skills ? weighted : S.settings.mockWeighted });
       const pool = exam.questions.filter(q => (images || q.choices.length) && (!topic || q.topic === Number(topic)));
       if (!pool.length) return toast('No questions match those options.');
       if (S.mock && !(await ask('Replace the unfinished mock exam?', 'Its answers will be discarded.', 'Start new exam'))) return;
       // as in the real exam, a case study's questions sit together, ahead of the rest
-      const picked = shuffle(pool).slice(0, size);
+      const picked = weighted ? pickWeighted(exam, pool, size) : shuffle(pool).slice(0, size);
       const byCase = new Map();
       const rest = [];
       for (const q of picked) {
@@ -2650,7 +2819,8 @@
         h('span', { class: 'spacer' }),
         h('button', { class: 'btn sm primary', type: 'button', onclick: () => review(pending, 0, 'Self-grade') }, 'Grade them now')) : null,
       h('div', { class: 'grid-2' },
-        multiTopic(exam) ? breakdown('By topic', exam.topics.map(t => [topicLabel(exam, t.n), q => q.topic === t.n])) : null,
+        exam.skills ? breakdown('By official skill group', exam.skills.groups.map(g => [`${g.id}. ${g.title} (${g.pct[0]}–${g.pct[1]}%)`, q => q.sk.some(id => id[0] === g.id)])) : null,
+        multiTopic(exam) && !exam.skills ? breakdown('By topic', exam.topics.map(t => [topicLabel(exam, t.n), q => q.topic === t.n])) : null,
         exam.kps.length ? breakdown('By knowledge point', exam.kps.map(kp => [kp, q => q.kp === kp])) : null,
         breakdown('By question type', [...new Set(items.map(it => QUESTIONS.get(it.id).type))].map(t => [TYPE_LABEL[t] || t, q => q.type === t]))),
       h('div', { class: 'card stack' },
@@ -2859,7 +3029,7 @@
       h('div', { class: 'card stack' },
         h('h2', { text: 'Answer key used for grading' }),
         h('p', { class: 'small muted', text: 'ExamTopics publishes a suggested answer, its users vote on the answer they believe is right, and every question has also been re-judged against Microsoft product behaviour (the reviewed answer, with an explanation). All three are shown on every question.' }),
-        option('key', 'reviewed', 'Reviewed answer (recommended)', 'Grade against the reviewed answer. It corrects ExamTopics on 51 questions and marks its own confidence; where it says low confidence, read the explanation and the discussion.'),
+        option('key', 'reviewed', 'Reviewed answer (recommended)', `Grade against the reviewed answer. It corrects ExamTopics on ${Object.values(REVIEWED).filter(r => r.verdict === 'corrected').length} questions and marks its own confidence; where it says low confidence, read the explanation and the discussion.`),
         option('key', 'community', 'Community vote when it is clear', `Use the most-voted answer once at least ${MIN_VOTES} votes are in and there is no tie; otherwise the ExamTopics answer. Votes are pooled across copies of the same question, and each copy's ExamTopics answer counts as one vote. Drag & drop and hotspot questions have no votes, so a box uses the answer the most-upvoted comments clearly agree on.`),
         option('key', 'official', 'ExamTopics answer', 'Always grade against the answer ExamTopics shows as correct.')),
       h('div', { class: 'card stack' },
@@ -2929,7 +3099,7 @@
     const q = exam && exam.questions.find(x => x.n === n);
     if (!q) return navigate('#/');
     const group = [q, ...q.siblings].sort((a, b) => a.n - b.n);
-    startSession(exam, { key: 'read', mode: 'read', title: `Question ${n} and its ${plural(q.siblings.length, 'copy', 'copies')}`, ids: group.map(x => x.id), i: group.indexOf(q) });
+    startSession(exam, { key: 'read', mode: 'read', title: q.siblings.length ? `Question ${n} and its ${plural(q.siblings.length, 'copy', 'copies')}` : `Question ${n}`, ids: group.map(x => x.id), i: group.indexOf(q) });
   }
 
   function route() {
