@@ -1038,7 +1038,15 @@
     function render() {
       const active = document.activeElement;
       const keepFocus = focusKey || (active && root.contains(active) && active.dataset.focus);
+      const y = scrollY;
       put(root, help(), tiles ? h('div', { class: 'area-split' }, pool(), answerPane()) : answerPane());
+      // WebKit (Safari, and every browser on iPhone) lays out a container-query container whose content was replaced
+      // in two passes; in between the area is briefly short, the page scroll is clamped, and the page jumps up. Lay it
+      // out now and put the scroll position back before anything is painted.
+      if (root.isConnected) {
+        void root.offsetHeight;
+        if (scrollY !== y) scrollTo({ top: y });
+      }
       if (locked) {
         root.classList.add('locked');
         for (const el of root.querySelectorAll('button, select, input')) el.disabled = true;
