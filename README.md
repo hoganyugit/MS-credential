@@ -14,6 +14,24 @@ If you'd rather serve it (for example to use it from your phone on the same netw
 `file://` and `http://` as different sites, so stick to one, or move progress with
 **Settings → Export / Import progress**.
 
+## Sync across devices (optional)
+
+To keep progress in step across your phone and computers, the app can mirror the browser's
+progress blob to a small self-hosted service (`server/sync_server.py`). In **Settings → Sync
+across devices** pick any **sync code** and enter the same code on each device; the code is the
+only protection for the server copy, so keep it private (anyone with it can read or overwrite it).
+
+The server (`assets/sync.js` ⇄ `server/sync_server.py`) is a dumb, authenticated blob store with
+a revision counter; all merging happens client-side in `sync.js` (`merge()`), so two devices that
+studied offline converge deterministically — newer per-question attempts win, counters keep the
+larger value, lists union, and a flag sticks. Settings stay device-local. Codes with characters an
+HTTP header cannot carry (Chinese, emoji) travel base64-encoded in `X-Sync-Code-B64`.
+
+Deploy it with `sudo bash server/deploy.sh` (static app to `/var/www/ms-credential`, the sync
+service under systemd, an nginx site proxying `/api/sync` → `127.0.0.1:8793`; then
+`certbot --nginx` for HTTPS). The feature is entirely optional: with no sync code set, nothing is
+sent anywhere and progress stays in the browser as before.
+
 ## How it is meant to be used
 
 | Where | What it does |
@@ -146,6 +164,8 @@ of its choices, falls back to the image with self-grading.
 ## Files
 
 - `index.html`, `assets/app.css`, `assets/app.js`: the app (plain HTML/CSS/JS, no build step)
+- `assets/sync.js`: optional cross-device progress sync (client); loads before `app.js`
+- `server/`: the sync service — `sync_server.py` (blob store), `mscred-sync.service`, `nginx-ms.conf`, `deploy.sh`
 - `data/bank.js`: the parsed questions; `data/img/`: exhibit and answer images
 - `data/areas.js`: interactive versions of the drag & drop and hotspot screenshots (hand-transcribed)
 - `data/tags.js`: skill areas for exams whose ExamTopics listing has no topics (AI-103), keyed by question ID
@@ -155,6 +175,7 @@ of its choices, falls back to the image with self-grading.
 - `data/extra/`: supplementary questions in the official style; `data/extra.js`: compiled
 - `EXAM_SOURCES.example.md`: the exam URLs and a placeholder for the ExamTopics cookie; copy it to `EXAM_SOURCES.md` (git-ignored) before a refresh
 - `tools/examtopics.py`: scraper and parser that produces `data/`
+- `tools/sync_comments.py`: refreshes only the discussion comments in `data/bank.js` (reuses `examtopics.py`'s parser)
 - `tools/build_guide.py`: compiles `data/guide/*.md` into `data/guide.js`
 - `tools/build_skills.py`: compiles `data/skills/*.md` and `data/skillmap/*.json` into `data/skills.js`
 - `tools/build_extra.py`: compiles `data/extra/*.md` into `data/extra.js`

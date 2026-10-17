@@ -322,11 +322,11 @@
         persistent = false;
       }
     }
-    addEventListener('pagehide', () => timer && flush());
+    addEventListener('pagehide', () => { if (timer) flush(); if (window.SYNC) SYNC.bye(); });
     return {
       data,
       flush,
-      save() { clearTimeout(timer); timer = setTimeout(flush, 150); },
+      save() { clearTimeout(timer); timer = setTimeout(flush, 150); if (window.SYNC) SYNC.poke(); },
       freeze() { clearTimeout(timer); frozen = true; }, // before replacing storage wholesale and reloading
       get persistent() { return persistent; },
     };
@@ -2996,7 +2996,7 @@
         if (!(await ask('Replace your progress?', `Everything stored in this browser is replaced with “${f.name}”.`, 'Replace'))) return;
         store.freeze();
         localStorage.setItem(STORE_KEY, JSON.stringify(data));
-        location.reload();
+        (window.SYNC && SYNC.enabled() ? SYNC.syncNow().catch(() => {}) : Promise.resolve()).finally(() => location.reload());
       } catch (err) {
         toast(`Import failed: ${err.message}`);
       }
@@ -3010,7 +3010,7 @@
       if (!code) {
         store.freeze();
         localStorage.setItem(STORE_KEY, JSON.stringify({ version: 1, settings: S.settings }));
-        location.reload();
+        (window.SYNC && SYNC.enabled() ? SYNC.syncNow().catch(() => {}) : Promise.resolve()).finally(() => location.reload());
         return;
       }
       for (const q of examByCode(code).questions) delete S.q[q.id];
@@ -3019,11 +3019,66 @@
       S.mocks = S.mocks.filter(m => m.code !== code);
       if (S.mock && S.mock.code === code) S.mock = null;
       store.flush();
+      if (window.SYNC) SYNC.poke();
       toast(`${code} progress reset`);
       route();
     }
 
     const tracked = Object.values(S.q).filter(p => p.a).length;
+    let syncCard = null;
+    if (window.SYNC) {
+      const status = h('p', { class: 'small muted' });
+      const renderStatus = s => {
+        status.textContent = !s.enabled
+          ? 'Off — progress lives only in this browser.'
+          : s.deferred
+            ? 'On — an update from another device will apply when you leave the current session.'
+            : s.lastError
+              ? `On — paused: ${s.lastError}`
+              : `On — server revision ${s.rev}, last synced ${s.lastSync ? (Date.now() - s.lastSync < 60e3 ? 'just now' : `at ${new Date(s.lastSync).toLocaleTimeString()}`) : 'not yet'}.`;
+      };
+      SYNC.onChange(renderStatus);
+      renderStatus(SYNC.state());
+      const busy = async (btn, job, done) => {
+        btn.disabled = true;
+        try { await job(); if (done) toast(done); }
+        catch (err) { toast(`${err.message || 'Sync failed'}`); }
+        btn.disabled = false;
+      };
+      const code = h('input', { type: 'text', placeholder: 'Pick a sync code (8+ characters)', autocomplete: 'off', 'aria-label': 'Sync code' });
+      const turnOn = h('button', {
+        class: 'btn primary', type: 'button',
+        onclick: () => busy(turnOn, async () => {
+          const merged = await SYNC.enable(code.value);
+          toast(merged ? 'Sync on — merged with the progress already on the server.' : 'Sync on — your progress is now on the server.');
+          location.reload();
+        }),
+      }, 'Turn on sync');
+      code.addEventListener('keydown', ev => { if (ev.key === 'Enter') turnOn.click(); });
+      syncCard = h('div', { class: 'card stack' },
+        h('h2', { text: 'Sync across devices' }),
+        h('p', { class: 'small muted', text: 'Mirror progress to this server so your phone and computers stay in step: pick any sync code and enter the same one on each device. The code is the only protection for the server copy — anyone who knows it can read or overwrite it, so keep it private.' }),
+        status,
+        SYNC.enabled()
+          ? h('div', { class: 'row' },
+            h('button', { class: 'btn', type: 'button', onclick: ev => busy(ev.currentTarget, () => SYNC.syncNow(), 'Synced.') }, icon('repeat'), 'Sync now'),
+            h('button', {
+              class: 'btn', type: 'button',
+              onclick: async ev => {
+                if (!(await ask('Turn off sync?', 'This browser stops syncing. The server copy stays, so you can pick it up again with the same code.', 'Turn off'))) return;
+                busy(ev.currentTarget, () => SYNC.disable(false)).then(() => route());
+              },
+            }, 'Turn off'),
+            h('button', {
+              class: 'btn bad', type: 'button',
+              onclick: async ev => {
+                if (!(await ask('Delete the server copy?', 'The synced progress on the server is deleted and this browser stops syncing. Other devices keep their local progress but stop finding this code. This cannot be undone.', 'Delete'))) return;
+                busy(ev.currentTarget, () => SYNC.disable(true)).then(() => route());
+              },
+            }, icon('trash'), 'Delete server copy'))
+          : h('div', { class: 'row', style: 'align-items:end' },
+            h('label', { class: 'field', style: 'flex:1 1 240px' }, 'Sync code', code), turnOn));
+    }
     mount(h('div', { class: 'page', style: 'max-width:820px' },
       h('h1', { text: 'Settings' }),
       h('div', { class: 'card stack' },
@@ -3048,9 +3103,10 @@
         h('div', { class: 'builder' }, number('Questions', 'mockSize', 1, 500), number('Minutes (0 = untimed)', 'mockMinutes', 0, 600)),
         h('label', { class: 'check' }, images, 'Include drag & drop and hotspot questions'),
         h('label', { class: 'check' }, lock, 'Lock series questions once you move on, as in the real exam')),
+      syncCard,
       h('div', { class: 'card stack' },
         h('h2', { text: 'Your data' }),
-        h('p', { class: 'small muted', text: `Progress is stored in this browser only: ${plural(tracked, 'question')} with answers, ${plural(S.mocks.length, 'mock exam')}. Export a backup to move it to another browser or computer.` }),
+        h('p', { class: 'small muted', text: `Progress is stored in this browser: ${plural(tracked, 'question')} with answers, ${plural(S.mocks.length, 'mock exam')}. Sync (above) mirrors it to this server across your devices; export a backup to move it anywhere else.` }),
         h('div', { class: 'row' },
           h('button', {
             class: 'btn', type: 'button',
@@ -3201,5 +3257,6 @@
 
   applyTheme();
   addEventListener('hashchange', route);
-  route();
+  window.CERTPREP_SYNCNOTE = () => toast('Progress updated from another device — it will apply when you leave this session.');
+  (window.SYNC ? SYNC.boot() : Promise.resolve()).then(route);
 })();
