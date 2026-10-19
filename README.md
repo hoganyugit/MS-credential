@@ -22,10 +22,21 @@ across devices** pick any **sync code** and enter the same code on each device; 
 only protection for the server copy, so keep it private (anyone with it can read or overwrite it).
 
 The server (`assets/sync.js` ⇄ `server/sync_server.py`) is a dumb, authenticated blob store with
-a revision counter; all merging happens client-side in `sync.js` (`merge()`), so two devices that
-studied offline converge deterministically — newer per-question attempts win, counters keep the
-larger value, lists union, and a flag sticks. Settings stay device-local. Codes with characters an
-HTTP header cannot carry (Chinese, emoji) travel base64-encoded in `X-Sync-Code-B64`.
+a revision counter; all merging happens client-side in `sync.js` (`merge()`), which is a join
+(commutative, associative, idempotent), so devices converge whatever order they sync in. Each
+piece of progress carries its own clock and the newer write wins: a question's attempt record,
+its flag and its note separately; a session's position by its last use and each of its answers by
+its own; the session or mock exam started last replaces older ones. Day counters keep the larger
+value. Deletions (an exam reset, a deleted mock result) travel as timestamps in `gone`, and a full
+reset or an import starts a new `epoch` that replaces the other devices' copies. Settings stay
+device-local. Codes with characters an HTTP header cannot carry (Chinese, emoji) travel
+base64-encoded in `X-Sync-Code-B64`.
+
+`app.js` owns the progress object and is the only writer of `localStorage`; `sync.js` hands it
+merged data, which it takes over in place, so a stale copy in memory never overwrites a merge.
+Every pull (on load, when the tab comes back into view, every two minutes, and on "Sync now")
+reconciles both ways: the server copy is merged in, and anything the server lacks is pushed back.
+Two devices on the same server revision therefore hold the same progress.
 
 Deploy it with `sudo bash server/deploy.sh` (static app to `/var/www/ms-credential`, the sync
 service under systemd, an nginx site proxying `/api/sync` → `127.0.0.1:8793`; then

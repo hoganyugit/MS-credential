@@ -288,33 +288,44 @@
   const STORE_KEY = 'certprep.v1';
   const DEFAULTS = { key: 'reviewed', theme: 'auto', mockSize: 50, mockMinutes: 100, mockImages: true, mockLock: true, mockWeighted: true, shuffle: true, terms: true };
 
+  // The object in memory is the only copy the app writes; localStorage mirrors it, and progress
+  // merged in from another device (assets/sync.js) is taken over in place rather than written
+  // around it, so neither can overwrite the other.
   const store = (() => {
-    let data = null;
+    let data = { version: 1 };
     let persistent = true;
-    let frozen = false;
     let timer = 0;
     try {
-      data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+      data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null') || data;
     } catch (err) {
       persistent = false;
     }
-    if (!data || data.version !== 1) data = { version: 1 };
+    if (data.version !== 1) data = { version: 1 };
     data.settings = { ...DEFAULTS, ...data.settings };
     if (!data.settings.keyVersion) { // reviewed answers arrived after the first release: adopt them once
       data.settings.key = 'reviewed';
       data.settings.keyVersion = 2;
     }
-    data.q = data.q || {};
-    data.activity = data.activity || {};
-    data.sessions = data.sessions || {};
-    data.mocks = data.mocks || [];
-    data.mock = data.mock || null;
-    data.plan = data.plan || {};
+    fill(data);
 
+    function fill(d) {
+      d.q = d.q || {};
+      d.activity = d.activity || {};
+      d.sessions = d.sessions || {};
+      d.mocks = d.mocks || [];
+      d.mock = d.mock || null;
+      d.plan = d.plan || {};
+      d.gone = d.gone || {}; // deletions, for sync: "exam:CODE" (reset), "mock:ID", "session:KEY" → when
+    }
+    function swap(next, settings) {
+      for (const k of Object.keys(data)) delete data[k];
+      Object.assign(data, next, { settings });
+      fill(data);
+      flush();
+    }
     function flush() {
       clearTimeout(timer);
       timer = 0;
-      if (frozen) return;
       try {
         localStorage.setItem(STORE_KEY, JSON.stringify(data));
         persistent = true;
@@ -322,20 +333,27 @@
         persistent = false;
       }
     }
-    addEventListener('pagehide', () => { if (timer) flush(); if (window.SYNC) SYNC.bye(); });
+    addEventListener('pagehide', () => { if (timer) flush(); });
     return {
       data,
       flush,
       save() { clearTimeout(timer); timer = setTimeout(flush, 150); if (window.SYNC) SYNC.poke(); },
-      freeze() { clearTimeout(timer); frozen = true; }, // before replacing storage wholesale and reloading
+      commit() { flush(); if (window.SYNC) SYNC.poke(); }, // save now, before navigating away
+      // merged progress from assets/sync.js; this device keeps its own settings
+      adopt(next) { swap(next, data.settings); },
+      // an imported file or a full reset, which starts a new sync epoch and so replaces other devices' copies
+      replace(next) { swap({ ...next, epoch: Date.now() }, { ...DEFAULTS, ...next.settings }); if (window.SYNC) SYNC.poke(); },
       get persistent() { return persistent; },
     };
   })();
   const S = store.data;
 
   const prog = id => S.q[id] || {};
+  // A cleared flag or emptied note is dropped rather than stored as false or '', so copies compare equal.
   function patch(id, values) {
-    S.q[id] = { ...S.q[id], ...values };
+    const e = { ...S.q[id], ...values };
+    for (const k of Object.keys(values)) if (values[k] === false || values[k] === '') delete e[k];
+    S.q[id] = e;
     store.save();
   }
 
@@ -756,7 +774,7 @@
   function notesSection(q) {
     const ta = h('textarea', { class: 'notes', placeholder: 'Your own notes on this question — saved automatically', 'aria-label': 'My notes' });
     ta.value = prog(q.id).n || '';
-    ta.addEventListener('input', () => patch(q.id, { n: ta.value }));
+    ta.addEventListener('input', () => patch(q.id, { n: ta.value, nt: Date.now() }));
     return h('section', { class: 'section' }, h('h3', { text: 'My notes' }), ta);
   }
 
@@ -1379,7 +1397,7 @@
         e.flag = on;
         if (ctx.onChange) ctx.onChange();
       } else {
-        patch(q.id, { f: on });
+        patch(q.id, { f: on, ft: Date.now() });
       }
       flagBtn.setAttribute('aria-pressed', String(on));
       flagBtn.lastChild.textContent = flagWord(on);
@@ -1875,6 +1893,10 @@
 
   // ================================================================== shared session layout (practice, read, review, mock)
 
+  // Whether the case-study panel is open: a preference of this device (open by default on wide screens), kept in
+  // its settings so it never travels with a synced session or mock exam.
+  const caseOpen = () => (S.settings.caseOpen ??= innerWidth >= 1280);
+
   function sessionLayout({ getCase, setCase }) {
     const nav = h('aside', { class: 'navigator', 'aria-label': 'Questions in this session' });
     const stage = h('section', { class: 'stage' });
@@ -1942,31 +1964,46 @@
     s.ids = s.ids.filter(id => QUESTIONS.has(id));
     if (!s.ids.length) {
       delete S.sessions[key];
+      S.gone['session:' + key] = Date.now();
       store.save();
       return navigate(`#/exam/${exam.slug}`);
     }
     setTabs(exam.slug);
     setTitle(s.title, exam.code);
-    if (s.caseOpen == null) s.caseOpen = innerWidth >= 1280;
 
-    const L = sessionLayout({ getCase: () => s.caseOpen, setCase });
+    const L = sessionLayout({ getCase: caseOpen, setCase });
     let card = null;
-    mount(L.root, { key: ev => (card ? card.handleKey(ev) : false), escape: () => setCase(false) });
+    mount(L.root, {
+      key: ev => (card ? card.handleKey(ev) : false),
+      escape: () => setCase(false),
+      live: () => S.sessions[key] === s && (!mock || S.mocks.includes(mock)), // untouched by a sync merge
+    });
 
     const peek = id => (mock ? mock.items.find(it => it.id === id) : s.res[id]);
     const entry = id => (mock ? peek(id) : (s.res[id] = s.res[id] || {}));
-    const save = () => store.save();
+
+    // Progress is stamped, so a sync merge with another device's copy of this session keeps the
+    // position of whichever was used last and the newer version of each answer.
+    function touch(e) {
+      const now = Date.now();
+      s.u = now;
+      if (e) {
+        e.u = now;
+        if (mock) mock.u = now; // review mode: the entries belong to the mock result
+      }
+      store.save();
+    }
 
     function jump(i) {
       s.i = clamp(i, 0, s.ids.length);
-      save();
+      touch();
       draw(true);
     }
 
     function setCase(open) {
-      if (s.caseOpen === open) return;
-      s.caseOpen = open;
-      save();
+      if (caseOpen() === open) return;
+      S.settings.caseOpen = open;
+      store.save();
       draw(false);
     }
 
@@ -1978,14 +2015,14 @@
       const e = entry(q.id);
       const k = answerKey(q);
       if (mock && k && e.key) k.active = e.key; // review against the key the exam was scored with
-      const redraw = () => { save(); draw(false); };
+      const redraw = () => { touch(e); draw(false); };
       card = questionCard(q, {
         mode: s.mode,
         pos: `${s.i + 1} of ${s.ids.length}`,
         entry: e,
         key: k,
-        caseOpen: !!(q.case && s.caseOpen),
-        toggleCase: () => setCase(!s.caseOpen),
+        caseOpen: !!(q.case && caseOpen()),
+        toggleCase: () => setCase(!caseOpen()),
         nav: {
           hasPrev: s.i > 0, hasNext: s.i < s.ids.length - 1,
           prev: () => jump(s.i - 1), next: () => jump(s.i + 1),
@@ -2023,7 +2060,7 @@
           if (mock) scoreMock(mock);
           redraw();
         },
-        onChange: save,
+        onChange: () => touch(e),
         onFlag: drawNav,
       });
       L.stage.replaceChildren(L.mobileBar(`${s.i + 1} / ${s.ids.length}`, s.title), card);
@@ -2323,7 +2360,7 @@
     const date = h('input', { type: 'date', value: pl.date, 'aria-label': 'Exam date' });
     const goal = h('input', { type: 'number', min: 0, max: 500, value: pl.goal || '', placeholder: 'e.g. 20', 'aria-label': 'Questions per day' });
     const save = () => {
-      S.plan[exam.code] = { date: date.value || '', goal: clamp(Number(goal.value) || 0, 0, 500) };
+      S.plan[exam.code] = { date: date.value || '', goal: clamp(Number(goal.value) || 0, 0, 500), u: Date.now() };
       store.save();
       route();
     };
@@ -2613,7 +2650,7 @@
       }
       const ids = [...[...byCase.values()].flat(), ...rest].map(q => q.id);
       S.mock = { id: uid(), code: exam.code, ids, i: 0, items: {}, start: Date.now(), minutes, lock };
-      store.flush();
+      store.commit();
       navigate('#/mock');
     });
 
@@ -2636,15 +2673,18 @@
     const m = S.mock;
     const exam = m && examByCode(m.code);
     if (!exam) {
-      S.mock = null;
+      if (m) {
+        S.gone['mock:' + m.id] = Date.now(); // its exam is no longer in the bank
+        S.mock = null;
+        store.save();
+      }
       return navigate('#/');
     }
     m.ids = m.ids.filter(id => QUESTIONS.has(id));
     setTabs(exam.slug);
     setTitle('Mock exam', exam.code);
-    if (m.caseOpen == null) m.caseOpen = innerWidth >= 1280;
 
-    const L = sessionLayout({ getCase: () => m.caseOpen, setCase });
+    const L = sessionLayout({ getCase: caseOpen, setCase });
     const clockText = h('span');
     const timer = h('span', { class: 'timer', role: 'timer' }, icon('clock'), clockText);
     const answeredText = h('span', { class: 'small muted' });
@@ -2663,6 +2703,7 @@
       key: ev => (card ? card.handleKey(ev) : false),
       escape: () => setCase(false),
       leave: () => clearInterval(interval),
+      live: () => S.mock === m, // untouched by a sync merge
     });
 
     const item = id => (m.items[id] = m.items[id] || {});
@@ -2684,21 +2725,33 @@
     }
 
     function setCase(open) {
-      if (m.caseOpen === open) return;
-      m.caseOpen = open;
+      if (caseOpen() === open) return;
+      S.settings.caseOpen = open;
       store.save();
       draw(false);
     }
 
+    // stamped like a practice session's progress (see viewSession)
+    function touch(it) {
+      const now = Date.now();
+      m.u = now;
+      if (it) it.u = now;
+      store.save();
+    }
+
+    // Returns the series question's entry when moving on locks it.
     function leave() {
       const q = QUESTIONS.get(m.ids[m.i]);
-      if (m.lock && q && q.series && answered(q.id)) item(q.id).locked = true;
+      if (!(m.lock && q && q.series && answered(q.id))) return null;
+      const it = item(q.id);
+      it.locked = true;
+      return it;
     }
 
     function jump(i) {
-      leave();
+      const locked = leave();
       m.i = clamp(i, 0, m.ids.length - 1);
-      store.save();
+      touch(locked);
       draw(true);
     }
 
@@ -2709,15 +2762,15 @@
         pos: `${m.i + 1} of ${m.ids.length}`,
         entry: item(q.id),
         key: answerKey(q),
-        caseOpen: !!(q.case && m.caseOpen),
-        toggleCase: () => setCase(!m.caseOpen),
+        caseOpen: !!(q.case && caseOpen()),
+        toggleCase: () => setCase(!caseOpen()),
         nav: {
           hasPrev: m.i > 0, hasNext: m.i < m.ids.length - 1,
           prev: () => jump(m.i - 1),
           next: () => (m.i < m.ids.length - 1 ? jump(m.i + 1) : finish(false)),
           lastLabel: 'Finish exam',
         },
-        onChange: () => { store.save(); drawNav(); },
+        onChange: () => { touch(item(q.id)); drawNav(); },
         onFlag: drawNav,
       });
       L.stage.replaceChildren(L.mobileBar(`${m.i + 1} / ${m.ids.length}`, 'Mock exam'), card);
@@ -2776,7 +2829,7 @@
       scoreMock(result);
       S.mocks.push(result);
       S.mock = null;
-      store.flush();
+      store.commit();
       if (auto) toast('Time is up — the exam was submitted.');
       navigate(`#/result/${result.id}`);
     }
@@ -2861,7 +2914,8 @@
           onclick: async () => {
             if (!(await ask('Delete this result?', 'The score is removed from your history. Practice progress is kept.', 'Delete'))) return;
             S.mocks.splice(S.mocks.indexOf(r), 1);
-            store.flush();
+            S.gone['mock:' + r.id] = Date.now();
+            store.commit();
             navigate(`#/exam/${exam.slug}`);
           },
         }, icon('trash'), 'Delete result'))));
@@ -3001,10 +3055,10 @@
       try {
         const data = JSON.parse(await f.text());
         if (!data || data.version !== 1 || typeof data.q !== 'object') throw new Error('this is not a Cert Prep progress file');
-        if (!(await ask('Replace your progress?', `Everything stored in this browser is replaced with “${f.name}”.`, 'Replace'))) return;
-        store.freeze();
-        localStorage.setItem(STORE_KEY, JSON.stringify(data));
-        (window.SYNC && SYNC.enabled() ? SYNC.syncNow().catch(() => {}) : Promise.resolve()).finally(() => location.reload());
+        const linked = window.SYNC && SYNC.enabled();
+        if (!(await ask('Replace your progress?', `Everything stored in this browser${linked ? ' and on your other synced devices' : ''} is replaced with “${f.name}”.`, 'Replace'))) return;
+        store.replace(data);
+        (linked ? SYNC.syncNow().catch(() => {}) : Promise.resolve()).finally(() => location.reload());
       } catch (err) {
         toast(`Import failed: ${err.message}`);
       }
@@ -3014,20 +3068,20 @@
     async function reset() {
       const code = resetScope.value;
       const what = code || 'every exam';
-      if (!(await ask(`Reset progress for ${what}?`, 'Answers, review schedule, flags, notes, sessions and mock results are deleted. This cannot be undone — export first if unsure.', 'Reset'))) return;
+      const linked = window.SYNC && SYNC.enabled();
+      if (!(await ask(`Reset progress for ${what}?`, `Answers, review schedule, flags, notes, sessions and mock results are deleted${linked ? ' here and on your other synced devices' : ''}. This cannot be undone — export first if unsure.`, 'Reset'))) return;
       if (!code) {
-        store.freeze();
-        localStorage.setItem(STORE_KEY, JSON.stringify({ version: 1, settings: S.settings }));
-        (window.SYNC && SYNC.enabled() ? SYNC.syncNow().catch(() => {}) : Promise.resolve()).finally(() => location.reload());
+        store.replace({ version: 1, settings: S.settings });
+        (linked ? SYNC.syncNow().catch(() => {}) : Promise.resolve()).finally(() => location.reload());
         return;
       }
+      S.gone['exam:' + code] = Date.now(); // so sync drops what other devices still hold from before
       for (const q of examByCode(code).questions) delete S.q[q.id];
       delete S.plan[code];
       for (const [k, s] of Object.entries(S.sessions)) if (s.code === code) delete S.sessions[k];
       S.mocks = S.mocks.filter(m => m.code !== code);
       if (S.mock && S.mock.code === code) S.mock = null;
-      store.flush();
-      if (window.SYNC) SYNC.poke();
+      store.commit();
       toast(`${code} progress reset`);
       route();
     }
@@ -3039,11 +3093,9 @@
       const renderStatus = s => {
         status.textContent = !s.enabled
           ? 'Off — progress lives only in this browser.'
-          : s.deferred
-            ? 'On — an update from another device will apply when you leave the current session.'
-            : s.lastError
-              ? `On — paused: ${s.lastError}`
-              : `On — server revision ${s.rev}, last synced ${s.lastSync ? (Date.now() - s.lastSync < 60e3 ? 'just now' : `at ${new Date(s.lastSync).toLocaleTimeString()}`) : 'not yet'}.`;
+          : s.lastError
+            ? `On — paused: ${s.lastError}`
+            : `On — server revision ${s.rev}, last synced ${s.lastSync ? (Date.now() - s.lastSync < 60e3 ? 'just now' : `at ${new Date(s.lastSync).toLocaleTimeString()}`) : 'not yet'}${s.pending ? ' · changes waiting to upload' : ''}.`;
       };
       SYNC.onChange(renderStatus);
       renderStatus(SYNC.state());
@@ -3059,7 +3111,7 @@
         onclick: () => busy(turnOn, async () => {
           const merged = await SYNC.enable(code.value);
           toast(merged ? 'Sync on — merged with the progress already on the server.' : 'Sync on — your progress is now on the server.');
-          location.reload();
+          route();
         }),
       }, 'Turn on sync');
       code.addEventListener('keydown', ev => { if (ev.key === 'Enter') turnOn.click(); });
@@ -3080,7 +3132,7 @@
             h('button', {
               class: 'btn bad', type: 'button',
               onclick: async ev => {
-                if (!(await ask('Delete the server copy?', 'The synced progress on the server is deleted and this browser stops syncing. Other devices keep their local progress but stop finding this code. This cannot be undone.', 'Delete'))) return;
+                if (!(await ask('Delete the server copy?', 'The synced progress on the server is deleted and this browser stops syncing. Other devices keep their local progress; one still syncing with this code uploads its copy again the next time it saves. This cannot be undone.', 'Delete'))) return;
                 busy(ev.currentTarget, () => SYNC.disable(true)).then(() => route());
               },
             }, icon('trash'), 'Delete server copy'))
@@ -3263,8 +3315,34 @@
     navigate(`#/browse/${currentSlug || 'all'}${q ? `?q=${encodeURIComponent(q)}` : ''}`);
   });
 
+  // ================================================================== sync (assets/sync.js)
+
+  let booted = false;
+  let stale = false;
+  // Progress merged in from another device: redraw the screen, except a guide page, the session or mock exam
+  // being worked on when the merge left it alone, and a field being typed in (redrawn once it is left).
+  function synced() {
+    if (!booted || /^#\/guide/.test(location.hash) || (view.live && view.live())) return;
+    const t = document.activeElement;
+    stale = !!(t && app.contains(t) && t.matches('input, textarea, select'));
+    if (stale) return;
+    const y = scrollY;
+    route();
+    if (!view.live) scrollTo(0, y); // a session or mock exam opens at the top of its question
+  }
+  document.addEventListener('focusout', () => { if (stale) setTimeout(synced); });
+
   applyTheme();
   addEventListener('hashchange', route);
-  window.CERTPREP_SYNCNOTE = () => toast('Progress updated from another device — it will apply when you leave this session.');
-  (window.SYNC ? SYNC.boot() : Promise.resolve()).then(route);
+  if (window.SYNC) {
+    SYNC.attach({
+      read: () => S,
+      apply(next) { store.adopt(next); queueMicrotask(synced); },
+      examOf: id => { const q = QUESTIONS.get(Number(id)); return q ? q.exam.code : null; },
+    });
+  }
+  // The first screen waits briefly for the first pull; on a slow network it shows this device's progress and
+  // the pull redraws it when it lands.
+  const first = window.SYNC ? Promise.race([SYNC.boot(), new Promise(r => setTimeout(r, 2500))]) : Promise.resolve();
+  first.then(() => { booted = true; route(); });
 })();
