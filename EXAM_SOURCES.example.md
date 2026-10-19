@@ -8,8 +8,8 @@ cookie is a live login session, and anyone holding it can act as the account.
 
 | Exam | Title | Questions | URL |
 |------|-------|-----------|-----|
-| AB-620 | Designing and Building Integrated AI Agent Solutions in Copilot Studio | 97 | https://www.examtopics.com/exams/microsoft/ab-620/view/ |
-| AB-100 | Agentic AI Business Solutions Architect | 120 | https://www.examtopics.com/exams/microsoft/ab-100/view/ |
+| AB-620 | Designing and Building Integrated AI Agent Solutions in Copilot Studio | 116 | https://www.examtopics.com/exams/microsoft/ab-620/view/ |
+| AB-100 | Agentic AI Business Solutions Architect | 129 | https://www.examtopics.com/exams/microsoft/ab-100/view/ |
 | AI-103 | Developing AI Apps and Agents on Azure | 161 | https://www.examtopics.com/exams/microsoft/ai-103/view/ |
 
 Question counts as of 2026-10-09. Anonymous access to ExamTopics stops after questions 1–10

@@ -1,7 +1,7 @@
 # Cert Prep
 
 An offline study app for the ExamTopics question sets listed in `EXAM_SOURCES.example.md`:
-AB-620 (97 questions), AB-100 (120) and AI-103 (161), with ExamTopics answers, community
+AB-620 (116 questions), AB-100 (129) and AI-103 (161), with ExamTopics answers, community
 vote counts, discussion threads, and all 289 exhibit images stored locally.
 
 ## Open it
@@ -64,15 +64,15 @@ all of that into plain lines; `tools/examtopics.py` rebuilds the structure.
 
 **Copies of a question.** ExamTopics lists many questions more than once with reshuffled,
 partly different choices and sometimes a different answer (for example AB-100 #40, #41, #42,
-#43, #98, #110 and #120 are one question). The build links such copies; the app shows an
+#43, #104, #116 and #126 are one question). The build links such copies; the app shows an
 "Also #…" chip that opens them side by side, and pools their votes, counting each copy's
 ExamTopics answer as one vote.
 
 **Reviewed answers.** Every question was re-judged against Microsoft product behaviour and
 documentation and given an explanation, a confidence level and a knowledge-point tag
-(`data/reviewed.js`). The review confirms ExamTopics on 332 questions and corrects it on 46;
+(`data/reviewed.js`). The review confirms ExamTopics on 361 questions and corrects it on 45;
 8 answers are marked low confidence. Answers that hinge on product details were checked against
-the current Microsoft Learn pages, and 42 entries link the page they rely on. By default the app
+the current Microsoft Learn pages, and 70 entries link the page they rely on. By default the app
 grades against the reviewed answer and
 shows all three keys (reviewed, ExamTopics, community vote) on every question. The review was
 done by an AI model reading the questions, not by Microsoft, so treat a low-confidence answer as
@@ -112,7 +112,7 @@ drift from the question bank. Term marking in questions can be turned off in Set
 A chapter whose front matter says `skills: <exam slug>` follows that exam's official outline:
 its sections are the sub-areas (`{#a1}`, `{#b2}`…), the build checks that none is missing, and the
 app adds a practice row to every section with the bank questions on that sub-area. Chapter 7
-(出题规律) is the pattern analysis of all 378 questions: for each exam, the question formats and
+(出题规律) is the pattern analysis of all 406 questions: for each exam, the question formats and
 stem formulas, the recurring "requirement wording → correct answer" decision rules, distractor
 patterns, hot and cold objectives, how case-study requirement lines become questions, and
 tactics; every question number in it links to the question. Chapters 8–10 walk the official

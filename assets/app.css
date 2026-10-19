@@ -236,7 +236,7 @@ main { padding: 28px 20px 64px; }
 .page { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
 .page-head { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
 .page-head .sub { color: var(--ink-2); margin-top: 4px; }
-.section { display: grid; gap: 12px; }
+.section { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .section-head { display: flex; align-items: baseline; gap: 8px 12px; flex-wrap: wrap; }
 .section-head .spacer + * { font-size: 13px; }
 
@@ -528,13 +528,13 @@ textarea.notes:focus { outline: none; border-color: var(--accent); }
 .nav-legend i { width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--line-strong); display: inline-block; }
 .nav-toggle { display: none; }
 
-.stage { min-width: 0; display: grid; gap: 16px; }
+.stage { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .session.done { grid-template-columns: minmax(0, 1fr); }
 
 /* ------------------------------------------------------------------ question card */
 
 .qcard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
-.qcard-body { padding: 24px 28px 8px; display: grid; gap: 18px; }
+.qcard-body { padding: 24px 28px 8px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
 .qmeta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .qmeta .qnum { font-weight: 650; font-size: 15px; margin-right: 4px; }
 .qmeta .pos { font-size: 13px; color: var(--ink-2); }
@@ -898,7 +898,7 @@ pre code { padding: 0; border-radius: 0; background: none; font-size: inherit; }
 a.chip.variants { text-decoration: none; background: var(--accent-wash); color: var(--accent-ink); }
 a.chip.variants:hover { background: var(--accent-wash-2); text-decoration: none; }
 .terms { gap: 8px; }
-.terms a.chip { text-decoration: none; height: 28px; padding: 0 11px; font-size: 12.5px; color: var(--ink); background: var(--raised); border: 1px solid var(--line-strong); }
+.terms a.chip { text-decoration: none; height: auto; min-height: 28px; max-width: 100%; white-space: normal; padding: 3px 11px; font-size: 12.5px; color: var(--ink); background: var(--raised); border: 1px solid var(--line-strong); }
 .terms a.chip:hover { border-color: var(--accent); color: var(--accent-ink); text-decoration: none; }
 .terms a.chip svg { width: 12px; height: 12px; color: var(--ink-3); }
 .chip.muted { color: var(--ink-3); }
@@ -910,8 +910,8 @@ a.chip.variants:hover { background: var(--accent-wash-2); text-decoration: none;
 .key.reviewed.active { border-color: var(--accent); }
 .key .small { margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .chip.kp { background: var(--accent-wash); color: var(--accent-ink); max-width: 100%; white-space: normal; height: auto; min-height: 24px; padding: 2px 9px; }
-.explain { display: grid; gap: 10px; padding: 14px 16px; border-radius: 10px; background: var(--fill); }
-.explain p { margin: 0; font-size: 15px; line-height: 1.6; }
+.explain { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 14px 16px; border-radius: 10px; background: var(--fill); }
+.explain p { margin: 0; font-size: 15px; line-height: 1.6; overflow-wrap: anywhere; }
 .explain .row { gap: 8px; }
 
 details.originals { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; background: var(--surface); }
@@ -933,7 +933,7 @@ details.originals .rich { font-size: 14px; }
 }
 .actions .hint { font-size: 12px; color: var(--ink-3); }
 
-.feedback { border-top: 1px solid var(--line); padding: 20px 28px 24px; display: grid; gap: 22px; }
+.feedback { border-top: 1px solid var(--line); padding: 20px 28px 24px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 .result {
   display: flex;
   align-items: center;
