@@ -71,7 +71,7 @@ ExamTopics answer as one vote.
 **Reviewed answers.** Every question was re-judged against Microsoft product behaviour and
 documentation and given an explanation, a confidence level and a knowledge-point tag
 (`data/reviewed.js`). The review confirms ExamTopics on 361 questions and corrects it on 45;
-8 answers are marked low confidence. Answers that hinge on product details were checked against
+9 answers are marked low confidence. Answers that hinge on product details were checked against
 the current Microsoft Learn pages, and 70 entries link the page they rely on. By default the app
 grades against the reviewed answer and
 shows all three keys (reviewed, ExamTopics, community vote) on every question. The review was
