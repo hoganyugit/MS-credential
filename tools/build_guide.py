@@ -9,6 +9,8 @@ Sources
                           > callouts (first line **注意**/**考点**/**易混**/**提示**/**来源**), fenced code,
                           ```diagram blocks (JSON, see diagram()), **bold**, *em*, `code`, [text](url),
                           [[term-id]] or [[term-id|text]] for glossary links.
+  data/guide/abbr.md      abbreviations (see tools/abbr.py): each one is spelled out the first time it
+                          appears in a section or glossary entry; unlisted all-caps tokens fail the build.
   data/guide/glossary*.md entries "### Term {#id}" followed by "- key: value" lines
                             (zh, aliases, exams, ref, see, chapter, nohl) and a Markdown definition.
 
@@ -24,6 +26,8 @@ import json
 import re
 import sys
 from pathlib import Path
+
+import abbr
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / 'data' / 'guide'
@@ -406,9 +410,14 @@ def main():
     if len(by_id) != len(chapters):
         err('duplicate chapter ids')
 
+    def check_abbr(md, where):
+        for tok in sorted(abbr.unknown_caps(md)):
+            err(f'{where}: abbreviation {tok} is not in data/guide/abbr.md (add it, or to ignore: if it is not one)')
+
     # render glossary bodies (may link to other terms)
     for e in entries:
-        e['html'] = render_blocks(e['md'], f'glossary:{e["id"]}')
+        check_abbr(e['md'], f'glossary {e["id"]}')
+        e['html'] = render_blocks(abbr.expand(e['md']), f'glossary:{e["id"]}')
         e['text'] = re.sub(r'<[^>]+>', '', e['html'])
         for s in e['see']:
             if s not in GLOSSARY:
@@ -424,9 +433,11 @@ def main():
     # render chapters
     kps = load_kps()
     for c in chapters:
-        c['lead'] = render_blocks(c['lead_md'], f'{c["id"]}:lead')
+        check_abbr(c['lead_md'], c['file'])
+        c['lead'] = render_blocks(abbr.expand(c['lead_md']), f'{c["id"]}:lead')
         for s in c['sections']:
-            s['html'] = render_blocks(s['md'], f'{c["id"]}:{s["id"]}')
+            check_abbr(s['md'], f'{c["file"]} §{s["id"]}')
+            s['html'] = render_blocks(abbr.expand(s['md']), f'{c["id"]}:{s["id"]}')
             del s['md']
         del c['lead_md']
         for slug, names in c['practice'].items():

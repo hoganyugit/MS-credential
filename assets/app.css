@@ -1213,7 +1213,8 @@ a.guide-chapter p { margin: 0; font-size: 14px; }
 .guide-prose li { margin: 4px 0; }
 .guide-prose li > ul, .guide-prose li > ol { margin: 4px 0 0; }
 .guide-prose code { font: 13.5px/1.4 var(--mono); background: var(--fill); padding: 1px 5px; border-radius: 5px; }
-.guide-prose pre.code-block { margin: 0 0 12px; }
+.guide-prose pre.code-block { margin: 0 0 12px; padding: 12px 14px; background: var(--fill); border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; }
+.guide-prose pre.code-block code { background: none; padding: 0; white-space: pre; }
 .guide-prose strong { font-weight: 650; }
 .guide-prose a { color: var(--accent-ink); }
 .guide-prose p.refs { font-size: 13px; color: var(--ink-3); padding-left: 12px; border-left: 2px solid var(--line-strong); line-height: 1.6; }

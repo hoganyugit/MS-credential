@@ -109,6 +109,10 @@ real case studies do).
 refuses to run on an unknown `[[term]]` link, a glossary entry without a Microsoft Learn `ref`,
 or a practice knowledge point that does not exist in `data/reviewed.js`, so the guide cannot
 drift from the question bank. Term marking in questions can be turned off in Settings.
+Abbreviations are spelled out for the reader: `data/guide/abbr.md` gives each one (SFT, CAF,
+SLM…) its English full name and a Chinese explanation, and the build adds them after the first use
+in every chapter section, glossary entry and skills-outline sub-area, unless the text already
+spells it out. An all-caps token that is in neither the list nor its `ignore:` line fails the build.
 A chapter whose front matter says `skills: <exam slug>` follows that exam's official outline:
 its sections are the sub-areas (`{#a1}`, `{#b2}`…), the build checks that none is missing, and the
 app adds a practice row to every section with the bank questions on that sub-area. Chapter 7
@@ -188,5 +192,6 @@ of its choices, falls back to the image with self-grading.
 - `tools/examtopics.py`: scraper and parser that produces `data/`
 - `tools/sync_comments.py`: refreshes only the discussion comments in `data/bank.js` (reuses `examtopics.py`'s parser)
 - `tools/build_guide.py`: compiles `data/guide/*.md` into `data/guide.js`
+- `tools/abbr.py`: abbreviation expansion and check shared by the guide and skills builds
 - `tools/build_skills.py`: compiles `data/skills/*.md` and `data/skillmap/*.json` into `data/skills.js`
 - `tools/build_extra.py`: compiles `data/extra/*.md` into `data/extra.js`

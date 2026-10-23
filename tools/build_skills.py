@@ -6,7 +6,9 @@ Sources
                                Body:
                                  # A. Group title (25–30%)            a functional group with its weight
                                  ## A1. Sub-area title                 a sub-area ("skill")
-                                 - A1.3 Bullet text | 中文释义          an objective bullet (the id must be <area id>.<n>)
+                                 - A1.3 Bullet text | 中文释义          an objective bullet (the id must be <area id>.<n>);
+                                                                       abbreviations in the 中文释义 are spelled out once
+                                                                       per sub-area from data/guide/abbr.md (tools/abbr.py)
                                    - guide: <chapter id>[/<section id>] where the Guide explains it (optional, repeatable)
                                    - learn: <url>                       official Learn page or module (optional, repeatable)
   data/skillmap/<exam slug>.json  {"<question id>": ["A1.3", "B2.1"], ...} — the official objectives each
@@ -24,6 +26,8 @@ import json
 import re
 import sys
 from pathlib import Path
+
+import abbr
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / 'data' / 'skills'
@@ -64,6 +68,7 @@ def parse_outline(path):
     if not exam['code']:
         err(f'{path.name}: front matter needs exam:')
     group = area = bullet = None
+    area_seen = set()  # abbreviations already spelled out in this sub-area
     ids = set()
     for ln, raw in enumerate(body.splitlines(), 1):
         line = raw.rstrip()
@@ -89,6 +94,7 @@ def parse_outline(path):
                 err(f'{where}: duplicate sub-area id {aid}')
             ids.add(aid)
             area = {'id': aid, 'title': m.group(2).strip(), 'bullets': []}
+            area_seen = set()
             if group:
                 group['areas'].append(area)
             bullet = None
@@ -105,6 +111,9 @@ def parse_outline(path):
             bullet = {'id': bid, 'text': text_.strip(), 'zh': zh.strip(), 'guide': [], 'learn': []}
             if not bullet['zh']:
                 warn(f'{where}: bullet {bid} has no 中文释义')
+            for tok in sorted(abbr.unknown_caps(bullet['zh'])):
+                err(f'{where}: abbreviation {tok} is not in data/guide/abbr.md')
+            bullet['zh'] = abbr.expand(bullet['zh'], area_seen)
             if area:
                 area['bullets'].append(bullet)
             continue
