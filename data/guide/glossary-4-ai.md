@@ -3,7 +3,7 @@
 ### Microsoft Foundry {#foundry}
 - zh: Azure 上做生成式 AI 和 agent 的统一平台（原 Azure AI Foundry / Azure AI Studio）
 - aliases: Foundry | Azure AI Foundry | Azure AI Studio | Foundry portal | ai.azure.com
-- exams: AI-103 | AB-100 | AB-620
+- exams: AI-103 | AB-100 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/what-is-foundry
 - see: foundry-resource | foundry-project | foundry-models | foundry-agent-service | foundry-tools
 - chapter: 05-azure-ai/structure
@@ -124,7 +124,7 @@ Global（任意区域处理，配额最高，新模型最先上）、Data Zone�
 ### Provisioned throughput unit {#ptu}
 - zh: PTU：预留的固定模型处理容量单位
 - aliases: PTU | PTUs | provisioned throughput | provisioned deployment
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput
 - see: deployment-types | quota
 - chapter: 05-azure-ai/models
@@ -144,7 +144,7 @@ Hugging Face 集合等模型，按加速器（A100 / H100 / MI300X）小时计�
 ### Quota {#quota}
 - zh: 配额：按订阅、区域、模型和部署类型分配的 TPM 上限
 - aliases: TPM | tokens per minute | RPM | requests per minute | rate limit
-- exams: AI-103
+- exams: AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/quota
 - see: deployment-types | ptu | subscription
 - chapter: 05-azure-ai/models
@@ -154,7 +154,7 @@ TPM 分给每个部署，同区域同模型的部署共享；RPM 按比例派生
 ### Model router {#model-router}
 - zh: 按提示实时选择最合适底层模型的"路由模型"
 - aliases: routing mode
-- exams: AB-100 | AI-103
+- exams: AB-100 | AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/model-router
 - see: foundry-models | deployment
 - chapter: 05-azure-ai/models
@@ -164,7 +164,7 @@ TPM 分给每个部署，同区域同模型的部署共享；RPM 按比例派生
 ### Fine-tuning {#fine-tuning}
 - zh: 微调：用任务数据继续训练模型、调整权重
 - aliases: fine-tune | fine-tuned model | supervised fine-tuning | SFT | DPO | reinforcement fine-tuning | RFT | distillation
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/fine-tuning/overview
 - see: rag | prompt-engineering | foundry-roles
 - chapter: 05-azure-ai/models
@@ -173,8 +173,8 @@ TPM 分给每个部署，同区域同模型的部署共享；RPM 按比例派生
 
 ### Responses API {#responses-api}
 - zh: Azure OpenAI 当前的主 API：有状态、多轮、带工具
-- aliases: Responses | conversations | items | previous_response_id
-- exams: AI-103 | AB-100
+- aliases: Responses | conversations | items
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/responses
 - see: assistants-api | chat-completions | foundry-agent-service
 - chapter: 05-azure-ai/openai
@@ -204,7 +204,7 @@ system message 放指令，few-shot 示例写成 user/assistant 轮次。Copilot
 ### Embeddings {#embeddings}
 - zh: 嵌入：把文本或图像变成向量
 - aliases: embedding | embedding model | text-embedding | vectorization
-- exams: AI-103
+- exams: AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/search/vector-search-overview
 - see: vector-search | integrated-vectorization | rag
 - chapter: 05-azure-ai/rag
@@ -214,7 +214,7 @@ Azure OpenAI 的 text-embedding 模型做文本，Azure Vision 的 multimodal em
 ### Prompt engineering {#prompt-engineering}
 - zh: 提示工程：通过提示的结构和措辞引导模型
 - aliases: few-shot | zero-shot | one-shot | chain of thought | chain-of-thought | temperature | top_p | system prompt
-- exams: AI-103 | AB-100 | AB-620
+- exams: AI-103 | AB-100 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/prompt-engineering
 - see: chat-completions | instructions | grounding
 - chapter: 05-azure-ai/openai
@@ -234,7 +234,7 @@ Azure OpenAI 的 text-embedding 模型做文本，Azure Vision 的 multimodal em
 ### Retrieval-augmented generation {#rag}
 - zh: RAG：先检索你的数据，再让模型基于检索结果生成
 - aliases: RAG | retrieval augmented generation
-- exams: AI-103 | AB-100 | AB-620
+- exams: AI-103 | AB-100 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search
 - see: grounding | azure-ai-search | embeddings | foundry-iq | fine-tuning
 - chapter: 05-azure-ai/rag
@@ -244,7 +244,7 @@ Azure 上的典型管道：indexer + skillset 把文档分块嵌入进 AI Search
 ### Grounding {#grounding}
 - zh: 接地：让模型的回答基于指定的数据
 - aliases: grounded | grounding data | ungrounded
-- exams: AI-103 | AB-100 | AB-620
+- exams: AI-103 | AB-100 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/prompt-engineering
 - see: rag | groundedness | knowledge-source
 - chapter: 06-business-ai/data
@@ -254,7 +254,7 @@ Azure 上的典型管道：indexer + skillset 把文档分块嵌入进 AI Search
 ### Azure AI Search {#azure-ai-search}
 - zh: Azure 的搜索与检索服务（RAG 的核心）
 - aliases: AI Search | Azure Cognitive Search | search service
-- exams: AI-103 | AB-620 | AB-100
+- exams: AI-103 | AB-620 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/search/search-what-is-azure-search
 - see: index | indexer | skillset | vector-search | hybrid-search | semantic-ranker | agentic-retrieval
 - chapter: 05-azure-ai/rag
@@ -313,7 +313,7 @@ projections 三种：tables（Table storage）、objects（JSON blob）、files�
 
 ### Integrated vectorization {#integrated-vectorization}
 - zh: 用 indexer + skillset 自动分块和嵌入
-- aliases: chunking | Text Split skill
+- aliases: Text Split skill
 - exams: AI-103
 - ref: https://learn.microsoft.com/en-us/azure/search/vector-search-overview
 - see: embeddings | skillset | vector-search
@@ -324,7 +324,7 @@ Text Split 分块 + Azure OpenAI Embedding / Vision Vectorize 嵌入，省去自
 ### Vector search {#vector-search}
 - zh: 向量搜索：按嵌入向量的相似度检索
 - aliases: vector query | kNN | HNSW | vector index | vector store
-- exams: AI-103 | AB-620
+- exams: AI-103 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/search/vector-search-overview
 - see: embeddings | hybrid-search | azure-ai-search
 - chapter: 05-azure-ai/rag
@@ -334,7 +334,7 @@ Text Split 分块 + Azure OpenAI Embedding / Vision Vectorize 嵌入，省去自
 ### Hybrid search {#hybrid-search}
 - zh: 混合搜索：关键词（BM25）+ 向量并行，RRF 合并
 - aliases: Reciprocal Rank Fusion | RRF | BM25 | keyword search | full text search
-- exams: AI-103 | AB-620
+- exams: AI-103 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/search/hybrid-search-overview
 - see: vector-search | semantic-ranker
 - chapter: 05-azure-ai/rag
@@ -344,7 +344,7 @@ Text Split 分块 + Azure OpenAI Embedding / Vision Vectorize 嵌入，省去自
 ### Semantic ranker {#semantic-ranker}
 - zh: 语义重排：对前 50 个结果做二次排序并给出 captions / answers
 - aliases: semantic search | semantic ranking | semantic configuration | reranker score | semantic captions | semantic answers
-- exams: AI-103 | AB-620
+- exams: AI-103 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/search/semantic-search-overview
 - see: hybrid-search | azure-ai-search
 - chapter: 05-azure-ai/rag
@@ -354,7 +354,7 @@ L2 重排，返回 `@search.rerankerScore`（0–4）、semantic captions、可�
 ### Agentic retrieval {#agentic-retrieval}
 - zh: 由模型做查询规划、并行子查询和重排的新一代检索
 - aliases: retrieval reasoning effort
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/search/agentic-retrieval-overview
 - see: foundry-iq | azure-ai-search | semantic-ranker
 - chapter: 05-azure-ai/rag
@@ -364,7 +364,7 @@ knowledge base 组织多个 knowledge sources（已索引或远程），用 Azur
 ### Foundry IQ {#foundry-iq}
 - zh: Foundry 的托管知识层（基于 AI Search agentic retrieval）
 - aliases: knowledge_base_retrieve
-- exams: AI-103 | AB-100 | AB-620
+- exams: AI-103 | AB-100 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/what-is-foundry-iq
 - see: agentic-retrieval | azure-ai-search | document-level-access
 - chapter: 05-azure-ai/rag
@@ -384,7 +384,7 @@ Security filters（索引里放用户/组字段，查询时 `$filter`，GA）、
 ### Foundry Agent Service {#foundry-agent-service}
 - zh: Azure 上托管 agent 的运行时
 - aliases: Agent Service | Azure AI Agent Service | Foundry agent | Foundry agents
-- exams: AI-103 | AB-100 | AB-620
+- exams: AI-103 | AB-100 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/agents/overview
 - see: prompt-agent | hosted-agent | toolbox | mcp | a2a | connected-agent
 - chapter: 05-azure-ai/agents
@@ -393,8 +393,8 @@ agent 类型：prompt agents（声明式）、voice-based prompt agents、hosted
 
 ### Prompt agent {#prompt-agent}
 - zh: 声明式的 Foundry agent：指令 + 模型 + 工具
-- aliases: prompt agents | PromptAgentDefinition | agent version
-- exams: AI-103
+- aliases: prompt agents | PromptAgentDefinition
+- exams: AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/agents/overview
 - see: foundry-agent-service | hosted-agent
 - chapter: 05-azure-ai/agents
@@ -404,7 +404,7 @@ agent 类型：prompt agents（声明式）、voice-based prompt agents、hosted
 ### Hosted agent {#hosted-agent}
 - zh: 托管 agent：你自己的代码或容器由 Foundry 运行
 - aliases: hosted agents | container agent
-- exams: AI-103
+- exams: AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/agents/overview
 - see: foundry-agent-service | agent-framework
 - chapter: 05-azure-ai/agents
@@ -414,7 +414,7 @@ agent 类型：prompt agents（声明式）、voice-based prompt agents、hosted
 ### Function calling {#function-calling}
 - zh: 函数调用：模型请求你的代码执行某个函数并回传结果
 - aliases: function call | tool calling | tool schema | function_call_output
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/tools/function-calling
 - see: foundry-agent-service | mcp
 - chapter: 05-azure-ai/agents
@@ -424,7 +424,7 @@ agent 类型：prompt agents（声明式）、voice-based prompt agents、hosted
 ### File search {#file-search}
 - zh: 让 agent 在上传文件上做检索（vector store）
 - aliases: vector stores
-- exams: AI-103
+- exams: AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/tools/file-search
 - see: rag | vector-search | foundry-agent-service
 - chapter: 05-azure-ai/agents
@@ -434,7 +434,7 @@ agent 类型：prompt agents（声明式）、voice-based prompt agents、hosted
 ### Code interpreter {#code-interpreter}
 - zh: 在托管沙箱里运行 Python 的工具
 - aliases: code interpreter tool
-- exams: AI-103
+- exams: AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/tools/code-interpreter
 - see: foundry-agent-service | aci
 - chapter: 05-azure-ai/agents
@@ -454,7 +454,7 @@ Azure Container Apps dynamic sessions（Hyper-V 隔离、无出站网络），�
 ### Agent memory {#agent-memory}
 - zh: Foundry Agent Service 的托管长期记忆（预览）
 - aliases: memory store | memory search tool
-- exams: AI-103
+- exams: AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/what-is-memory
 - see: foundry-agent-service
 - chapter: 05-azure-ai/agents
@@ -464,7 +464,7 @@ user profile、chat summary、procedural memory 三类，按 scope（如 `{{$use
 ### Toolbox {#toolbox}
 - zh: 把一组工具放在一个 MCP endpoint 后面统一管理
 - aliases: toolboxes | tool search | Foundry Toolbox
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/toolbox-overview
 - see: mcp | foundry-agent-service | skill
 - chapter: 05-azure-ai/agents
@@ -474,7 +474,7 @@ Build / Discover / Consume / Govern；集中认证（Entra、OAuth 透传）、t
 ### Microsoft Agent Framework {#agent-framework}
 - zh: 开源 agent SDK，Semantic Kernel 和 AutoGen 的后继
 - aliases: Agent Framework | AutoGen
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/agent-framework/overview/
 - see: semantic-kernel | hosted-agent | azure-machine-learning
 - chapter: 05-azure-ai/agents
@@ -484,7 +484,7 @@ Build / Discover / Consume / Govern；集中认证（Entra、OAuth 透传）、t
 ### Semantic Kernel {#semantic-kernel}
 - zh: 轻量开源开发套件，用 plugins 把代码描述给模型
 - aliases: SK | plugins
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/semantic-kernel/overview/
 - see: agent-framework
 - chapter: 05-azure-ai/agents
@@ -493,8 +493,7 @@ C#、Python、Java；模型请求由 SK 翻译成函数调用（OpenAPI 规范�
 
 ### Observability {#observability}
 - zh: 可观测性：评估 + 监控 + 追踪
-- aliases: continuous evaluation
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/concepts/observability
 - see: evaluator | tracing | red-teaming | application-insights
 - chapter: 05-azure-ai/observability
@@ -504,7 +503,7 @@ C#、Python、Java；模型请求由 SK 翻译成函数调用（OpenAPI 规范�
 ### Tracing {#tracing}
 - zh: 追踪：记录每次模型和工具调用的 span
 - aliases: distributed tracing | spans | invoke_agent | execute_tool
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/observability/concepts/trace-agent-concept
 - see: observability | application-insights | telemetry
 - chapter: 05-azure-ai/observability
@@ -514,7 +513,7 @@ OpenTelemetry GenAI 语义约定（`invoke_agent`、`execute_tool` 等），记�
 ### AI red teaming {#red-teaming}
 - zh: 红队：用模拟攻击找 agent 的安全漏洞
 - aliases: AI red teaming agent | red team | Attack Success Rate | ASR | PyRIT
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/how-to/develop/run-ai-red-teaming-cloud
 - see: observability | prompt-shields | evaluator
 - chapter: 05-azure-ai/observability
@@ -524,7 +523,7 @@ OpenTelemetry GenAI 语义约定（`invoke_agent`、`execute_tool` 等），记�
 ### Evaluators {#evaluator}
 - zh: 评估器：度量质量、安全和 agent 行为的内置指标
 - aliases: evaluators | built-in evaluators | Relevance | Coherence | Fluency | Task Adherence | Tool Call Accuracy | Intent Resolution
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/concepts/built-in-evaluators
 - see: groundedness | observability | evaluation
 - chapter: 05-azure-ai/observability
@@ -534,7 +533,7 @@ OpenTelemetry GenAI 语义约定（`invoke_agent`、`execute_tool` 等），记�
 ### Groundedness {#groundedness}
 - zh: 接地性：回答是否有来源支撑（反幻觉指标）
 - aliases: Groundedness Pro | fabrication | hallucination
-- exams: AI-103 | AB-100 | AB-620
+- exams: AI-103 | AB-100 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/concepts/built-in-evaluators
 - see: evaluator | groundedness-detection | grounding
 - chapter: 05-azure-ai/observability
@@ -544,7 +543,7 @@ Foundry 评估器 Groundedness（1–5）和 Groundedness Pro（pass/fail，基�
 ### Azure AI Content Safety {#content-safety}
 - zh: 检测有害内容和提示攻击的服务
 - aliases: Content Safety | content filtering | content filter | content filters | severity levels | harm categories | blocklist | custom categories
-- exams: AI-103 | AB-100 | AB-620
+- exams: AI-103 | AB-100 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/ai-services/content-safety/overview
 - see: prompt-shields | guardrails | groundedness-detection | protected-material | content-moderation
 - chapter: 05-azure-ai/safety
@@ -554,7 +553,7 @@ Foundry 评估器 Groundedness（1–5）和 Groundedness Pro（pass/fail，基�
 ### Prompt Shields {#prompt-shields}
 - zh: 检测用户提示攻击和文档（间接）攻击
 - aliases: Prompt Shield | user prompt attacks | document attacks | Spotlighting
-- exams: AI-103 | AB-100 | AB-620
+- exams: AI-103 | AB-100 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/ai-services/content-safety/concepts/jailbreak-detection
 - see: jailbreak | indirect-prompt-injection | content-safety | guardrails
 - chapter: 05-azure-ai/safety
@@ -564,7 +563,7 @@ user prompt attacks（旧名 jailbreak risk detection：改系统规则、对话
 ### Jailbreak {#jailbreak}
 - zh: 越狱 / 用户提示攻击：用户在输入里诱导模型违反规则
 - aliases: jailbreak attack | direct attack | prompt manipulation
-- exams: AI-103 | AB-100 | AB-620
+- exams: AI-103 | AB-100 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/ai-services/content-safety/concepts/jailbreak-detection
 - see: prompt-shields | indirect-prompt-injection | red-teaming
 - chapter: 02-identity-security/ai-security
@@ -574,7 +573,7 @@ Prompt Shields 的 "user prompt attacks" 类别；Azure OpenAI 的 "Prompt Shiel
 ### Indirect prompt injection {#indirect-prompt-injection}
 - zh: 间接提示注入（XPIA）：攻击指令藏在模型读取的文档、网页、邮件或图片里
 - aliases: XPIA | indirect attack | indirect attacks | cross prompt injection
-- exams: AI-103 | AB-100 | AB-620
+- exams: AI-103 | AB-100 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/ai-services/content-safety/concepts/jailbreak-detection
 - see: prompt-shields | jailbreak | guardrails
 - chapter: 02-identity-security/ai-security
@@ -584,7 +583,7 @@ Prompt Shields 的 document attacks 类别（Azure OpenAI 里默认关闭，需�
 ### Groundedness detection {#groundedness-detection}
 - zh: 运行时检查模型输出是否有来源支撑（预览）
 - aliases: groundedness correction
-- exams: AI-103
+- exams: AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/ai-services/content-safety/concepts/groundedness
 - see: content-safety | groundedness
 - chapter: 05-azure-ai/safety
@@ -594,7 +593,7 @@ Content Safety 的功能，有 Non-Reasoning 和 Reasoning 模式，领域 MEDIC
 ### Protected material {#protected-material}
 - zh: 受版权保护的文本/代码检测
 - aliases: protected material text | protected material code | Customer Copyright Commitment
-- exams: AI-103
+- exams: AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry-classic/openai/how-to/content-filters
 - see: content-safety | guardrails
 - chapter: 05-azure-ai/safety
@@ -604,7 +603,7 @@ Azure OpenAI 补全侧默认开启；代码检测返回引用 URL 和许可证�
 ### Guardrails {#guardrails}
 - zh: Foundry 的护栏：一组控制（风险 × 干预点 × 动作）
 - aliases: guardrails and controls | RAI policy | Microsoft.DefaultV2 | intervention points | Annotate and block
-- exams: AI-103 | AB-100 | AB-620
+- exams: AI-103 | AB-100 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/guardrails/guardrails-overview
 - see: content-safety | prompt-shields | toolbox
 - chapter: 05-azure-ai/safety
@@ -614,7 +613,7 @@ Azure OpenAI 补全侧默认开启；代码检测返回引用 URL 和许可证�
 ### Responsible AI {#responsible-ai}
 - zh: 负责任 AI：微软的六项原则与 Responsible AI Standard
 - aliases: Responsible AI Standard | RAI | AI principles | fairness | inclusiveness | accountability | reliability and safety | privacy and security
-- exams: AB-100 | AI-103 | AB-620
+- exams: AB-100 | AI-103 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/compliance/assurance/assurance-artificial-intelligence
 - see: transparency-note | limited-access | guardrails | content-safety
 - chapter: 05-azure-ai/safety
@@ -774,7 +773,7 @@ image classification（每张图的标签）vs object detection（边界框）�
 ### PII detection {#pii}
 - zh: 识别并脱敏个人身份信息
 - aliases: PII | personally identifiable information | PII redaction
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/ai-services/language-service/personally-identifiable-information/overview
 - see: azure-language | content-safety | purview
 - chapter: 05-azure-ai/tools
@@ -896,7 +895,7 @@ Speech SDK 的功能；Live Interpreter 自动识别并切换语言；原生支�
 ### Large / small language model {#llm}
 - zh: 大语言模型与小语言模型
 - aliases: LLM | SLM | small language model | large language model | foundation model | multimodal model
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/concepts/foundry-models-overview
 - see: foundry-models | fine-tuning | model-router
 - chapter: 05-azure-ai/models
@@ -906,7 +905,7 @@ Foundry 目录按 foundation、reasoning、small language、multimodal、domain-
 ### Token {#token}
 - zh: 模型处理文本的基本单位，也是计费和配额单位
 - aliases: tokens | context window | max tokens
-- exams: AI-103 | AB-620
+- exams: AI-103 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/prompt-engineering
 - see: quota | prompt-engineering | embeddings
 - chapter: 05-azure-ai/openai

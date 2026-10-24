@@ -8,6 +8,7 @@ data/bank.js and stores every question/answer image under data/img/.
     python3 tools/examtopics.py                      # fetch + build, raw pages in a temp dir
     python3 tools/examtopics.py --cache .cache       # keep raw pages: re-runs resume / re-parse offline
     python3 tools/examtopics.py build --cache .cache # re-parse cached pages only
+    python3 tools/examtopics.py --exam AI-500 --cache .cache  # one exam only; the others in bank.js are kept
 
 If the cookie expires mid-run, paste a fresh one into EXAM_SOURCES.md and re-run with the same --cache.
 Cached pages are never re-downloaded, so delete the cache folder (or omit --cache) to pick up new questions and votes.
@@ -185,6 +186,14 @@ CORRECTIONS = [
     ("You may need o dag the", "You may need to drag the"), ("retuned results", "returned results"),
     ("Azure Constant Understanding", "Azure Content Understanding"), ("in Foundry Too to", "in Foundry Tools to"),
     ("Validate the voice against", "Validate the invoice against"),
+    ("supported s kills", "supported skills"), ("Azure Managed Red is", "Azure Managed Redis"),
+    ("for NoSQL A container", "for NoSQL. A container"), ("in HTML Both", "in HTML. Both"),
+    ("Use as elective summarization", "Use a selective summarization"), ("magnetic", "magentic"),
+    ("Foundry specialists agents", "Foundry specialist agents"), ("across hand offs", "across handoffs"),
+    ("Build each hand off context", "Build each handoff context"), ("Open Telemetry", "OpenTelemetry"),
+    ("Time to First Token (TIFT)", "Time to First Token (TTFT)"), ("must be ab le to", "must be able to"),
+    ("must NOT stored.", "must NOT be stored."), ("Data Reader r ole", "Data Reader role"),
+    ("Use separate a managed identity", "Use a separate managed identity"),
 ]
 
 
@@ -306,10 +315,10 @@ def blocks(lines, heading=lambda text: False, stem=False):
         """Does line i continue the open list?"""
         if limit and len(items) >= limit:
             return False
-        if kind == "lead" or is_ask(t) or t.startswith(("You need to", "NOTE:", "Note:")):
+        if kind == "lead" or is_ask(t) or t.startswith(("You ", "NOTE:", "Note:")):  # "You discover …" is the story again
             return False
         if headingish(t):  # question stems have no sub-headings, so a short line there is always an item
-            return shape in (None, "frag") and (stem or not introduces(i))
+            return shape in (None, "frag") and (stem or not introduces(i) or bool(limit))  # "the following four": 4 items
         if shape is None or (shape == "kv" and kind == "text" and line_kind(next_text(i) or "") == "kv"):
             return True
         if shape == "bullet":
@@ -390,6 +399,12 @@ def stem_start(texts):
         hits = [i for i, t in enumerate(texts) if pattern(t)]
         if hits:
             return hits[-1]
+    hits = [i for i, t in enumerate(texts) if t.startswith("For each of the following statements")]
+    if hits:  # a Yes/No grid, with its "You are validating …" lead-in
+        i = hits[-1]
+        while i and texts[i - 1].startswith("You "):
+            i -= 1
+        return i
     blanks = [i for i, t in enumerate(texts[:-1]) if not t]
     return blanks[-1] + 1 if blanks else max(0, len(texts) - 2)
 
@@ -438,6 +453,7 @@ def parse_card(card, image):
             r'<li class="multi-choice-item"([^>]*)>\s*<span class="multi-choice-letter" data-choice-letter="([A-Z])">'
             r".*?</span>(.*?)</li>", card, re.S):
         inner = re.sub(r"<span[^>]*most-voted-answer-badge[^>]*>.*?</span>", "", inner, flags=re.S)
+        inner = re.sub(r"(?<=[^\s>])[ \t]*\n\s*(?=[^\s<])", "<br>", inner.strip())  # a choice of several settings
         q["choices"].append({"k": letter, "html": clean(inner, image)})
         correct += letter if "data-correct" in attrs else ""
 
@@ -558,7 +574,7 @@ def link_variants(questions):
 
 # ---------------------------------------------------------------- build
 
-def build(exams, cache, out):
+def build(exams, cache, out, keep_others=False):
     out.mkdir(parents=True, exist_ok=True)
     img_href = os.path.relpath(out / "img", ROOT).replace(os.sep, "/")
     downloads = {}
@@ -613,6 +629,11 @@ def build(exams, cache, out):
 
     if not any(e["questions"] for e in bank["exams"]):
         sys.exit(f"No questions found in {cache}; leaving {out / 'bank.js'} untouched.")
+    if keep_others and (out / "bank.js").exists():  # --exam: the exams not rebuilt stay as they are
+        text = (out / "bank.js").read_text()
+        fresh = {e["code"]: e for e in bank["exams"]}
+        bank["exams"] = [fresh.pop(e["code"], e) for e in json.loads(text[text.index("{"):text.rindex("}") + 1])["exams"]]
+        bank["exams"] += fresh.values()
     pending = {src: dst for src, dst in downloads.items() if not dst.exists()}
     log(f"images: {len(downloads)} referenced, {len(pending)} to download")
     for i, (src, dst) in enumerate(pending.items(), 1):
@@ -638,17 +659,25 @@ def main():
     ap.add_argument("--sources", type=pathlib.Path, default=ROOT / "EXAM_SOURCES.md")
     ap.add_argument("--cache", type=pathlib.Path, help="directory for raw HTML (default: temporary)")
     ap.add_argument("--out", type=pathlib.Path, default=ROOT / "data")
+    ap.add_argument("--exam", action="append", metavar="CODE",
+                    help="only fetch and rebuild this exam (repeatable); the other exams in bank.js are kept as they are")
     args = ap.parse_args()
 
     if args.step == "build" and not args.cache:
         ap.error("the build step re-parses cached pages, so it needs --cache")
     cookie, exams = read_sources(args.sources)
+    if args.exam:
+        wanted = {code.upper() for code in args.exam}
+        unknown = wanted - {e["code"] for e in exams}
+        if unknown:
+            ap.error(f"not in the exam table of {args.sources}: {', '.join(sorted(unknown))}")
+        exams = [e for e in exams if e["code"] in wanted]
     with tempfile.TemporaryDirectory() as tmp:
         cache = args.cache or pathlib.Path(tmp)
         if args.step in ("all", "fetch"):
             fetch(Fetcher(cookie), exams, cache)
         if args.step in ("all", "build"):
-            build(exams, cache, args.out)
+            build(exams, cache, args.out, keep_others=bool(args.exam))
 
 
 if __name__ == "__main__":

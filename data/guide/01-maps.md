@@ -2,8 +2,8 @@
 id: 01-maps
 title: 四张地图：Azure、Microsoft 365、Power Platform、Dynamics 365
 short: 四张地图
-intro: 三门考试的题目默认你知道微软这几块产品各管什么、彼此怎么接。这一章先把地图摊开，后面的章节再逐块放大。
-exams: AB-620 | AB-100 | AI-103
+intro: 四门考试的题目默认你知道微软这几块产品各管什么、彼此怎么接。这一章先把地图摊开，后面的章节再逐块放大。
+exams: AB-620 | AB-100 | AI-103 | AI-500
 practice:
   ab-100: Agent architecture & orchestration | Frameworks & methodologies
   ai-103: Planning & managing Azure AI solutions

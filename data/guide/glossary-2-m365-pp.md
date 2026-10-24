@@ -412,7 +412,7 @@ v2.0 基于 pac CLI；任务分 Helper、Quality check、Solution（export/impor
 ### GitHub Actions for Power Platform {#github-actions}
 - zh: GitHub 上的 Power Platform 自动化动作集
 - aliases: GitHub Actions | powerplatform-actions
-- exams: AB-620 | AB-100
+- exams: AB-620 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/power-platform/alm/devops-github-actions
 - see: build-tools | pac-cli
 - chapter: 03-alm/code-first

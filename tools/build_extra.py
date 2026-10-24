@@ -22,7 +22,7 @@ Source format (one file per exam, front matter "exam: AB-620"):
 
 Output: window.EXTRA = { exams: [{ code, questions: [...] }], areas: { id: area }, reviewed: { id: entry } }
 in the shapes of data/bank.js, data/areas.js and data/reviewed.js, so the app treats them like any question.
-IDs: 9<exam digits>000 + n (AB-620 -> 9620001…, AB-100 -> 9100001…, AI-103 -> 9103001…); display numbers
+IDs: 9<exam digits>000 + n (AB-620 -> 9620001…, AB-100 -> 9100001…, AI-103 -> 9103001…, AI-500 -> 9500001…); display numbers
 start at 1001 so they never collide with ExamTopics numbering.
 
 The build fails on malformed headers, unknown knowledge points (data/reviewed.js) or objectives
@@ -156,8 +156,9 @@ def render_case(lines):
     return ''.join(html)
 CHOICE = re.compile(r'^- (\*?)([A-H])\. (.+?)\s*$')
 
-EXAM_BASE = {'AB-620': 9620000, 'AB-100': 9100000, 'AI-103': 9103000}
-TYPE_FOR_AREA = {'match': 'dragdrop', 'order': 'dragdrop', 'select': 'hotspot', 'yesno': 'hotspot'}
+EXAM_BASE = {'AB-620': 9620000, 'AB-100': 9100000, 'AI-103': 9103000, 'AI-500': 9500000}
+TYPE_FOR_AREA = {'match': 'dragdrop', 'order': 'dragdrop', 'select': 'hotspot', 'yesnogrid': 'hotspot'}
+AREA_KIND = {'yesnogrid': 'yesno'}  # header type -> area kind, where the two names differ
 
 
 def parse_file(path, kps):
@@ -281,7 +282,7 @@ def parse_file(path, kps):
             if choices or not area:
                 err(f'{where}: {qtype} questions take one ```area block and no choices')
                 continue
-            if area.get('kind') != qtype:
+            if area.get('kind') != AREA_KIND.get(qtype, qtype):
                 err(f'{where}: area kind {area.get("kind")!r} does not match type={qtype}')
             q['type'] = TYPE_FOR_AREA[qtype]
             slots = []
@@ -295,7 +296,7 @@ def parse_file(path, kps):
                     if b.get('type') != 'row':
                         err(f'{where}: only "row" blocks are supported')
                         continue
-                    opts = area.get('pool', []) if qtype == 'match' else ['Yes', 'No'] if qtype == 'yesno' else b.get('options', [])
+                    opts = area.get('pool', []) if qtype == 'match' else ['Yes', 'No'] if qtype == 'yesnogrid' else b.get('options', [])
                     if b.get('answer') not in opts:
                         err(f'{where}: row {b.get("label", "")[:40]!r} answer {b.get("answer")!r} is not one of its options')
                     slots.append(b.get('answer'))

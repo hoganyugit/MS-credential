@@ -42,7 +42,7 @@ Azure 资源的逻辑容器，每个资源恰好属于一个资源组；资源�
 
 ### Bicep {#bicep}
 - zh: Azure 的基础设施即代码语言
-- exams: AI-103
+- exams: AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/overview
 - see: arm
 - chapter: 01-maps/azure
@@ -122,7 +122,7 @@ Azure 资源的逻辑容器，每个资源恰好属于一个资源组；资源�
 ### Managed identity {#managed-identity}
 - zh: 托管标识：Azure 自动维护、无需保管密码的身份
 - aliases: managed identities | system-assigned managed identity | user-assigned managed identity
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/overview
 - see: service-principal | keyless-auth | rbac
 - chapter: 02-identity-security/identities
@@ -132,7 +132,7 @@ Azure 资源的逻辑容器，每个资源恰好属于一个资源组；资源�
 ### OAuth 2.0 flows {#oauth}
 - zh: OAuth 2.0 授权流程（授权码、客户端凭据、代表流）
 - aliases: OAuth 2.0 | OAuth | OpenID Connect | authorization code flow | client credentials flow | on-behalf-of flow | OBO
-- exams: AB-620 | AI-103
+- exams: AB-620 | AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow
 - see: app-registration | agent-id
 - chapter: 02-identity-security/identities
@@ -141,8 +141,8 @@ Microsoft identity platform 的三种常考流程：authorization code（有用�
 
 ### Microsoft Entra Agent ID {#agent-id}
 - zh: Entra 给 AI agent 的身份与安全框架
-- aliases: Agent ID | agent identity | agent identity blueprint
-- exams: AB-100 | AB-620 | AI-103
+- aliases: Agent ID | agent identity
+- exams: AB-100 | AB-620 | AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/entra/agent-id/what-is-microsoft-entra-agent-id
 - see: agent-365 | entra-id | conditional-access
 - chapter: 02-identity-security/identities
@@ -152,7 +152,7 @@ Microsoft identity platform 的三种常考流程：authorization code（有用�
 ### Azure RBAC {#rbac}
 - zh: 基于角色的访问控制：谁能对哪个作用域做什么
 - aliases: RBAC | role-based access control
-- exams: AI-103 | AB-100 | AB-620
+- exams: AI-103 | AB-100 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/role-based-access-control/overview
 - see: role-assignment | foundry-roles | keyless-auth
 - chapter: 02-identity-security/rbac
@@ -182,7 +182,7 @@ Foundry User = 在 project 里开发（数据平面）+ 只读，开发者最小
 ### API key {#api-key}
 - zh: 资源密钥：用请求头传的访问凭据
 - aliases: API keys | subscription key | Ocp-Apim-Subscription-Key | KEY1 | local authentication
-- exams: AI-103 | AB-620
+- exams: AI-103 | AB-620 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/ai-services/authentication
 - see: keyless-auth | key-vault
 - chapter: 02-identity-security/keyless
@@ -192,7 +192,7 @@ Foundry User = 在 project 里开发（数据平面）+ 只读，开发者最小
 ### Keyless authentication {#keyless-auth}
 - zh: 无密钥认证：用 Entra ID 令牌而不是 API key
 - aliases: keyless | Entra ID authentication | bearer token | DefaultAzureCredential | disable local auth
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/foundry/concepts/authentication-authorization-foundry
 - see: api-key | managed-identity | rbac
 - chapter: 02-identity-security/keyless
@@ -202,7 +202,7 @@ Foundry User = 在 project 里开发（数据平面）+ 只读，开发者最小
 ### Azure Key Vault {#key-vault}
 - zh: 保管 secrets、密钥和证书的服务
 - aliases: Key Vault
-- exams: AB-620 | AI-103 | AB-100
+- exams: AB-620 | AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/key-vault/general/overview
 - see: environment-variable | cmk | api-key
 - chapter: 02-identity-security/keyless
@@ -222,7 +222,7 @@ Foundry User = 在 project 里开发（数据平面）+ 只读，开发者最小
 ### Virtual Network {#vnet}
 - zh: 虚拟网络：Azure 里的私有网络
 - aliases: VNet | virtual networks | subnet | network security group | NSG
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview
 - see: private-endpoint
 - chapter: 02-identity-security/network
@@ -232,7 +232,7 @@ Azure 私有网络的基本单位：子网、网络安全组、路由表、VPN /
 ### Private endpoint {#private-endpoint}
 - zh: 私有终结点：通过 Private Link 在 VNet 里访问 PaaS 服务
 - aliases: Private Link | private endpoints | Azure Private Link
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/private-link/private-link-overview
 - see: vnet
 - chapter: 02-identity-security/network
@@ -322,7 +322,7 @@ Power Platform 环境绑定区域；"Move data across regions for Copilots, AI a
 ### Azure Monitor {#azure-monitor}
 - zh: Azure 的统一可观测性服务
 - aliases: Log Analytics | Log Analytics workspace | KQL | Kusto Query Language
-- exams: AI-103 | AB-620 | AB-100
+- exams: AI-103 | AB-620 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/overview
 - see: application-insights
 - chapter: 05-azure-ai/azure-services
@@ -332,7 +332,7 @@ Power Platform 环境绑定区域；"Move data across regions for Copilots, AI a
 ### Application Insights {#application-insights}
 - zh: Azure Monitor 的应用性能监控（APM），agent 遥测的落点
 - aliases: App Insights | connection string | customEvents | OpenTelemetry
-- exams: AB-620 | AI-103 | AB-100
+- exams: AB-620 | AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview
 - see: azure-monitor | tracing | telemetry
 - chapter: 04-copilot-studio/analytics
@@ -342,7 +342,7 @@ Power Platform 环境绑定区域；"Move data across regions for Copilots, AI a
 ### Azure Functions {#azure-functions}
 - zh: 无服务器函数计算
 - aliases: Functions | Azure Function | Durable Functions
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview
 - see: logic-apps | skill
 - chapter: 05-azure-ai/azure-services
@@ -352,7 +352,7 @@ Power Platform 环境绑定区域；"Move data across regions for Copilots, AI a
 ### Azure Logic Apps {#logic-apps}
 - zh: 低代码集成工作流服务
 - aliases: Logic Apps | logic app
-- exams: AI-103 | AB-100
+- exams: AI-103 | AB-100 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-overview
 - see: azure-functions | power-automate
 - chapter: 05-azure-ai/azure-services
@@ -362,7 +362,7 @@ Power Platform 环境绑定区域；"Move data across regions for Copilots, AI a
 ### Azure Cosmos DB {#cosmos-db}
 - zh: 全托管 NoSQL + 向量数据库
 - aliases: Cosmos DB
-- exams: AI-103
+- exams: AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/cosmos-db/overview
 - see: blob-storage | vector-search
 - chapter: 05-azure-ai/azure-services
@@ -382,7 +382,7 @@ Power Platform 环境绑定区域；"Move data across regions for Copilots, AI a
 ### Azure Kubernetes Service {#aks}
 - zh: 托管的 Kubernetes 服务
 - aliases: AKS
-- exams: AI-103
+- exams: AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/aks/what-is-aks
 - see: aci | containers
 - chapter: 05-azure-ai/azure-services
@@ -392,7 +392,7 @@ Azure 管控制平面（免费），你付节点费用；AKS Automatic（推荐�
 ### Azure Container Instances {#aci}
 - zh: 不管虚拟机、直接运行容器的最简单方式
 - aliases: ACI | Container Instances | Azure Container Apps | Container Apps
-- exams: AI-103
+- exams: AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/container-instances/container-instances-overview
 - see: aks | containers
 - chapter: 05-azure-ai/azure-services
@@ -412,7 +412,7 @@ workspace、studio、designer（无代码）、Automated ML、managed endpoints�
 ### Azure DevOps {#azure-devops}
 - zh: 微软的开发协作平台（Boards、Repos、Pipelines…）
 - aliases: Azure Pipelines | Azure Repos | Azure Boards
-- exams: AB-620 | AB-100 | AI-103
+- exams: AB-620 | AB-100 | AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/azure/devops/user-guide/what-is-azure-devops
 - see: build-tools | github-actions
 - chapter: 03-alm/code-first

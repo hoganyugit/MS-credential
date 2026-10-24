@@ -1741,7 +1741,7 @@
     mount(h('div', { class: 'page guide' },
       h('div', { class: 'page-head' }, h('div', null,
         h('h1', { text: 'Microsoft 概念指南' }),
-        h('p', { class: 'sub', text: `面向 AB-620、AB-100、AI-103 的基础概念手册：用中文解释微软的产品和术语，英文名保留，方便对照题目。内容按 Microsoft Learn 当前页面核对（${fmtDay(parseDay(GUIDE.generated))}），每节附来源链接。` }))),
+        h('p', { class: 'sub', text: `面向 AB-620、AB-100、AI-103、AI-500 的基础概念手册：用中文解释微软的产品和术语，英文名保留，方便对照题目。内容按 Microsoft Learn 当前页面核对（${fmtDay(parseDay(GUIDE.generated))}），每节附来源链接。` }))),
       form,
       h('div', { class: 'guide-chapters' }, CHAPTERS.map(c => h('a', { class: 'card guide-chapter', href: `#/guide/${c.id}` },
         h('div', { class: 'row' }, h('span', { class: 'chip accent', text: `第 ${c.n} 章` }), c.exams.map(examChip)),

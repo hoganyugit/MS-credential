@@ -11,8 +11,9 @@ cookie is a live login session, and anyone holding it can act as the account.
 | AB-620 | Designing and Building Integrated AI Agent Solutions in Copilot Studio | 116 | https://www.examtopics.com/exams/microsoft/ab-620/view/ |
 | AB-100 | Agentic AI Business Solutions Architect | 129 | https://www.examtopics.com/exams/microsoft/ab-100/view/ |
 | AI-103 | Developing AI Apps and Agents on Azure | 161 | https://www.examtopics.com/exams/microsoft/ai-103/view/ |
+| AI-500 | Designing and Implementing Multi-Agent AI Solutions | 107 | https://www.examtopics.com/exams/microsoft/ai-500/view/ |
 
-Question counts as of 2026-10-09. Anonymous access to ExamTopics stops after questions 1–10
+Question counts as of 2026-10-24. Anonymous access to ExamTopics stops after questions 1–10
 (page 1) of each exam; later pages redirect to a login wall, so the scraper needs a
 logged-in session.
 

@@ -116,7 +116,7 @@ Tools › Add tool › New tool › REST API：上传 OpenAPI v2 JSON（v3 自�
 ### Model Context Protocol {#mcp}
 - zh: MCP：让 agent 使用外部工具和资源的开放协议
 - aliases: MCP | MCP server | MCP servers | MCP tools
-- exams: AB-620 | AB-100 | AI-103
+- exams: AB-620 | AB-100 | AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/microsoft-copilot-studio/agent-extend-action-mcp
 - see: a2a | tool | toolbox | custom-connector
 - chapter: 04-copilot-studio/tools
@@ -239,7 +239,7 @@ Agents › Add an agent › New child agent，把一组工具、指令、知识�
 ### Agent2Agent protocol {#a2a}
 - zh: A2A：agent 调用 agent 的开放协议
 - aliases: A2A | Agent2Agent | agent-to-agent | agent.json
-- exams: AB-620 | AB-100 | AI-103
+- exams: AB-620 | AB-100 | AI-103 | AI-500
 - ref: https://learn.microsoft.com/en-us/microsoft-copilot-studio/add-agent-agent-to-agent
 - see: mcp | connected-agent | foundry-agent-service
 - chapter: 04-copilot-studio/multi-agent

@@ -1,8 +1,8 @@
 # Cert Prep
 
 An offline study app for the ExamTopics question sets listed in `EXAM_SOURCES.example.md`:
-AB-620 (116 questions), AB-100 (129) and AI-103 (161), with ExamTopics answers, community
-vote counts, discussion threads, and all 289 exhibit images stored locally.
+AB-620 (116 questions), AB-100 (129), AI-103 (161) and AI-500 (107), with ExamTopics answers,
+community vote counts, discussion threads, and all 418 question and answer images stored locally.
 
 ## Open it
 
@@ -56,7 +56,7 @@ sent anywhere and progress stays in the browser as before.
 | **Mock exam** | Random questions with a timer and no feedback until you finish. "Mark for review" and a question grid work like the real exam, case-study questions sit together, and series questions lock once you move on (optional). Everything is scored automatically; as on the real exam, drag & drop and hotspot questions earn partial credit per correct box. |
 | **Study plan** | On each exam page: set the exam date and a daily goal to get the pace needed for a first pass, today's progress, and a readiness verdict from your last three mock exams. |
 | **Read-through / Browse** | Answers shown up front; full-text search (optionally including discussions), plus filters by status, type and disputed answers. |
-| **Guide (指南)** | A concept guide, in Chinese with the English terms kept, to the Microsoft products and vocabulary the questions assume: six chapters (the four product maps, identity and security, ALM, Copilot Studio, Azure AI and Foundry, AI business solutions) and a 249-term glossary with search, exam filter and A–Z index. Every section and glossary entry links the Microsoft Learn page it was checked against (October 2026). Glossary terms are marked in question text (first mention per card, never in mock exams); click one for its Chinese explanation, chapter and Learn link. Each chapter ends with practice sets by knowledge point. |
+| **Guide (指南)** | A concept guide, in Chinese with the English terms kept, to the Microsoft products and vocabulary the questions assume: seven concept chapters (the four product maps, identity and security, ALM, Copilot Studio, Azure AI and Foundry, AI business solutions, multi-agent systems) and a 303-term glossary with search, exam filter and A–Z index. Every section and glossary entry links the Microsoft Learn page it was checked against (October 2026). Glossary terms are marked in question text (first mention per card, never in mock exams); click one for its Chinese explanation, chapter and Learn link. Each chapter ends with practice sets by knowledge point. |
 
 **Case studies.** The long scenario is stored once and opens beside the question
 (press **S**), with its headings, lists and "Label: value" facts restored. ExamTopics flattens
@@ -70,9 +70,10 @@ ExamTopics answer as one vote.
 
 **Reviewed answers.** Every question was re-judged against Microsoft product behaviour and
 documentation and given an explanation, a confidence level and a knowledge-point tag
-(`data/reviewed.js`). The review confirms ExamTopics on 361 questions and corrects it on 45;
-9 answers are marked low confidence. Answers that hinge on product details were checked against
-the current Microsoft Learn pages, and 70 entries link the page they rely on. By default the app
+(`data/reviewed.js`). The review confirms ExamTopics on 443 questions and corrects it on 70;
+11 answers are marked low confidence. Answers that hinge on product details were checked against
+the current Microsoft Learn pages, and 176 entries link the page they rely on. AI-500 has almost no
+community votes or comments, and the review corrects 25 of its 107 ExamTopics answers. By default the app
 grades against the reviewed answer and
 shows all three keys (reviewed, ExamTopics, community vote) on every question. The review was
 done by an AI model reading the questions, not by Microsoft, so treat a low-confidence answer as
@@ -84,7 +85,8 @@ breaks accuracy down by knowledge point, the practice builder and Browse can fil
 mock results report it.
 
 **Official skills measured.** `data/skills/<exam>.md` holds Microsoft's skills-measured outline
-for each exam (from the study guides; AB-100's is the version effective October 14, 2026), with
+for each exam (from the study guides; AB-100's is the version effective October 14, 2026, AI-500's the
+study guide dated June 30, 2026), with
 ids (`A`, `A1`, `A1.3`), a Chinese gloss per bullet and optional `guide:` / `learn:` links.
 `data/skillmap/<exam>.json` maps every bank question to the objectives it tests (first one
 primary; written by an AI mapping pass, fix by hand). `python3 tools/build_skills.py` compiles
@@ -97,10 +99,10 @@ mock result breakdown by skill group.
 **Supplementary questions.** `data/extra/<exam>.md` holds questions written for this app in the
 official exam style, for objectives the ExamTopics bank covers thinly, each with an explanation and
 Microsoft Learn references. `python3 tools/build_extra.py` compiles them into `data/extra.js`
-(ids 9620001…, 9100001…, 9103001…; display numbers from 1001) and refuses a missing reference, an
+(ids 9620001…, 9100001…, 9103001…, 9500001…; display numbers from 1001) and refuses a missing reference, an
 unknown knowledge point or objective, or an answer that is not among the options. They appear
-with a **Supplement** chip and are graded against their authored answer. There are 94 of them
-(AB-620 18, AB-100 46, AI-103 30), including one new case study per exam with six questions each
+with a **Supplement** chip and are graded against their authored answer. There are 124 of them
+(AB-620 18, AB-100 46, AI-103 30, AI-500 30), including one new case study per exam with six questions each
 (`data/extra/<exam>-cases.md`: a `## Case:` block whose body opens beside the questions, as the
 real case studies do).
 
@@ -116,11 +118,13 @@ spells it out. An all-caps token that is in neither the list nor its `ignore:` l
 A chapter whose front matter says `skills: <exam slug>` follows that exam's official outline:
 its sections are the sub-areas (`{#a1}`, `{#b2}`…), the build checks that none is missing, and the
 app adds a practice row to every section with the bank questions on that sub-area. Chapter 7
-(出题规律) is the pattern analysis of all 406 questions: for each exam, the question formats and
+(出题规律) is the pattern analysis of all 513 questions: for each exam, the question formats and
 stem formulas, the recurring "requirement wording → correct answer" decision rules, distractor
 patterns, hot and cold objectives, how case-study requirement lines become questions, and
-tactics; every question number in it links to the question. Chapters 8–10 walk the official
-outlines objective by objective, each bullet with what the examiner expects and its Learn sources.
+tactics; every question number in it links to the question. Chapters 8–10 and 12 walk the official
+outlines objective by objective, each bullet with what the examiner expects and its Learn sources;
+chapter 11 is the multi-agent map that AI-500 builds on (where agents run, orchestration patterns,
+MCP and A2A, memory tiers, agent identity, guardrail intervention points, evaluation, release).
 
 **Disputed answers.** ExamTopics' suggested answer is sometimes wrong. Settings can switch
 grading to the (pooled) community vote, used when at least 3 votes are in and there is no tie,
@@ -144,6 +148,8 @@ When ExamTopics adds questions, or votes and comments change:
 
 Add `--cache .cache` to keep the raw pages, so an interrupted run resumes and
 `python3 tools/examtopics.py build --cache .cache` can re-parse without downloading again.
+`--exam AI-500` (repeatable) fetches and rebuilds only that exam and leaves the others in
+`data/bank.js` as they are, which is how a new exam is added without re-scraping the rest.
 Delete that folder later to pull fresh pages. Progress is keyed by ExamTopics question ID,
 so it carries over to the refreshed bank. `CORRECTIONS` in the tool fixes typos in the source
 text ("Blue Vender", "Fabrikarn", …); add to it when you spot more. `data/areas.js`,

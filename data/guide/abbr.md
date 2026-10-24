@@ -8,7 +8,7 @@ tools/build_guide.py 和 tools/build_skills.py 用这张表展开缩写：每一
 
 keep: Cosmos DB | VS Code | Azure Cosmos DB for NoSQL | Entra ID V2 | F1 Score
 
-ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG | MP4 | TXT | MB | GB | VIP | NVIDIA | SAP | DALL | LINE | IQ | AND | NOT | MUST | NEVER | TEST | DEV | PROD | PREPROD | ENDPOINT | GET | POST | PUT | PATCH | DELETE | KEY1 | KEY2 | GENERIC | MEDICAL
+ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG | MP4 | TXT | MB | GB | VIP | NVIDIA | SAP | DALL | LINE | IQ | AND | NOT | MUST | NEVER | TEST | DEV | PROD | PREPROD | ENDPOINT | GET | POST | PUT | PATCH | DELETE | KEY1 | KEY2 | GENERIC | MEDICAL | ASP
 
 ## AI 与模型
 
@@ -50,6 +50,7 @@ ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG 
 - SK: Semantic Kernel | 微软的开源 agent / AI 编排 SDK
 - PTU: provisioned throughput unit | 预置吞吐量单位：预先买下固定的模型处理容量
 - TPM: tokens per minute | 每分钟 token 数，模型配额的计量单位
+- TTFT: time to first token | 首 token 延迟：从发出请求到模型返回第一个 token 的时间，流式体验的关键指标
 - RPM: requests per minute | 每分钟请求数
 - RPH: requests per hour | 每小时请求数
 - BYOM: bring your own model | 自带模型
@@ -64,6 +65,7 @@ ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG 
 - RRF: Reciprocal Rank Fusion | 倒数排名融合：把关键词搜索和向量搜索的结果合并排序
 - L2: | 第二阶段：semantic ranker 在初次检索结果上做的二次重排
 - NDCG: normalized discounted cumulative gain | 归一化折损累计增益：衡量结果排序离理想顺序有多近
+- MRR: mean reciprocal rank | 平均倒数排名：第一个相关结果排得越靠前分数越高，衡量排序质量
 - XDCG: | 微软检索评估指标：只看前 k 个结果的质量，不受索引里其他文档打分的影响
 - BLEU: Bilingual Evaluation Understudy | 按词组重合度比较生成文本和参考答案的指标，常用于翻译
 - GLEU: Google-BLEU | BLEU 的变体，按句子打分
@@ -74,6 +76,9 @@ ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG 
 - FN: false negative | 假阴性：该检出的漏掉了
 - AUC: area under the curve | 曲线下面积，衡量分类器区分能力的指标
 - WER: word error rate | 词错误率，衡量语音识别准确度
+- MMR: Maximum Marginal Relevance | 最大边际相关：挑选检索结果时兼顾与查询的相关度和与已选结果的差异，减少重复内容
+- MRL: Matryoshka Representation Learning | 套娃式表示学习：text-embedding-3 的向量截取较少维度仍可用，用来压缩向量存储
+- MTEB: Massive Text Embedding Benchmark | Hugging Face 上的文本嵌入模型基准与排行榜，选通用嵌入模型时的起点
 
 ## Azure 与基础设施
 
@@ -101,6 +106,8 @@ ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG 
 - SKU: stock keeping unit | 定价层 / 规格档位
 - SLA: service level agreement | 服务等级协议：承诺的可用性
 - SLO: service level objective | 服务等级目标：内部定的可用性或性能目标
+- SLI: service level indicator | 服务等级指标：实际测得的延迟、错误率等数值，用来和 SLO 比较
+- DTAP: Development-Test-Acceptance-Production | 开发、测试、验收、生产四套环境依次晋级的发布模型
 - GA: general availability | 正式发布，不再是预览
 - KV: Key Vault | Azure Key Vault：存放密钥、证书、连接串的服务
 - HSM: hardware security module | 硬件安全模块：用专用硬件保护密钥
@@ -115,6 +122,15 @@ ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG 
 - APAC: Asia-Pacific | 亚太地区
 - UTC: Coordinated Universal Time | 协调世界时
 - OTLP: OpenTelemetry Protocol | OpenTelemetry 传输遥测数据用的协议
+- DNS: Domain Name System | 域名系统：把域名解析成 IP 地址
+- FQDN: fully qualified domain name | 完全限定域名：包含全部层级的完整主机名，如 myapp.contoso.com
+- TLS: Transport Layer Security | 传输层安全协议；mutual TLS 指客户端和服务端互相校验证书
+- SSL: Secure Sockets Layer | 安全套接层：TLS 的前身，常用来泛指网站证书
+- SRE: site reliability engineering | 站点可靠性工程：用软件工程方法做运维和可靠性保障
+- MTTR: mean time to recovery | 平均恢复时间：从故障发生到服务恢复的平均时长，衡量事件响应效率的指标
+- MTBF: mean time between failures | 平均故障间隔时间：两次故障之间的平均时长
+- OOM: out of memory | 内存不足：显存或内存耗尽导致推理失败
+- ITSM: IT service management | IT 服务管理：工单、事件、变更等运维流程及其系统
 
 ## 身份与安全
 
@@ -129,6 +145,7 @@ ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG 
 - OAuth: Open Authorization | 开放授权标准：让应用在不拿密码的情况下获得访问令牌
 - OIDC: OpenID Connect | 建在 OAuth 2.0 上的登录认证协议
 - OBO: on-behalf-of | 代表用户：服务拿用户的令牌再以该用户身份调用下游 API
+- JWT: JSON Web Token | JSON Web 令牌：带签名的访问令牌格式，API 网关据此校验调用方身份和权限
 - PKCE: Proof Key for Code Exchange | 授权码流程的防截获扩展
 - DCR: Dynamic Client Registration | 动态客户端注册：OAuth 客户端自动向授权服务器注册自己
 - MI: managed identity | 托管标识：Azure 自动管理凭据的身份，代码里不用存密钥
@@ -145,6 +162,15 @@ ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG 
 - ATLAS: Adversarial Threat Landscape for Artificial-Intelligence Systems | MITRE 的 AI 系统攻击手法知识库
 - OWASP: Open Worldwide Application Security Project | 开放式全球应用安全项目，发布常见安全风险清单
 - SSN: Social Security Number | 美国社会安全号码
+- ABAC: attribute-based access control | 基于属性的访问控制：在角色分配上加条件，按资源或请求的属性再收窄权限
+- JIT: just-in-time | 即时访问：需要时才申请提权，经批准后限时生效、到期自动收回
+- DAST: dynamic application security testing | 动态应用安全测试：对运行中的应用发起模拟攻击来找漏洞
+- SAST: static application security testing | 静态应用安全测试：不运行程序，直接扫描源代码找漏洞
+- NIST: National Institute of Standards and Technology | 美国国家标准与技术研究院
+- SOC: System and Organization Controls | 服务组织控制报告：美国注册会计师协会制定的内部控制审计报告，SOC 2 关注安全、可用性、处理完整性、保密性和隐私
+- ISO: International Organization for Standardization | 国际标准化组织：发布国际标准的独立非政府组织，ISO 27001 是信息安全管理体系标准
+- OID: object ID | Microsoft Entra 中用户或对象的唯一标识，Foundry Memory 用它和 TID 解析 `{{$userId}}`
+- TID: tenant ID | Microsoft Entra 租户的唯一标识，Foundry Memory 用它和 OID 解析 `{{$userId}}`
 
 ## Microsoft 产品与框架
 
@@ -174,6 +200,9 @@ ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG 
 - URL: Uniform Resource Locator | 网址
 - URI: Uniform Resource Identifier | 统一资源标识符，网址的通称
 - JSON: JavaScript Object Notation | 常用的结构化数据格式
+- DAG: directed acyclic graph | 有向无环图：任务之间只有单向依赖、没有环，能并行的分支同时跑
+- JSONL: JSON Lines | 每行一个 JSON 对象的文本格式，微调训练数据常用
+- UUID: universally unique identifier | 通用唯一标识符：128 位的随机或按规则生成的 ID
 - YAML: YAML Ain't Markup Language | 用缩进表示结构的配置文件格式
 - XML: Extensible Markup Language | 可扩展标记语言，用标签表示结构的数据格式
 - HTML: Hypertext Markup Language | 网页标记语言
@@ -213,6 +242,8 @@ ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG 
 - JAWS: Job Access With Speech | 一款 Windows 读屏软件
 - NVDA: NonVisual Desktop Access | 一款免费的 Windows 读屏软件
 - IP: Internet Protocol | 互联网协议，IP 地址就是网络地址
+- BSP: Bulk Synchronous Parallel | 批量同步并行：按"超步"推进、每一步结束统一同步的并行计算模型，Agent Framework 工作流按它执行
+- MIT: Massachusetts Institute of Technology | MIT 许可证：源自麻省理工学院、允许商用和再分发的宽松开源许可证
 
 ## 业务与项目管理
 
@@ -232,6 +263,10 @@ ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG 
 - AP: accounts payable | 应付账款
 - B2B: business-to-business | 企业对企业
 - SME: subject matter expert | 业务领域专家
+- GDPR: General Data Protection Regulation | 欧盟《通用数据保护条例》：个人数据处理的法规
+- HIPAA: Health Insurance Portability and Accountability Act | 美国《健康保险流通与责任法案》：医疗健康数据的隐私法规
+- HAX: human-AI experience | 人与 AI 的交互体验：微软 Guidelines for Human-AI Interaction 那套设计原则
+- SDLC: software development lifecycle | 软件开发生命周期：从设计、编码、测试到发布运维的全过程
 - SOP: standard operating procedure | 标准作业程序
 - SSOT: single source of truth | 唯一可信数据源
 - PoC: proof of concept | 概念验证：先做小样验证方案可行
@@ -247,3 +282,9 @@ ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG 
 - CTO: chief technology officer | 首席技术官
 - CISO: chief information security officer | 首席信息安全官
 - RPA: robotic process automation | 机器人流程自动化：用软件模拟人点界面完成重复操作
+- EA: Enterprise Agreement | 企业协议：微软面向大型组织的 Azure 购买和计费协议
+- MCA: Microsoft Customer Agreement | 微软客户协议：Azure 的一种购买和计费协议
+- IBAN: International Bank Account Number | 国际银行账号：跨境转账用的标准银行账号格式
+- SWIFT: Society for Worldwide Interbank Financial Telecommunication | 环球银行金融电信协会；SWIFT 代码用来识别具体银行
+- NDC: National Drug Code | 美国国家药品代码：药品的唯一编号，检索时需要精确匹配
+- PHI: Protected Health Information | 受保护的健康信息：HIPAA 所保护的、能识别个人的医疗数据

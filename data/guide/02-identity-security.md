@@ -2,12 +2,13 @@
 id: 02-identity-security
 title: 身份与安全：Entra ID、RBAC、密钥与数据保护
 short: 身份与安全
-intro: "谁能访问什么"在微软世界里由 Microsoft Entra ID 回答，"怎么访问"由密钥或令牌回答，"访问时受什么约束"由 RBAC、DLP、网络隔离和合规工具回答。三门考试都会考这些。
-exams: AB-620 | AB-100 | AI-103
+intro: "谁能访问什么"在微软世界里由 Microsoft Entra ID 回答，"怎么访问"由密钥或令牌回答，"访问时受什么约束"由 RBAC、DLP、网络隔离和合规工具回答。四门考试都会考这些。
+exams: AB-620 | AB-100 | AI-103 | AI-500
 practice:
   ab-620: Security, authentication & governance
   ab-100: Governance, security & compliance
   ai-103: Planning & managing Azure AI solutions
+  ai-500: Identity, access & secrets | Guardrails & safety
 ---
 先建立一张总图：**身份（identity）**是"你是谁"，**认证（authentication）**是"证明你是谁"，**授权（authorization）**是"你被允许做什么"。微软把这三件事分别交给 [[entra-id|Microsoft Entra ID]]、令牌/密钥、以及 [[rbac|RBAC]] 等授权机制。
 

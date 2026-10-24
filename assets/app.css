@@ -586,6 +586,7 @@ pre code { padding: 0; border-radius: 0; background: none; font-size: inherit; }
 .rich p.ask strong { font-weight: 650; }
 .rich p.note { font-size: 13.5px; color: var(--ink-2); }
 .rich .exhibit { margin: 8px 0 14px; }
+.rich .exhibit td { white-space: pre-line; }
 .rich pre.code-block, .area pre.code-area {
   margin: 0 0 12px;
   padding: 14px 16px;
@@ -815,10 +816,11 @@ pre code { padding: 0; border-radius: 0; background: none; font-size: inherit; }
 .area pre.code-area { line-height: 2.1; margin: 0; }
 
 /* answers once revealed */
-.slot.shown { display: grid; gap: 2px; padding: 8px 12px; border-style: solid; font-size: 14.5px; line-height: 1.45; }
+.slot.shown { display: grid; gap: 2px; padding: 8px 12px; border-style: solid; font-size: 14.5px; line-height: 1.45; min-width: 0; overflow-wrap: anywhere; }
 .slot.shown.inline { display: inline-grid; padding: 3px 10px; font-size: 13.5px; min-width: 0; }
 .slot.shown .val-line { display: flex; align-items: flex-start; gap: 6px; }
 .slot.shown .val-line svg { flex: none; width: 17px; height: 17px; margin-top: 2px; }
+.slot.shown .val-line .val { min-width: 0; }
 .slot.shown.is-correct { border-color: var(--good); background: var(--good-wash); }
 .slot.shown.is-correct .val-line svg { color: var(--good); }
 .slot.shown.is-wrong { border-color: var(--bad); background: var(--bad-wash); }
