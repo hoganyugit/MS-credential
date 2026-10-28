@@ -69,8 +69,15 @@ def main():
         fetcher = et.Fetcher(cookie)
         parsed, before, after = {}, 0, 0
         for i, h in enumerate(hashes, 1):
-            text = fetcher.page(f"{et.SITE}/comments/{h}/", cache / "comments" / f"{h}.html",
-                                et.COMMENT_DELAY, referer=et.SITE + "/")
+            try:
+                text = fetcher.page(f"{et.SITE}/comments/{h}/", cache / "comments" / f"{h}.html",
+                                    et.COMMENT_DELAY, referer=et.SITE + "/")
+            except SystemExit as err:
+                # A question nobody has discussed has no thread page; keep its comments as they are.
+                if not str(err).startswith("HTTP 404"):
+                    raise
+                et.log(f"  {err}: no discussion yet, skipped")
+                continue
             parsed[h] = et.parse_comments(text)
             if i % 10 == 0 or i == len(hashes):
                 et.log(f"  threads {i}/{len(hashes)}")
