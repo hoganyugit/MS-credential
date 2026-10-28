@@ -604,8 +604,11 @@
     app.replaceChildren(node);
   }
 
-  function navigate(hash) {
+  // replace: the address being left only redirects here (a #/q/ link opens a session), so it must not stay in the
+  // history; Back would land on it and be sent forward again.
+  function navigate(hash, replace = false) {
     if (location.hash === hash) route();
+    else if (replace) location.replace(hash);
     else location.hash = hash;
   }
 
@@ -1944,14 +1947,14 @@
 
   const MODE_LABEL = { practice: 'Practice', read: 'Read-through', review: 'Mock exam review' };
 
-  function startSession(exam, { key = exam.code, mode, title, ids, i = 0, mockId }) {
+  function startSession(exam, { key = exam.code, mode, title, ids, i = 0, mockId, replace }) {
     if (!ids.length) {
       toast('No questions match that selection.');
       return;
     }
     S.sessions[key] = { code: exam.code, mode, title, ids, i, res: {}, mockId, created: Date.now() };
     store.save();
-    navigate(`#/s/${key === exam.code ? exam.slug : key}`);
+    navigate(`#/s/${key === exam.code ? exam.slug : key}`, replace);
   }
 
   function viewSession(param) {
@@ -3213,9 +3216,9 @@
 
   function viewVariants(exam, n) {
     const q = exam && exam.questions.find(x => x.n === n);
-    if (!q) return navigate('#/');
+    if (!q) return navigate('#/', true);
     const group = [q, ...q.siblings].sort((a, b) => a.n - b.n);
-    startSession(exam, { key: 'read', mode: 'read', title: q.siblings.length ? `Question ${n} and its ${plural(q.siblings.length, 'copy', 'copies')}` : `Question ${n}`, ids: group.map(x => x.id), i: group.indexOf(q) });
+    startSession(exam, { key: 'read', mode: 'read', title: q.siblings.length ? `Question ${n} and its ${plural(q.siblings.length, 'copy', 'copies')}` : `Question ${n}`, ids: group.map(x => x.id), i: group.indexOf(q), replace: true });
   }
 
   function route() {
@@ -3225,13 +3228,23 @@
     hideTip();
     closeTerm();
     if (!EXAMS.length) return viewMissingBank();
+    clearTimeout(scrollSave); // a save still pending belongs to the page just left
     scrollTo({ top: 0 });
-    for (const [re, fn] of ROUTES) {
-      const m = location.hash.match(re);
-      if (m) return fn(m);
-    }
-    viewHome();
+    const hit = ROUTES.find(([re]) => re.test(location.hash));
+    if (hit) hit[1](location.hash.match(hit[0]));
+    else viewHome();
+    // Back (or Forward) to a page left part-way down returns to that spot; a session keeps its own position.
+    const y = history.state && history.state.y;
+    if (y && !view.live) scrollTo({ top: y });
   }
+
+  // Each history entry remembers how far its page was scrolled, saved once scrolling settles (Safari limits how
+  // often replaceState may be called). A newly opened page has no saved position, so it starts at the top.
+  let scrollSave = 0;
+  addEventListener('scroll', () => {
+    clearTimeout(scrollSave);
+    scrollSave = setTimeout(() => history.replaceState({ ...history.state, y: scrollY }, ''), 150);
+  }, { passive: true });
 
   document.addEventListener('keydown', ev => {
     if (ev.key === 'Escape' && !termPop.hidden) {
