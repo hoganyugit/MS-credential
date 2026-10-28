@@ -2,11 +2,11 @@
 id: 07-exam-patterns
 title: 出题规律：微软怎么出题，题库怎么用
 short: 出题规律
-intro: 把四门考试的 513 道题逐题拆开，归纳出"需求措辞 → 正确答案"的决策规则、干扰项套路、限定词和 case study 的出题方式，每条结论都能点开原题核对。
+intro: 把四门考试的 539 道题逐题拆开，归纳出"需求措辞 → 正确答案"的决策规则、干扰项套路、限定词和 case study 的出题方式，每条结论都能点开原题核对。
 exams: AB-620 | AB-100 | AI-103 | AI-500
 ---
 
-这一章回答一个问题：微软是怎么出题的。它不是泛泛的"考试技巧"，而是把题库里的 513 道题（AB-620 116 题、AB-100 129 题、AI-103 161 题、AI-500 107 题）逐题拆开，按 reviewed answer 归纳出反复出现的"需求措辞 → 正确答案"规则、干扰项的套路、限定词怎么翻转答案、case study 的哪几句会被出成题。每条结论都带题号，点一下题号就能打开原题核对。
+这一章回答一个问题：微软是怎么出题的。它不是泛泛的"考试技巧"，而是把题库里的 539 道题（AB-620 116 题、AB-100 129 题、AI-103 187 题、AI-500 107 题）逐题拆开，按 reviewed answer 归纳出反复出现的"需求措辞 → 正确答案"规则、干扰项的套路、限定词怎么翻转答案、case study 的哪几句会被出成题。每条结论都带题号，点一下题号就能打开原题核对。
 
 先说三件通用的事，再分考试细讲。
 
@@ -644,36 +644,38 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 
 | 题型 | 数量 | 占比 | 细分 / 题号 |
 |---|---|---|---|
-| 单选 single | 88 | 55% | 其中 case study 单选 9 题（[Q2](#/q/ai-103/2) [Q27](#/q/ai-103/27) [Q28](#/q/ai-103/28) [Q56](#/q/ai-103/56) [Q62](#/q/ai-103/62) [Q67](#/q/ai-103/67) [Q145](#/q/ai-103/145) [Q146](#/q/ai-103/146) 及 [Q61](#/q/ai-103/61) 为多选） |
-| Hotspot 下拉/是非/代码补全 | 39 | 24% | 代码补全 12（[Q6](#/q/ai-103/6) [Q11](#/q/ai-103/11) [Q35](#/q/ai-103/35) [Q66](#/q/ai-103/66) [Q68](#/q/ai-103/68) [Q98](#/q/ai-103/98) [Q103](#/q/ai-103/103) [Q104](#/q/ai-103/104) [Q113](#/q/ai-103/113) [Q134](#/q/ai-103/134) [Q148](#/q/ai-103/148) [Q161](#/q/ai-103/161)）；是非陈述 7（[Q4](#/q/ai-103/4) [Q93](#/q/ai-103/93) [Q101](#/q/ai-103/101) [Q107](#/q/ai-103/107) [Q121](#/q/ai-103/121) [Q124](#/q/ai-103/124) [Q130](#/q/ai-103/130)）；配置下拉 20（[Q1](#/q/ai-103/1) [Q7](#/q/ai-103/7) [Q8](#/q/ai-103/8) [Q18](#/q/ai-103/18) [Q20](#/q/ai-103/20) [Q37](#/q/ai-103/37) [Q40](#/q/ai-103/40) [Q49](#/q/ai-103/49) [Q71](#/q/ai-103/71) [Q79](#/q/ai-103/79) [Q92](#/q/ai-103/92) [Q99](#/q/ai-103/99) [Q114](#/q/ai-103/114) [Q117](#/q/ai-103/117) [Q118](#/q/ai-103/118) [Q122](#/q/ai-103/122) [Q128](#/q/ai-103/128) [Q154](#/q/ai-103/154) [Q156](#/q/ai-103/156) [Q160](#/q/ai-103/160)） |
-| 拖放 dragdrop | 14 | 9% | 匹配 7（[Q5](#/q/ai-103/5) [Q15](#/q/ai-103/15) [Q32](#/q/ai-103/32) [Q86](#/q/ai-103/86) [Q94](#/q/ai-103/94) [Q95](#/q/ai-103/95) [Q150](#/q/ai-103/150)）；排序 5（[Q108](#/q/ai-103/108) [Q112](#/q/ai-103/112) [Q133](#/q/ai-103/133) [Q152](#/q/ai-103/152) [Q158](#/q/ai-103/158)）；代码拖放 2（[Q30](#/q/ai-103/30) [Q77](#/q/ai-103/77)） |
-| Yes/No 系列 | 12 | 7% | 3 组 × 4 题，同一场景换"Proposed solution"：[Q23](#/q/ai-103/23)–26、[Q41](#/q/ai-103/41)–44、[Q137](#/q/ai-103/137)–140 |
-| 多选 multi | 8 | 5% | [Q33](#/q/ai-103/33) [Q61](#/q/ai-103/61) [Q69](#/q/ai-103/69) [Q72](#/q/ai-103/72) [Q115](#/q/ai-103/115) [Q127](#/q/ai-103/127) [Q135](#/q/ai-103/135) [Q144](#/q/ai-103/144) |
-| Case study（含在以上各类中） | 12 | 7% | [Q1](#/q/ai-103/1) [Q2](#/q/ai-103/2) [Q27](#/q/ai-103/27) [Q28](#/q/ai-103/28) [Q56](#/q/ai-103/56) [Q61](#/q/ai-103/61) [Q62](#/q/ai-103/62) [Q66](#/q/ai-103/66) [Q67](#/q/ai-103/67) [Q68](#/q/ai-103/68) [Q145](#/q/ai-103/145) [Q146](#/q/ai-103/146)（2 题 hotspot 代码补全 [Q66](#/q/ai-103/66) [Q68](#/q/ai-103/68)，1 题 hotspot 配置 [Q1](#/q/ai-103/1)，1 题多选 [Q61](#/q/ai-103/61)，其余单选） |
+| 单选 single | 103 | 55% | 其中 case study 单选 9 题（[Q2](#/q/ai-103/2) [Q27](#/q/ai-103/27) [Q28](#/q/ai-103/28) [Q56](#/q/ai-103/56) [Q62](#/q/ai-103/62) [Q67](#/q/ai-103/67) [Q145](#/q/ai-103/145) [Q146](#/q/ai-103/146) [Q187](#/q/ai-103/187)） |
+| Hotspot 下拉/是非/代码补全 | 46 | 25% | 代码补全 15（[Q6](#/q/ai-103/6) [Q11](#/q/ai-103/11) [Q35](#/q/ai-103/35) [Q66](#/q/ai-103/66) [Q68](#/q/ai-103/68) [Q98](#/q/ai-103/98) [Q103](#/q/ai-103/103) [Q104](#/q/ai-103/104) [Q113](#/q/ai-103/113) [Q134](#/q/ai-103/134) [Q148](#/q/ai-103/148) [Q161](#/q/ai-103/161) [Q170](#/q/ai-103/170) [Q174](#/q/ai-103/174) [Q180](#/q/ai-103/180)）；是非陈述 11（[Q4](#/q/ai-103/4) [Q93](#/q/ai-103/93) [Q101](#/q/ai-103/101) [Q107](#/q/ai-103/107) [Q121](#/q/ai-103/121) [Q124](#/q/ai-103/124) [Q130](#/q/ai-103/130) [Q163](#/q/ai-103/163) [Q169](#/q/ai-103/169) [Q172](#/q/ai-103/172) [Q173](#/q/ai-103/173)）；配置下拉 20（[Q1](#/q/ai-103/1) [Q7](#/q/ai-103/7) [Q8](#/q/ai-103/8) [Q18](#/q/ai-103/18) [Q20](#/q/ai-103/20) [Q37](#/q/ai-103/37) [Q40](#/q/ai-103/40) [Q49](#/q/ai-103/49) [Q71](#/q/ai-103/71) [Q79](#/q/ai-103/79) [Q92](#/q/ai-103/92) [Q99](#/q/ai-103/99) [Q114](#/q/ai-103/114) [Q117](#/q/ai-103/117) [Q118](#/q/ai-103/118) [Q122](#/q/ai-103/122) [Q128](#/q/ai-103/128) [Q154](#/q/ai-103/154) [Q156](#/q/ai-103/156) [Q160](#/q/ai-103/160)） |
+| 拖放 dragdrop | 15 | 8% | 匹配 7（[Q5](#/q/ai-103/5) [Q15](#/q/ai-103/15) [Q32](#/q/ai-103/32) [Q86](#/q/ai-103/86) [Q94](#/q/ai-103/94) [Q95](#/q/ai-103/95) [Q150](#/q/ai-103/150)）；排序 6（[Q108](#/q/ai-103/108) [Q112](#/q/ai-103/112) [Q133](#/q/ai-103/133) [Q152](#/q/ai-103/152) [Q158](#/q/ai-103/158) [Q164](#/q/ai-103/164)）；代码拖放 2（[Q30](#/q/ai-103/30) [Q77](#/q/ai-103/77)） |
+| Yes/No 系列 | 13 | 7% | 3 组共 13 题，同一场景换"Proposed solution"：[Q23](#/q/ai-103/23)–26、[Q41](#/q/ai-103/41)–44 加 [Q185](#/q/ai-103/185)（同一场景的第 5 个方案）、[Q137](#/q/ai-103/137)–140 |
+| 多选 multi | 10 | 5% | [Q33](#/q/ai-103/33) [Q61](#/q/ai-103/61) [Q69](#/q/ai-103/69) [Q72](#/q/ai-103/72) [Q115](#/q/ai-103/115) [Q127](#/q/ai-103/127) [Q135](#/q/ai-103/135) [Q144](#/q/ai-103/144) [Q168](#/q/ai-103/168) [Q178](#/q/ai-103/178) |
+| Case study（含在以上各类中） | 13 | 7% | [Q1](#/q/ai-103/1) [Q2](#/q/ai-103/2) [Q27](#/q/ai-103/27) [Q28](#/q/ai-103/28) [Q56](#/q/ai-103/56) [Q61](#/q/ai-103/61) [Q62](#/q/ai-103/62) [Q66](#/q/ai-103/66) [Q67](#/q/ai-103/67) [Q68](#/q/ai-103/68) [Q145](#/q/ai-103/145) [Q146](#/q/ai-103/146) [Q187](#/q/ai-103/187)（2 题 hotspot 代码补全 [Q66](#/q/ai-103/66) [Q68](#/q/ai-103/68)，1 题 hotspot 配置 [Q1](#/q/ai-103/1)，1 题多选 [Q61](#/q/ai-103/61)，其余单选） |
 
-代码补全合计 14 题（12 hotspot + 2 dragdrop），占 9%，语言/格式分布：Python SDK 8（[Q6](#/q/ai-103/6) [Q30](#/q/ai-103/30) [Q35](#/q/ai-103/35) [Q66](#/q/ai-103/66) [Q68](#/q/ai-103/68) [Q77](#/q/ai-103/77) [Q104](#/q/ai-103/104) [Q148](#/q/ai-103/148)）、YAML 1（[Q11](#/q/ai-103/11)）、Bicep 1（[Q98](#/q/ai-103/98)）、az CLI 1（[Q103](#/q/ai-103/103)）、ARM REST 1（[Q113](#/q/ai-103/113)）、Vision REST 1（[Q134](#/q/ai-103/134)）、docker run 1（[Q161](#/q/ai-103/161)）。另有 6 题"读代码判断输出"（[Q101](#/q/ai-103/101) [Q107](#/q/ai-103/107) [Q120](#/q/ai-103/120) [Q121](#/q/ai-103/121) [Q124](#/q/ai-103/124) [Q130](#/q/ai-103/130)）。
+代码补全合计 17 题（15 hotspot + 2 dragdrop），占 9%，语言/格式分布：Python SDK 8（[Q6](#/q/ai-103/6) [Q30](#/q/ai-103/30) [Q35](#/q/ai-103/35) [Q66](#/q/ai-103/66) [Q68](#/q/ai-103/68) [Q77](#/q/ai-103/77) [Q104](#/q/ai-103/104) [Q148](#/q/ai-103/148)）、YAML 1（[Q11](#/q/ai-103/11)）、Bicep 1（[Q98](#/q/ai-103/98)）、az CLI 1（[Q103](#/q/ai-103/103)）、ARM REST 2（[Q113](#/q/ai-103/113) [Q180](#/q/ai-103/180)）、Language REST 请求体 1（[Q170](#/q/ai-103/170)）、Agent Service REST cURL 1（[Q174](#/q/ai-103/174)）、Vision REST 1（[Q134](#/q/ai-103/134)）、docker run 1（[Q161](#/q/ai-103/161)）。另有 11 题"读代码判断输出"（[Q101](#/q/ai-103/101) [Q107](#/q/ai-103/107) [Q120](#/q/ai-103/120) [Q121](#/q/ai-103/121) [Q124](#/q/ai-103/124) [Q130](#/q/ai-103/130) [Q163](#/q/ai-103/163) [Q169](#/q/ai-103/169) [Q172](#/q/ai-103/172) [Q173](#/q/ai-103/173) [Q177](#/q/ai-103/177)）。
 
 #### 题干公式及其真实考点
 
 | 题干公式 | 数量 | 实际在问什么 | 例题 |
 |---|---|---|---|
-| "You have a Microsoft Foundry project that contains an agent…" 开头 | 62 | 新版 Foundry/agent 题的标志；考 Foundry Agent Service、workflow、evaluation、observability | [Q9](#/q/ai-103/9) [Q14](#/q/ai-103/14) [Q22](#/q/ai-103/22) [Q37](#/q/ai-103/37) [Q77](#/q/ai-103/77) |
-| "You have an Azure subscription…" 开头 | 13 | 几乎全是 AI-102 旧题换名（Custom Vision、容器、VNet、Content Safety Studio） | [Q102](#/q/ai-103/102) [Q103](#/q/ai-103/103) [Q111](#/q/ai-103/111) [Q127](#/q/ai-103/127) [Q136](#/q/ai-103/136) [Q137](#/q/ai-103/137)–140 [Q149](#/q/ai-103/149) [Q155](#/q/ai-103/155) [Q158](#/q/ai-103/158) |
-| "You need to… " | 144/161 | 需求句本身就是答案的别名（见第 2 节规则） | 全部 |
-| "The solution must meet the following requirements:" + 2–3 条 bullet | 18 | 每条 bullet 对应正确选项的一个特征，或 hotspot 的一个槽位 | [Q5](#/q/ai-103/5) [Q20](#/q/ai-103/20) [Q29](#/q/ai-103/29) [Q31](#/q/ai-103/31) [Q32](#/q/ai-103/32) [Q37](#/q/ai-103/37) [Q45](#/q/ai-103/45) [Q59](#/q/ai-103/59) [Q84](#/q/ai-103/84) [Q87](#/q/ai-103/87) [Q97](#/q/ai-103/97) [Q113](#/q/ai-103/113) [Q116](#/q/ai-103/116) [Q123](#/q/ai-103/123) [Q127](#/q/ai-103/127) [Q152](#/q/ai-103/152) [Q156](#/q/ai-103/156) [Q157](#/q/ai-103/157) |
-| "What should you do?" | 27 | 一个动作或一个参数（tool_choice、temperature、retry、inpainting…） | [Q17](#/q/ai-103/17) [Q39](#/q/ai-103/39) [Q46](#/q/ai-103/46) [Q74](#/q/ai-103/74) [Q89](#/q/ai-103/89) |
-| "Which … should you use?" | 19 | 从同族里挑一个（analyzer、evaluator、signal、model type、tool） | [Q47](#/q/ai-103/47) [Q65](#/q/ai-103/65) [Q81](#/q/ai-103/81) [Q96](#/q/ai-103/96) [Q147](#/q/ai-103/147) |
+| "You have a Microsoft Foundry project that contains an agent…" 开头 | 67 | 新版 Foundry/agent 题的标志；考 Foundry Agent Service、workflow、evaluation、observability | [Q9](#/q/ai-103/9) [Q14](#/q/ai-103/14) [Q22](#/q/ai-103/22) [Q37](#/q/ai-103/37) [Q77](#/q/ai-103/77) |
+| "You have an Azure subscription…" 开头 | 17 | 几乎全是 AI-102 旧题换名（Custom Vision、容器、VNet、Content Safety Studio、Speech SSML、ARM 请求、GPT-3.5 时代的 prompt 题） | [Q102](#/q/ai-103/102) [Q103](#/q/ai-103/103) [Q111](#/q/ai-103/111) [Q127](#/q/ai-103/127) [Q136](#/q/ai-103/136)–140 [Q149](#/q/ai-103/149) [Q155](#/q/ai-103/155) [Q158](#/q/ai-103/158) [Q173](#/q/ai-103/173) [Q175](#/q/ai-103/175) [Q176](#/q/ai-103/176) [Q180](#/q/ai-103/180) |
+| "You need to… " | 164/187 | 需求句本身就是答案的别名（见第 2 节规则） | 全部 |
+| "The solution must meet the following requirements:" + 2–3 条 bullet | 21 | 每条 bullet 对应正确选项的一个特征，或 hotspot 的一个槽位 | [Q5](#/q/ai-103/5) [Q20](#/q/ai-103/20) [Q29](#/q/ai-103/29) [Q31](#/q/ai-103/31) [Q32](#/q/ai-103/32) [Q37](#/q/ai-103/37) [Q45](#/q/ai-103/45) [Q59](#/q/ai-103/59) [Q84](#/q/ai-103/84) [Q87](#/q/ai-103/87) [Q97](#/q/ai-103/97) [Q113](#/q/ai-103/113) [Q116](#/q/ai-103/116) [Q123](#/q/ai-103/123) [Q127](#/q/ai-103/127) [Q152](#/q/ai-103/152) [Q156](#/q/ai-103/156) [Q157](#/q/ai-103/157) [Q165](#/q/ai-103/165) [Q183](#/q/ai-103/183) [Q186](#/q/ai-103/186) |
+| "What should you do?" | 32 | 一个动作或一个参数（tool_choice、temperature、retry、inpainting…） | [Q17](#/q/ai-103/17) [Q39](#/q/ai-103/39) [Q46](#/q/ai-103/46) [Q74](#/q/ai-103/74) [Q89](#/q/ai-103/89) |
+| "Which … should you use?" | 22 | 从同族里挑一个（analyzer、evaluator、signal、model type、tool、service） | [Q47](#/q/ai-103/47) [Q65](#/q/ai-103/65) [Q81](#/q/ai-103/81) [Q96](#/q/ai-103/96) [Q147](#/q/ai-103/147) [Q175](#/q/ai-103/175) [Q186](#/q/ai-103/186) |
 | "What should you configure?" | 10 | 模式/选项（standard vs pro、hybrid、security scheme、MI 作用域） | [Q1](#/q/ai-103/1) [Q16](#/q/ai-103/16) [Q83](#/q/ai-103/83) [Q87](#/q/ai-103/87) [Q92](#/q/ai-103/92) |
-| "What should you include in the solution / recommendation?" "What should you recommend?" | 13 | 服务选型（CU vs Document Intelligence vs Language vs AI Search） | [Q53](#/q/ai-103/53) [Q56](#/q/ai-103/56) [Q62](#/q/ai-103/62) [Q129](#/q/ai-103/129) [Q143](#/q/ai-103/143) |
-| "Which type of …" | 4 | 类别级选择：LLM/SLM/embedding、serverless、multi-service 资源 | [Q29](#/q/ai-103/29) [Q96](#/q/ai-103/96) [Q97](#/q/ai-103/97) [Q131](#/q/ai-103/131) |
+| "What should you include in the solution / recommendation?" "What should you recommend?" | 15 | 服务选型（CU vs Document Intelligence vs Language vs AI Search；evaluator 选型） | [Q53](#/q/ai-103/53) [Q56](#/q/ai-103/56) [Q62](#/q/ai-103/62) [Q129](#/q/ai-103/129) [Q143](#/q/ai-103/143) [Q183](#/q/ai-103/183) [Q187](#/q/ai-103/187) |
+| "What should you use?" | 6 | 同上，服务或功能选型 | [Q2](#/q/ai-103/2) [Q51](#/q/ai-103/51) [Q64](#/q/ai-103/64) [Q102](#/q/ai-103/102) [Q179](#/q/ai-103/179) [Q181](#/q/ai-103/181) |
+| "Which type of …" | 5 | 类别级选择：LLM/SLM/embedding、serverless、multi-service 资源、prompt 技巧类别（priming） | [Q29](#/q/ai-103/29) [Q96](#/q/ai-103/96) [Q97](#/q/ai-103/97) [Q131](#/q/ai-103/131) [Q176](#/q/ai-103/176) |
 | "To what should you set …" | 3 | 单个参数值 | [Q10](#/q/ai-103/10) [Q73](#/q/ai-103/73) [Q76](#/q/ai-103/76) |
-| "How should you complete the Python code / command / request / Bicep / workflow definition?" | 14 | SDK 类名、方法名、参数值（见 2.30 速查表） | [Q6](#/q/ai-103/6) [Q66](#/q/ai-103/66) [Q68](#/q/ai-103/68) [Q98](#/q/ai-103/98) [Q103](#/q/ai-103/103) |
-| "How should you configure …?" | 10 | 模板/模式/节点类型 | [Q5](#/q/ai-103/5) [Q40](#/q/ai-103/40) [Q49](#/q/ai-103/49) [Q79](#/q/ai-103/79) [Q118](#/q/ai-103/118) |
-| "Does this meet the goal / requirement?" | 12 | 提议方案是否覆盖问题的全部组成部分；一组里通常只有 0 或 1 个 Yes | [Q23](#/q/ai-103/23)–26（全 No）[Q41](#/q/ai-103/41)–44（[Q42](#/q/ai-103/42) Yes）[Q137](#/q/ai-103/137)–140（[Q137](#/q/ai-103/137) Yes） |
-| "select Yes if the statement is true" | 7 | 读代码/读配置：参数名含义、返回字段、默认行为 | [Q4](#/q/ai-103/4) [Q93](#/q/ai-103/93) [Q101](#/q/ai-103/101) [Q107](#/q/ai-103/107) [Q121](#/q/ai-103/121) [Q124](#/q/ai-103/124) [Q130](#/q/ai-103/130) |
-| "Which three/five actions should you perform in sequence?" | 5 | 既考顺序也考选项真伪（多出 2–4 个错误选项） | [Q108](#/q/ai-103/108) [Q112](#/q/ai-103/112) [Q133](#/q/ai-103/133) [Q152](#/q/ai-103/152) [Q158](#/q/ai-103/158) |
+| "How should you complete the Python code / command / request / Bicep / workflow definition?" | 17 | SDK 类名、方法名、参数值、REST 路径段（见 R30 速查表） | [Q6](#/q/ai-103/6) [Q66](#/q/ai-103/66) [Q68](#/q/ai-103/68) [Q98](#/q/ai-103/98) [Q103](#/q/ai-103/103) [Q170](#/q/ai-103/170) [Q174](#/q/ai-103/174) [Q180](#/q/ai-103/180) |
+| "How should you configure …?" | 11 | 模板/模式/节点类型 | [Q5](#/q/ai-103/5) [Q40](#/q/ai-103/40) [Q49](#/q/ai-103/49) [Q79](#/q/ai-103/79) [Q118](#/q/ai-103/118) |
+| "Does this meet the goal / requirement?" | 13 | 提议方案是否覆盖问题的全部组成部分；一组里通常只有 0 或 1 个 Yes | [Q23](#/q/ai-103/23)–26（全 No）[Q41](#/q/ai-103/41)–44 + [Q185](#/q/ai-103/185)（只 [Q42](#/q/ai-103/42) Yes）[Q137](#/q/ai-103/137)–140（[Q137](#/q/ai-103/137) Yes） |
+| "select Yes if the statement is true" | 11 | 读代码/读配置：参数名含义、返回字段、默认行为、schema 约束、SSML 效果 | [Q4](#/q/ai-103/4) [Q93](#/q/ai-103/93) [Q101](#/q/ai-103/101) [Q107](#/q/ai-103/107) [Q121](#/q/ai-103/121) [Q124](#/q/ai-103/124) [Q130](#/q/ai-103/130) [Q163](#/q/ai-103/163) [Q169](#/q/ai-103/169) [Q172](#/q/ai-103/172) [Q173](#/q/ai-103/173) |
+| "Which three/five actions should you perform in sequence?" | 6 | 既考顺序也考选项真伪（多出 2–4 个错误选项） | [Q108](#/q/ai-103/108) [Q112](#/q/ai-103/112) [Q133](#/q/ai-103/133) [Q152](#/q/ai-103/152) [Q158](#/q/ai-103/158) [Q164](#/q/ai-103/164) |
 | "Which two … Each correct answer presents a complete solution" | 3 | 两个各自独立成立的方案 | [Q33](#/q/ai-103/33) [Q72](#/q/ai-103/72) [Q135](#/q/ai-103/135) |
-| "Which two/three … Each correct answer presents part of the solution" | 5 | 组合方案，缺一不可 | [Q61](#/q/ai-103/61) [Q69](#/q/ai-103/69) [Q115](#/q/ai-103/115) [Q127](#/q/ai-103/127) [Q144](#/q/ai-103/144) |
+| "Which two/three … Each correct answer presents part of the solution" | 7 | 组合方案，缺一不可 | [Q61](#/q/ai-103/61) [Q69](#/q/ai-103/69) [Q115](#/q/ai-103/115) [Q127](#/q/ai-103/127) [Q144](#/q/ai-103/144) [Q168](#/q/ai-103/168) [Q178](#/q/ai-103/178) |
+| "What is the result of the request?" | 1 | 读 REST 请求判断效果 | [Q177](#/q/ai-103/177) |
 
 ---
 
@@ -682,10 +684,10 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 
 | 限定词 | 出现 | 把答案推向 | 例题 |
 |---|---|---|---|
-| "minimize development effort" | 13 | 预建/内置/托管方案，几行配置（workflow、SSML phonemes、prebuilt 服务、portal 操作） | [Q9](#/q/ai-103/9) [Q63](#/q/ai-103/63) [Q106](#/q/ai-103/106) [Q110](#/q/ai-103/110) [Q123](#/q/ai-103/123) [Q129](#/q/ai-103/129) [Q132](#/q/ai-103/132) [Q142](#/q/ai-103/142) [Q143](#/q/ai-103/143) [Q152](#/q/ai-103/152) [Q157](#/q/ai-103/157) [Q159](#/q/ai-103/159) [Q160](#/q/ai-103/160) |
-| "minimize administrative effort" | 5 | 一个共享配置（connection）、不训模型（CU）、资源自带设置（VNet rules）；**无安全条款时选 key**（[Q111](#/q/ai-103/111)） | [Q31](#/q/ai-103/31) [Q53](#/q/ai-103/53) [Q111](#/q/ai-103/111) [Q126](#/q/ai-103/126) [Q127](#/q/ai-103/127) |
+| "minimize development effort" | 17 | 预建/内置/托管方案，几行配置（workflow、SSML phonemes、prebuilt 服务、Image Analysis 预建功能、Content Safety Studio、Spatial Analysis、Face 属性、portal 操作） | [Q9](#/q/ai-103/9) [Q63](#/q/ai-103/63) [Q106](#/q/ai-103/106) [Q110](#/q/ai-103/110) [Q123](#/q/ai-103/123) [Q129](#/q/ai-103/129) [Q132](#/q/ai-103/132) [Q142](#/q/ai-103/142) [Q143](#/q/ai-103/143) [Q152](#/q/ai-103/152) [Q157](#/q/ai-103/157) [Q159](#/q/ai-103/159) [Q160](#/q/ai-103/160) [Q168](#/q/ai-103/168) [Q179](#/q/ai-103/179) [Q183](#/q/ai-103/183) [Q186](#/q/ai-103/186) |
+| "minimize administrative effort" | 6 | 一个共享配置（connection）、不训模型（CU）、资源自带设置（VNet rules）；**无安全条款时选 key**（[Q111](#/q/ai-103/111)） | [Q31](#/q/ai-103/31) [Q53](#/q/ai-103/53) [Q111](#/q/ai-103/111) [Q126](#/q/ai-103/126) [Q127](#/q/ai-103/127) [Q165](#/q/ai-103/165) |
 | "principle of least privilege" | 3 | 最窄的数据面角色、project 级 MI | [Q8](#/q/ai-103/8) [Q13](#/q/ai-103/13) [Q92](#/q/ai-103/92) |
-| "minimize costs" / "reduce costs and latency" | 2 | 不换大模型（加注释）、model cascade | [Q151](#/q/ai-103/151) [Q17](#/q/ai-103/17) |
+| "minimize costs" / "reduce costs and latency" | 3 | 不换大模型（加注释）、model cascade、定期抽查用 Face 单图检测而非视频索引（"every 15 minutes"） | [Q151](#/q/ai-103/151) [Q17](#/q/ai-103/17) [Q186](#/q/ai-103/186) |
 | "without requiring reserved throughput capacity" + "must remain within the EU" | 1 | Standard，而非 Global Standard | [Q1](#/q/ai-103/1) |
 | "NOT consume the vCPU quota" / "Prevents hosting model weights" | 2 | serverless | [Q97](#/q/ai-103/97) [Q122](#/q/ai-103/122) |
 | "must remain within the service and model limits" | 2 | backoff + jitter / 拆文件，排除提额 | [Q39](#/q/ai-103/39) [Q95](#/q/ai-103/95) |
@@ -693,25 +695,27 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | "without retraining the model or storing knowledge permanently" | 1 | few-shot | [Q75](#/q/ai-103/75) |
 | "without regenerating" / "remove only… preserving the rest" / "exclusively inside the masked area" | 3 | mask-based inpainting | [Q45](#/q/ai-103/45) [Q46](#/q/ai-103/46) [Q88](#/q/ai-103/88) |
 | "without requiring a language model deployment" | 1 | prebuilt-layout | [Q47](#/q/ai-103/47) |
-| "must NOT require training a custom model" / "NOT a custom model" | 2 | CU / 内置编辑控制 | [Q53](#/q/ai-103/53) [Q45](#/q/ai-103/45) |
-| "in the logic of the application code before responses are returned" | 3 | reflection / retry evaluation | [Q38](#/q/ai-103/38) [Q100](#/q/ai-103/100) [Q153](#/q/ai-103/153) |
+| "must NOT require training a custom model" / "NOT a custom model" / "without training a model" | 3 | CU / 内置编辑控制 / prebuilt NER（recognize_entities） | [Q53](#/q/ai-103/53) [Q45](#/q/ai-103/45) [Q171](#/q/ai-103/171) |
+| "in the logic of the application code before responses are returned" | 5 | reflection / retry evaluation | [Q38](#/q/ai-103/38) [Q100](#/q/ai-103/100) [Q153](#/q/ai-103/153) [Q166](#/q/ai-103/166) [Q167](#/q/ai-103/167) |
 | "deterministically" / "deterministic, step-based" | 4 | tool_choice required 或指定 type / workflow | [Q14](#/q/ai-103/14) [Q73](#/q/ai-103/73) [Q119](#/q/ai-103/119) [Q9](#/q/ai-103/9) |
-| "only"（范围限制） | 16 | system message（只答 Contoso 产品 [Q28](#/q/ai-103/28)）、tool_choice type（只查互联网 [Q73](#/q/ai-103/73)）、VNet settings（只允许 vnet1 [Q136](#/q/ai-103/136)）、scope session（不跨会话 [Q76](#/q/ai-103/76)）、query key（只读 [Q112](#/q/ai-103/112)） | [Q28](#/q/ai-103/28) [Q73](#/q/ai-103/73) [Q76](#/q/ai-103/76) [Q112](#/q/ai-103/112) [Q136](#/q/ai-103/136) [Q154](#/q/ai-103/154) |
+| "only"（范围限制） | 17 | system message（只答 Contoso 产品 [Q28](#/q/ai-103/28)）、tool_choice type（只查互联网 [Q73](#/q/ai-103/73)）、VNet settings（只允许 vnet1 [Q136](#/q/ai-103/136)）、scope session（不跨会话 [Q76](#/q/ai-103/76)）、query key（只读 [Q112](#/q/ai-103/112)）、piiCategories（只遮蔽姓名 [Q170](#/q/ai-103/170)） | [Q28](#/q/ai-103/28) [Q73](#/q/ai-103/73) [Q76](#/q/ai-103/76) [Q112](#/q/ai-103/112) [Q136](#/q/ai-103/136) [Q154](#/q/ai-103/154) [Q170](#/q/ai-103/170) |
 | "across separate sessions / conversations" vs "same case… days later… full history" | 8 | memory（persistent, {{$userId}}） vs conversation ID | [Q34](#/q/ai-103/34) [Q37](#/q/ai-103/37) [Q70](#/q/ai-103/70) [Q76](#/q/ai-103/76) [Q77](#/q/ai-103/77) [Q99](#/q/ai-103/99) |
-| "single analyzer / single built-in skill / single key and endpoint / single structured output" | 9 | 一个资源/技能解决：CU skill（[Q84](#/q/ai-103/84) [Q116](#/q/ai-103/116)）、custom CU analyzer（[Q64](#/q/ai-103/64)）、pro mode（[Q87](#/q/ai-103/87)）、多服务资源（[Q113](#/q/ai-103/113) [Q131](#/q/ai-103/131)） | [Q64](#/q/ai-103/64) [Q84](#/q/ai-103/84) [Q87](#/q/ai-103/87) [Q113](#/q/ai-103/113) [Q116](#/q/ai-103/116) [Q131](#/q/ai-103/131) |
-| "real-time / live / streaming / within a few seconds / approximately 100 ms" | 6 | real-time STT、WebRTC、serverless real-time | [Q58](#/q/ai-103/58) [Q59](#/q/ai-103/59) [Q90](#/q/ai-103/90) [Q97](#/q/ai-103/97) |
-| "scanned" | 9 | 需要 OCR：CU、Document Intelligence、OCR skill、advanced parsing | [Q47](#/q/ai-103/47) [Q52](#/q/ai-103/52) [Q53](#/q/ai-103/53) [Q54](#/q/ai-103/54) [Q57](#/q/ai-103/57) [Q64](#/q/ai-103/64) [Q85](#/q/ai-103/85) [Q117](#/q/ai-103/117) [Q132](#/q/ai-103/132) |
+| "single analyzer / single built-in skill / single key and endpoint / single structured output" | 10 | 一个资源/技能解决：CU skill（[Q84](#/q/ai-103/84) [Q116](#/q/ai-103/116)）、custom CU analyzer（[Q64](#/q/ai-103/64)）、pro mode（[Q87](#/q/ai-103/87)）、多服务资源（[Q113](#/q/ai-103/113) [Q131](#/q/ai-103/131) [Q180](#/q/ai-103/180)） | [Q64](#/q/ai-103/64) [Q84](#/q/ai-103/84) [Q87](#/q/ai-103/87) [Q113](#/q/ai-103/113) [Q116](#/q/ai-103/116) [Q131](#/q/ai-103/131) [Q180](#/q/ai-103/180) |
+| "real-time / live / streaming / within a few seconds / approximately 100 ms" | 7 | real-time STT、WebRTC、serverless real-time、Spatial Analysis（实时视频告警） | [Q58](#/q/ai-103/58) [Q59](#/q/ai-103/59) [Q90](#/q/ai-103/90) [Q97](#/q/ai-103/97) [Q183](#/q/ai-103/183) |
+| "scanned" | 11 | 需要 OCR：CU、Document Intelligence（含 prebuilt invoice）、OCR skill、advanced parsing | [Q47](#/q/ai-103/47) [Q52](#/q/ai-103/52) [Q53](#/q/ai-103/53) [Q54](#/q/ai-103/54) [Q57](#/q/ai-103/57) [Q64](#/q/ai-103/64) [Q85](#/q/ai-103/85) [Q117](#/q/ai-103/117) [Q132](#/q/ai-103/132) [Q181](#/q/ai-103/181) [Q182](#/q/ai-103/182) |
 | "varied layouts / template-generalizing / across varying templates" | 3 | CU（不是训练自定义模型） | [Q53](#/q/ai-103/53) [Q56](#/q/ai-103/56) [Q64](#/q/ai-103/64) |
 | "citations" | 5 | 必须经过检索/提取：tool_choice required、normalized_images、CU skill 位置元数据 | [Q14](#/q/ai-103/14) [Q55](#/q/ai-103/55) [Q84](#/q/ai-103/84) [Q116](#/q/ai-103/116) [Q119](#/q/ai-103/119) |
 | "confidence… routed for review" | 3 | CU 置信度（estimateFieldSourceAndConfidence / custom analyzer） | [Q57](#/q/ai-103/57) [Q64](#/q/ai-103/64) [Q87](#/q/ai-103/87) |
-| "on-premises" / "intermittent internet connectivity" / "iOS app" | 3 | 容器（仍需联网计费）/ compact 域可导出 | [Q133](#/q/ai-103/133) [Q150](#/q/ai-103/150) [Q118](#/q/ai-103/118) |
-| "Each correct answer presents a complete solution" vs "part of the solution" | 3 vs 5 | 两个独立方案 vs 组合方案 | [Q33](#/q/ai-103/33) [Q72](#/q/ai-103/72) [Q135](#/q/ai-103/135) vs [Q61](#/q/ai-103/61) [Q69](#/q/ai-103/69) [Q115](#/q/ai-103/115) [Q127](#/q/ai-103/127) [Q144](#/q/ai-103/144) |
+| "on-premises" / "intermittent internet connectivity" / "iOS app" / "disconnected from the internet" | 4 | 容器（仍需联网计费）/ compact 域可导出 | [Q133](#/q/ai-103/133) [Q150](#/q/ai-103/150) [Q118](#/q/ai-103/118) [Q164](#/q/ai-103/164) |
+| "Each correct answer presents a complete solution" vs "part of the solution" | 3 vs 7 | 两个独立方案 vs 组合方案 | [Q33](#/q/ai-103/33) [Q72](#/q/ai-103/72) [Q135](#/q/ai-103/135) vs [Q61](#/q/ai-103/61) [Q69](#/q/ai-103/69) [Q115](#/q/ai-103/115) [Q127](#/q/ai-103/127) [Q144](#/q/ai-103/144) [Q168](#/q/ai-103/168) [Q178](#/q/ai-103/178) |
 | "medium severity" vs "high severity" | 1 | 阈值越低越严 | [Q93](#/q/ai-103/93) |
 | "even after running az login" | 1 | 不是认证问题，是 RBAC 角色 | [Q13](#/q/ai-103/13) |
-| "even when the clauses are present in the retrieved content" | 4 | 不是检索/截断问题，是生成选择问题 | [Q41](#/q/ai-103/41)–44 |
+| "even when the clauses are present in the retrieved content" | 5 | 不是检索/截断/采样问题，是生成选择问题 | [Q41](#/q/ai-103/41)–44 [Q185](#/q/ai-103/185) |
 | "even when the knowledge API returns the expected data" | 1 | 看 tracing 的调用顺序 | [Q22](#/q/ai-103/22) |
 | "volume of user traffic remains unchanged" | 1 | 排除流量，看 token usage | [Q19](#/q/ai-103/19) |
 | "configure first" / "before sending" | 2 | 预处理步骤：先 CU 提取 / 先拆语言 | [Q52](#/q/ai-103/52) [Q60](#/q/ai-103/60) |
+| "keyless authentication" / "authenticate… by using a Microsoft Entra ID token" | 2 | 共享 connection（Entra，不用 key）/ Speech 资源配 custom subdomain（+ private endpoint） | [Q165](#/q/ai-103/165) [Q178](#/q/ai-103/178) |
+| "cosine similarity" | 1 | embedding 模型（text-embedding-ada-002），不是 GPT 聊天模型 | [Q175](#/q/ai-103/175) |
 
 ---
 
@@ -739,7 +743,7 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | CU 视频分析："generated JSON field that describes the color scheme of each video segment" | Field value type = string，Field method = generate | classify（固定类别）、group/table | [Q86](#/q/ai-103/86) |
 | 例外：题干**明确点名** Document Intelligence 且要 Markdown | output_content_format=ContentFormat.MARKDOWN | content=markdown、output=figures、confidence threshold | [Q63](#/q/ai-103/63) |
 
-判别口诀：题干出现"varied layouts / template-generalizing / pro mode / reference data / Markdown for downstream reasoning / confidence for routing"任一者选 CU；Document Intelligence 只在题干点名它（[Q63](#/q/ai-103/63)）或旧题"extract text from PDF/scanned articles"（[Q128](#/q/ai-103/128) [Q132](#/q/ai-103/132)）时为正确答案。
+判别口诀：题干出现"varied layouts / template-generalizing / pro mode / reference data / Markdown for downstream reasoning / confidence for routing"任一者选 CU；Document Intelligence 只在题干点名它（[Q63](#/q/ai-103/63)）或旧题"extract text from PDF/scanned articles"（[Q128](#/q/ai-103/128) [Q132](#/q/ai-103/132)）、"scanned invoices" 提取发票字段（[Q181](#/q/ai-103/181)，选项里没有 CU）时为正确答案。
 
 #### R2 · 图像内嵌文字的恶意指令 → Prompt Shields for documents（8 题）
 
@@ -753,7 +757,7 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 
 记忆点：user prompt shield = 用户直接输入的 jailbreak；document shield = 第三方内容（文档、邮件、网页、OCR 文本）里的 indirect attack；image moderation = 不安全画面；protected material = 版权文本/代码（[Q26](#/q/ai-103/26) [Q71](#/q/ai-103/71) [Q93](#/q/ai-103/93) [Q139](#/q/ai-103/139)）。
 
-#### R3 · "API keys must NOT be used / Entra / managed identity / least privilege" → DefaultAzureCredential + 最小角色（8 题，含 2 题反向）
+#### R3 · "API keys must NOT be used / Entra / managed identity / least privilege" → DefaultAzureCredential + 最小角色（9 题，含 2 题反向）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
@@ -764,6 +768,7 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | GitHub Actions 对 Azure 认证 | Azure Login action with OpenID Connect (OIDC) | PAT、user-assigned managed identity（GitHub 托管 runner 不可用） | [Q40](#/q/ai-103/40) |
 | Content Safety 读 blob URL + least privilege | system-assigned managed identity + Storage Blob Data **Contributor**（reviewed；题库展示为 Reader，争议） | access keys、user-assigned + Storage Queue Data Contributor | [Q8](#/q/ai-103/8) |
 | "Tool calls must authenticate by using the published agent's own identity… isolated… audit tracing" | a distinct agent identity bound to the client application | shared project agent identity、API keys in prompts | [Q20](#/q/ai-103/20) |
+| "authenticate to the service by using a Microsoft Entra ID token"（Speech，两步） | Configure a custom subdomain + Create a private endpoint（reviewed，低置信度：Learn 要求的另一步"分配 Cognitive Services Speech User 角色"不在选项里） | virtual network service endpoint、Conditional Access policy、X.509 certificate | [Q178](#/q/ai-103/178) |
 | **反向**："minimize administrative effort"，题干无任何安全/keyless 要求 | endpoint URI + subscription key（[Q111](#/q/ai-103/111)）；API key + deployment name（[Q154](#/q/ai-103/154)） | OAuth token、SAS token、MI + X.509、bearer token | [Q111](#/q/ai-103/111) [Q154](#/q/ai-103/154) |
 
 #### R4 · 记忆 vs 对话：跨会话 → memory，同一案件续聊 → conversation（8 题）
@@ -789,11 +794,11 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | "Capture all the nested operations across the entire agent run" / "Record tool invocation arguments and returned results" | Hierarchical spans / Tool call attributes | Sampling、Trace sampling policy、KQL query filter | [Q94](#/q/ai-103/94) |
 | "Unsupported responses" / "policy violations" 对应信号 | Groundedness evaluation metrics / Risk and safety metrics | Latency breakdown traces、Token usage analytics | [Q15](#/q/ai-103/15) |
 
-#### R6 · 评估器映射：不被检索内容支持 → Groundedness（7 题）
+#### R6 · 评估器映射："relevant, complete, and accurate" → RAG evaluator；只问"被检索内容支持" → Groundedness（8 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
-| "relevant, complete, and accurate" 基于 storage1 产品表（case）/ "assess the responses" | groundedness evaluator | RAG evaluator（含检索指标，过宽）、custom guardrail、fine-tuning | [Q27](#/q/ai-103/27) |
+| "relevant, complete, and accurate" 基于 storage1 产品表（case）/ "assess the responses" | a Retrieval Augmented Generation (RAG) evaluator（Groundedness 管 accurate、Relevance 管 relevant、Response Completeness 管 complete） | groundedness evaluator（只覆盖 accurate 一条）、coherence evaluator（只评行文连贯）、custom guardrail、fine-tuning | [Q27](#/q/ai-103/27) [Q187](#/q/ai-103/187) |
 | "retrieved content is negatively influencing the model's generated responses" | groundedness evaluation metrics | indexer status、latency traces、prediction drift | [Q65](#/q/ai-103/65) |
 | "claims not supported by the retrieved source content" + "retrieved content does not align with the labeled expected context" | Groundedness + Retrieval | Fluency、Coherence、Response Completeness | [Q69](#/q/ai-103/69) |
 | "address the user query" + "supported by the provided context" / "sensitive or proprietary information" | Groundedness and Relevance / Protected material | GPT similarity、F1、ROUGE（需 ground truth）；Hateful、Indirect attack、Violent | [Q71](#/q/ai-103/71) |
@@ -801,12 +806,14 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | "Some answers are unsupported by retrieved documents" | Groundedness evaluation metrics | — | [Q15](#/q/ai-103/15) |
 | 阈值语义："medium severity threshold" 12% vs "high" 4%；protected material 无阈值；改成 low 不会让 RAI 检查通过 | No / Yes / Yes | — | [Q93](#/q/ai-103/93) |
 
-#### R7 · 完整性（completeness）→ reflection pass / retry evaluation，不是调参（7 题）
+判别：需求只有"不被检索内容支持 / supported by the retrieved content"一条（[Q15](#/q/ai-103/15) [Q65](#/q/ai-103/65)）→ 单个 Groundedness；需求同时要相关、完整、准确（[Q27](#/q/ai-103/27) [Q187](#/q/ai-103/187)）→ RAG evaluator 这一组，单选 groundedness 只满足其中一条；两条需求各对一个指标（[Q71](#/q/ai-103/71)：address the query → Relevance，supported by context → Groundedness；[Q69](#/q/ai-103/69)：unsupported claims → Groundedness，retrieval mismatch → Retrieval）。
+
+#### R7 · 完整性（completeness）→ reflection pass / retry evaluation，不是调参（10 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
-| "improve response completeness… implemented in the logic of the application code before responses are returned" | Add a retry evaluation / a reflection pass before responses are returned | decrease max_tokens、decrease temperature、increase presence_penalty、smaller model、enable streaming、"switch to RAG"（已在用） | [Q38](#/q/ai-103/38) [Q100](#/q/ai-103/100) [Q153](#/q/ai-103/153) |
-| Yes/No："omit required regulatory clauses, even when present in the retrieved content" | 增大 max_tokens → No（[Q41](#/q/ai-103/41)，不是截断问题）；reflection pass regenerates → **Yes**（[Q42](#/q/ai-103/42)）；增大 temperature → No（[Q43](#/q/ai-103/43)）；评分低于阈值就 block → No（[Q44](#/q/ai-103/44)，阻断不等于改进） | — | [Q41](#/q/ai-103/41)–44 |
+| "improve response completeness… implemented in the logic of the application code before responses are returned" | Add a retry evaluation / a reflection pass before responses are returned | decrease max_tokens、decrease temperature、increase presence_penalty、smaller model、enable streaming、"switch to RAG"（已在用） | [Q38](#/q/ai-103/38) [Q100](#/q/ai-103/100) [Q153](#/q/ai-103/153) [Q166](#/q/ai-103/166) [Q167](#/q/ai-103/167) |
+| Yes/No："omit required regulatory clauses, even when present in the retrieved content" | 增大 max_tokens → No（[Q41](#/q/ai-103/41)，不是截断问题）；reflection pass regenerates → **Yes**（[Q42](#/q/ai-103/42)）；增大 temperature → No（[Q43](#/q/ai-103/43)）；评分低于阈值就 block → No（[Q44](#/q/ai-103/44)，阻断不等于改进）；增大 top_p → No（[Q185](#/q/ai-103/185)，只放宽采样范围） | — | [Q41](#/q/ai-103/41)–44 [Q185](#/q/ai-103/185) |
 
 #### R8 · 网络隔离与容器：资源自身的 virtual network 设置；容器需联网计费（7 题）
 
@@ -820,7 +827,7 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | docker run 参数 | 镜像 mcr.microsoft.com/azure-cognitive-services/textanalytics/sentiment；Billing=资源 endpoint URI；ApiKey；Eula=accept | blob URL、keyphrase 镜像 | [Q161](#/q/ai-103/161) |
 | 容器 /status 不调用 Azure 端点验证 key；默认 console 日志；/swagger 有文档 | No / Yes / Yes | — | [Q130](#/q/ai-103/130) |
 
-#### R9 · Custom Vision（旧题）：分类 vs 目标检测、compact 域、流程、指标（7 题）
+#### R9 · Custom Vision（旧题）：分类 vs 目标检测、compact 域、流程、指标（8 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
@@ -828,22 +835,23 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | "identify defects… provide the location of the defects… ensure each package contains the four products" + "intermittent internet connectivity" | Object detection + General (compact) | Image classification、Food、Logo | [Q150](#/q/ai-103/150) |
 | "detect faulty components… common faults"（顺序） | Create a project → Upload and tag images → Train the classifier model（reviewed；展示为 object detection，争议） | Initialize the training dataset | [Q108](#/q/ai-103/108) |
 | "add new products to the classifier… minimize time and development effort"（五步） | Custom Vision portal 打开项目 → 上传 → 标注 → Retrain → Publish | Vision Studio、Azure Machine Learning studio | [Q152](#/q/ai-103/152) |
+| "export the model for use on a network that is disconnected from the internet"（object detection，当前 General 域；顺序） | Change Domains to General (compact) → Retrain the model → Export the model（只有 compact 域训练出的迭代能导出） | Change the classification type、Create a new classification model | [Q164](#/q/ai-103/164) |
 | "real-time video feed + image library of approved/rejected… train a new model… minimize development effort" | Azure AI Custom Vision | Azure Vision（预建，不能学你的产品）、Video Indexer、Azure ML | [Q129](#/q/ai-103/129) |
 | 分类器评估指标 | precision + recall | F-score、AUC、weighted accuracy | [Q135](#/q/ai-103/135) |
 | 目标检测图表读数 | precision 100% → false positives 0；TP/(TP+FN) = recall = 25 | — | [Q114](#/q/ai-103/114) |
 
-#### R10 · 检索方式选择：语义 → vector，精确码 + 自然语言 → hybrid，多轮多块并行 → agentic（7 题）
+#### R10 · 检索方式选择：语义 → vector，精确码 + 自然语言 → hybrid，多轮多块并行 → agentic（8 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
 | "semantic similarity matching… different wording than the product manuals" | vector search | semantic ranking（只重排关键词结果）、suggesters、analyzers | [Q82](#/q/ai-103/82) |
 | "Exact product names or codes" + "Natural language descriptions" | hybrid search | vector only、keyword only、semantic only | [Q83](#/q/ai-103/83) |
 | "retrieve information from multiple chunks" + "Multi-turn conversations must influence retrieval planning" + "run in parallel" | agentic Retrieval Augmented Generation (RAG)（Azure AI Search agentic retrieval） | classic RAG、iterative retrieval、chain of thought | [Q36](#/q/ai-103/36) |
-| "generate vector representations of the text… and of user queries" / "numeric vectors… semantic similarity" | an embedding model / embeddings | LLM、SLM、image generation、GPT-4、DALL-E | [Q96](#/q/ai-103/96) [Q123](#/q/ai-103/123) |
+| "generate vector representations of the text… and of user queries" / "numeric vectors… semantic similarity" / "must use cosine similarity" | an embedding model / embeddings / text-embedding-ada-002 | LLM、SLM、image generation、GPT-4、GPT-35 Turbo、DALL-E | [Q96](#/q/ai-103/96) [Q123](#/q/ai-103/123) [Q175](#/q/ai-103/175) |
 | case "indexing pipeline that enables semantic and vector search"：两个 built-in skills | Text Split + Azure OpenAI Embedding | Entity Recognition、Merge、Language Detection、key phrase extraction | [Q61](#/q/ai-103/61) |
 | case 检索层选型 | Azure AI Search | Translator、Grounding with Bing Search、Document Intelligence | [Q62](#/q/ai-103/62) |
 
-#### R11 · 输出稳定性与 prompt 调节：一致 → temperature 降到 0；范围限制 → system message（7 题）
+#### R11 · 输出稳定性与 prompt 调节：一致 → temperature 降到 0；范围限制 → system message（8 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
@@ -851,11 +859,12 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | "Identical prompts must return consistent response… without modifying the prompt or reducing factual accuracy" | Decrease the temperature parameter | increase temperature、increase max_tokens、remove stop sequences | [Q74](#/q/ai-103/74) |
 | "answer questions only about the Contoso products"（case business requirement） | Modify the system message instructions | few-shot examples、top-p、temperature | [Q28](#/q/ai-103/28) |
 | "showing the model how correct classifications look, without retraining… or storing knowledge permanently" | few-shot learning | zero-shot、chain of thought、RAG | [Q75](#/q/ai-103/75) |
+| system message "You are an AI assistant that helps people solve mathematical puzzles. Explain your answers as if the request is by a 4-year-old." | priming（system message 设定角色与回答方式） | few-shot learning（要有示例对话）、chain of thought、affordance（外部工具） | [Q176](#/q/ai-103/176) |
 | "The model version used by Agent1 must remain consistent" | Opt out of automatic model version upgrades | Once current version expires、Upgrade once new default available | [Q1](#/q/ai-103/1) |
 | "What is an LLM?" 歧义 | 加语境到问题或 system message 提高命中；generic system message 不保证确定性 | — | [Q124](#/q/ai-103/124) |
 | "create an explanation of the code… minimize costs" | 在 prompt 末尾加 "// what does function F do?" | 换 GPT-4-32k、temperature=1、加函数桩 | [Q151](#/q/ai-103/151) |
 
-#### R12 · 实时语音："live / streaming / within seconds / turn-taking" → real-time；自定义语音模型细节（6 题）
+#### R12 · 实时语音："live / streaming / within seconds / turn-taking" → real-time；自定义语音模型与 SSML 细节（7 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
@@ -865,6 +874,7 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | "fine-tune a baseline speech to text model… error: project ID is invalid" | the custom speech project ID | Foundry project ID、project URL、custom speech endpoint URL | [Q10](#/q/ai-103/10) |
 | "custom speech to text model… expiration" + real-time endpoint | 自动回退到同 locale 最新 base model | 4xx error（那是 batch 的行为）、继续用过期模型、自动删除 | [Q12](#/q/ai-103/12) |
 | "pronounces technical terms incorrectly… minimize development effort" | SSML phonemes | say-as、prosody、custom neural voice、Whisper | [Q106](#/q/ai-103/106) |
+| cURL 把 SSML 发到 TTS 端点：三个 voice 元素（en-US Jenny、en-GB Ryan、en-US Christopher 且包在 mstts:express-as style="advertisement_upbeat" 里） | 三种不同声音 Yes；三种不同口音 No（locale 只有 en-US 与 en-GB 两种）；全部中性语气 No（第三句有 style） | — | [Q173](#/q/ai-103/173) |
 
 #### R13 · "deterministically force the agent to invoke a tool" → tool_choice（5 题）
 
@@ -875,21 +885,21 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | "Each workflow run must include a retrieval step before generating a response" | tool_choice = required | auto、none | [Q20](#/q/ai-103/20) |
 | "deterministically retrieves information only from the internet"（两个工具） | tool_choice={"type": "bing_grounding"}（指定具体工具） | "required"（只保证调某个工具）、"auto"、azure_ai_search | [Q73](#/q/ai-103/73) |
 
-#### R14 · 凭据集中管理 → project connection（5 题）
+#### R14 · 凭据集中管理 → project connection（6 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
 | "centrally manage the Azure AI Search credentials… across all the agents" | Add a connection to the Azure AI Search resource | enable RBAC、disable key-based access、managed private endpoint（都是加固/隔离，不是集中管理） | [Q3](#/q/ai-103/3) |
-| "Multiple client applications must use the same search configuration" + "prevent key-based authentication" + "Administrative effort must be minimized" | Configure an Azure AI Search connection in Project1 and reference it in each app | per-app endpoints、direct calls with Entra、per-app managed identity | [Q31](#/q/ai-103/31) |
+| "Multiple client applications must use the same search configuration" + "prevent key-based authentication" / "keyless authentication" + "Administrative effort must be minimized" | Configure an Azure AI Search connection in Project1 and reference it in each app | per-app endpoints、custom HTTP connection per app、direct calls with Entra、per-app managed identity | [Q31](#/q/ai-103/31) [Q165](#/q/ai-103/165) |
 | OpenAPI tool "401… API key header is NOT being sent… key stored in Connection1" | Connect the tool to Connection1 | identity passthrough、hard-code header in spec、default connection | [Q21](#/q/ai-103/21) |
 | OpenAPI spec "key value from the connection included automatically" | an API key security scheme（apiKey, in: header） | per-operation header parameter、Bearer scheme、Key Vault connection | [Q16](#/q/ai-103/16) |
 | Bicep "connection from Project1 to KV1" | category 'AzureKeyVault' + 'AccountManagedIdentity' | 'AzureAIService'、'AzureOpenAI'、'AccountKey'、'ApiKey' | [Q98](#/q/ai-103/98) |
 
-#### R15 · AI Search 摄取/技能集：扫描 PDF 保结构 → advanced parsing；OCR 技能的输入是 normalized_images（5 题）
+#### R15 · AI Search 摄取/技能集：扫描 PDF 保结构 → advanced parsing；OCR 技能的输入是 normalized_images（6 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
-| "OCR on scanned PDFs, preserves tables and headings as structure-aware chunks, stores page-number metadata" | Use advanced data parsing to reingest | OCR + page-level chunking、one page per chunk、basic parsing + fixed-size chunking | [Q54](#/q/ai-103/54) |
+| "OCR on scanned PDFs, preserves tables and headings as structure-aware chunks, stores page-number metadata" | Use advanced data parsing to reingest | OCR + page-level chunking、one page per chunk、basic parsing + fixed-size chunking | [Q54](#/q/ai-103/54) [Q182](#/q/ai-103/182) |
 | "images are extracted into a structure that can be used as input for the built-in OCR skill" | an indexer to extract image data into a normalized_images collection | Shaper skill、OCR against content field、outputFieldMappings | [Q55](#/q/ai-103/55) |
 | "invoices stored as scanned images… search invoice data" | OCR skill | Text Split、Text Translation、Image Analysis | [Q85](#/q/ai-103/85) |
 | "document-level filtering"（三步） | Add allowed groups to each index entry + Retrieve the group memberships of the user + Supply the groups as a filter | one index per group、send Entra tokens with request、retrieve all groups | [Q115](#/q/ai-103/115) |
@@ -905,7 +915,7 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | 403 after az login | RBAC 角色 Cognitive Services OpenAI User | Contributor | [Q13](#/q/ai-103/13) |
 | 401 "API key header is NOT being sent" | Connect the tool to the connection | identity passthrough | [Q21](#/q/ai-103/21) |
 
-#### R17 · Content Safety：SDK 调用、guardrail 介入点、Studio 功能（9 题）
+#### R17 · Content Safety：SDK 调用、guardrail 介入点、Studio 功能（10 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
@@ -914,6 +924,7 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | "cannot send any content tagged as Violence to the MCP server" | intervention point = tool call | user input、tool response、output | [Q147](#/q/ai-103/147) |
 | "prevent harmful content from being returned during runs"（图像经 blob URL） | User input + Output + Tool response + Tool call 全选，Action = Block | Annotate（只标注不拦截）、只选部分点 | [Q8](#/q/ai-103/8) |
 | "optimize the content filter configurations by running tests on sample questions" | Content Safety Studio → Moderate text content（Yes） | Safety metaprompt、Protected material detection、Monitor online activity（均 No） | [Q137](#/q/ai-103/137)–140 |
+| "prevent users from sharing sexually explicit images… minimize development effort" | Content Safety Studio（Content Safety in Foundry Control Plane 的图像审核，预建） | Vision Studio（Image Analysis 不做审核）、Microsoft Foundry、Visual Studio | [Q179](#/q/ai-103/179) |
 | severity 阈值方向 | 阈值越低越严格，拦得越多；protected material 不受阈值影响 | — | [Q93](#/q/ai-103/93) |
 
 #### R18 · 多 agent 编排："deterministic, step-based, branching, shared state" → workflow；审批 → Ask a question（4 题）
@@ -925,14 +936,14 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | 可视化生成器 "predictable execution across the agents" / "Requires user approval for high-risk updates" | sequential template / Add an Ask a question node（reviewed；展示为 human-in-the-loop template + Condition statement，争议） | group chat template、Basic chat node | [Q79](#/q/ai-103/79) |
 | Power Fx "ensures Var01 contains a value" / "uppercase" | Not(IsBlank(Local.Var01)) / {Upper(Local.Var01)} | IsEmpty（用于表）、IsBlank 不取反、{Upper(Var01)} 缺 Local 作用域 | [Q7](#/q/ai-103/7) |
 
-#### R19 · 局部修改图像/视频 → mask-based inpainting；保持产品身份 → input_fidelity=high（4 题）
+#### R19 · 局部修改图像/视频 → mask-based inpainting；保持产品身份 → input_fidelity=high（5 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
 | "remove only the logo, while preserving the rest of the image" | mask-based inpainting edit on the logo region | increase guidance strength、modify prompt、different seed（都重生整图） | [Q46](#/q/ai-103/46) |
 | "edits apply exclusively inside the masked area… preserve lighting and style… built-in controls, NOT a custom model" | Enable mask_inpainting + input image + mask | image_variation、text_to_image、image_to_image high strength | [Q45](#/q/ai-103/45) |
 | "remove the watermark without regenerating the videos" | mask-based inpainting edit to the affected part of the video | modify prompt、crop by size、increase guidance scale | [Q88](#/q/ai-103/88) |
-| "maintain the product identity and visual characteristics of the provided photo" | Set input_fidelity to high | groundedness filter、decrease temperature、"include prompt and image" | [Q48](#/q/ai-103/48) |
+| "maintain the product identity and visual characteristics of the provided photo" / "minimize the likelihood of changes to the product identity" | Set input_fidelity to high | groundedness filter、decrease temperature、decrease top_p、"include prompt and image" | [Q48](#/q/ai-103/48) [Q184](#/q/ai-103/184) |
 
 #### R20 · 部署类型（4 题）
 
@@ -952,16 +963,16 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | "Pipeline1 fails if unsupported content or a retrieval mismatch exceeds a threshold" | Retrieval + Groundedness evaluators | Fluency、Coherence、Response Completeness | [Q69](#/q/ai-103/69) |
 | "identify the created Azure AI services account… minimize development effort" | az cognitiveservices account show | network-rule、az account list、az resource link | [Q142](#/q/ai-103/142) |
 
-#### R22 · 模型类型选择（5 题）
+#### R22 · 模型类型选择（6 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
 | "deep, multi-step reasoning across long contexts… detailed natural language responses" | large language model (LLM) | SLM、multimodal、key phrase extraction | [Q29](#/q/ai-103/29) |
 | "Most requests are simple FAQs, but some require advanced reasoning… reduce costs and latency without degrading quality" | model cascade that routes requests to different models | all to smaller model、all to most capable、increase max_tokens | [Q17](#/q/ai-103/17) |
-| "vector representations" | embedding model | LLM、SLM、DALL-E | [Q96](#/q/ai-103/96) [Q123](#/q/ai-103/123) |
+| "vector representations" / "cosine similarity" | embedding model（text-embedding-ada-002） | LLM、SLM、DALL-E、GPT-35 Turbo、GPT-4-32k | [Q96](#/q/ai-103/96) [Q123](#/q/ai-103/123) [Q175](#/q/ai-103/175) |
 | "suggest product names from a given product description" | GPT-4（文本生成） | Whisper、DALL-E、embeddings | [Q149](#/q/ai-103/149) |
 
-#### R23 · Agent 工具对号入座（3 题）
+#### R23 · Agent 工具对号入座（4 题）
 
 | 需求 | 工具 | 题号 |
 |---|---|---|
@@ -969,38 +980,47 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | "up-to-date information from public websites" / "only from the internet" | Grounding with Bing Search / tool_choice type bing_grounding | [Q32](#/q/ai-103/32) [Q73](#/q/ai-103/73) |
 | "documents uploaded directly to the agent" / "uploading documents during a chat" | File search | [Q32](#/q/ai-103/32) [Q37](#/q/ai-103/37) |
 | "prebuilt index / curated repositories / approved data sources" | Azure AI Search tool / retrieval from approved data sources | [Q37](#/q/ai-103/37) [Q99](#/q/ai-103/99) |
+| "retrieve the current time at a given location by using a custom API" | Function calling：POST …/assistants，请求体 tools=[{"type": "function", "function": {…}}]（不是 threads、tool_resources） | [Q174](#/q/ai-103/174) |
 | 干扰项 | Computer use、Microsoft Fabric、Code interpreter（用于上传文档，错） | [Q32](#/q/ai-103/32) [Q37](#/q/ai-103/37) |
 
-#### R24 · Vision（旧题）：场景文字 → Vision OCR，文档 → Document Intelligence；Image Analysis 带语言参数（8 题）
+#### R24 · Vision（旧题）：场景文字 → Vision OCR，文档 → Document Intelligence；Image Analysis 预建功能；口罩/眼镜 → Face（13 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
 | "road signs in the images and extract the text" / "identify well-known locations" | Azure Vision in Foundry Tools / Azure Language in Foundry Tools（NER + entity linking；reviewed，展示为 AI Search，争议） | Document Intelligence、AI Search | [Q160](#/q/ai-103/160) |
 | "one million scanned magazine articles… extract text… minimize development effort" | Azure Document Intelligence in Foundry Tools（文本密集型文档用 DI read） | Vision Read API、Image Analysis、Language | [Q132](#/q/ai-103/132) |
 | "press releases stored as PDF… extract text" / "sentiment analysis" | Document Intelligence / Azure Language | AI Search、Vision | [Q128](#/q/ai-103/128) |
+| "5,000 images of scanned invoices… invoice items, sales amounts, customer details" | Azure Document Intelligence in Foundry Tools（prebuilt invoice 模型） | Azure Vision（只给 OCR 文本）、Custom Vision、Immersive Reader | [Q181](#/q/ai-103/181) |
 | "tags in a user's preferred language… English, French, Spanish" | Azure Vision Image Analysis（language 参数） | Custom Vision、Content Safety、Custom Translator | [Q157](#/q/ai-103/157) |
-| "verify that the user is alone… video stream… minimize development effort" | Spatial Analysis in Azure Vision | Video Indexer moderation、speech to text、Custom Vision object detection | [Q143](#/q/ai-103/143) |
+| "Categorize the image as either a photograph or a drawing" + "Generate a caption" + "minimize development effort"（两项） | image type detection + image descriptions（一次 Image Analysis 调用的预建功能） | image classification in Custom Vision（要训练）、object detection、content tags | [Q168](#/q/ai-103/168) |
+| "verify that the user is alone… video stream… minimize development effort" / "alerts when employees enter high-risk areas… video feeds in real time" | Spatial Analysis in Azure Vision | Video Indexer（录播视频，不做实时区域告警）、speech to text、Custom Vision object detection、Image Analysis | [Q143](#/q/ai-103/143) [Q183](#/q/ai-103/183) |
+| "Identify staff who have removed masks or safety glasses… every 15 minutes… minimize costs" | Azure AI Face（检测属性含 mask、glasses） | Azure Vision（没有口罩/眼镜属性）、Video Analyzer for Media（连续视频索引，成本高） | [Q186](#/q/ai-103/186) |
 | "identify whether an image is clipart or a line drawing" | POST …/vision/v3.2/analyze?visualFeatures=imageType | GET、description、objects、tags | [Q134](#/q/ai-103/134) |
 | Read API "get_read_result occurs before the read operation is complete" | 循环 + 延迟轮询 get_read_result，并检查 read_result.status | 去掉 operation_id、检查 Operation-Location | [Q144](#/q/ai-103/144) |
 | brands 代码：rectangle.x/y 是左上角，w/h 是宽高 | Yes / Yes / No | — | [Q101](#/q/ai-103/101) |
+| analyze_image_in_stream(visual_features=[tags, description]) 读代码 | 做 face recognition No（人脸是 Face 服务）；列出 tag 与置信度 Yes；从本地文件读图 Yes | — | [Q169](#/q/ai-103/169) |
 
-#### R25 · Language 与 Translator（旧题为主）（7 题）
+#### R25 · Language 与 Translator（旧题为主）（10 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
 | PII 代码：piiCategories=["Person","PhoneNumber"] + entityMask | 只检测/遮蔽 Person 和 PhoneNumber；email、SSN 原样送给模型 | — | [Q107](#/q/ai-103/107) |
+| analyze-text 请求体："redact only customer names and leave other entity types unchanged" | "kind": "PiiEntityRecognition" + "piiCategories": ["Person"] | EntityRecognition（只识别不遮蔽）、LanguageDetection；["Organization"]、["PhoneNumber"] | [Q170](#/q/ai-103/170) |
 | recognize_entities("Our tour of London included a visit to Buckingham Palace") | 输出 London 与 Buckingham Palace | tour、visit | [Q120](#/q/ai-103/120) |
+| TextAnalyticsClient："extract prebuilt entity categories… Person, Organization, Location, and DateTime… without training a model" | Call recognize_entities（prebuilt NER） | recognize_pii_entities、CustomEntityRecognition（要训练）、NamedEntityRecognitionSkill（AI Search 技能，不是应用里的调用） | [Q171](#/q/ai-103/171) |
 | recognize_linked_entities | 不检测语言；url 指向数据源页（Wikipedia），不是 Bing 搜索（reviewed No，展示 Yes，争议）；matches 给出位置 | — | [Q121](#/q/ai-103/121) |
 | custom NER "low precision… false positives… ContactInfo 混用电话/邮箱/社交账号" | 拆成 Phone、Email、SocialMedia 三个实体并重标 | lower threshold、auto-labeling、加更多同样混标的数据 | [Q105](#/q/ai-103/105) |
 | "identical answer to a specific question is returned every time… minimize development effort" | Azure Language（question answering） | Azure OpenAI（每次措辞不同）、Document Intelligence、Azure ML | [Q159](#/q/ai-103/159) |
 | "mixed-language segments… incomplete translations… entire transcript translated" | 先按语言拆分片段再逐段翻译 | document translation、auto language detection、强制 English | [Q60](#/q/ai-103/60) |
 | "reduced comprehension… dyslexia… minimize development effort" | Azure AI Immersive Reader | Document Intelligence、Language、Translator | [Q110](#/q/ai-103/110) |
+| "measure the public perception of your brand on social media by using natural language processing" | Azure Language in Foundry Tools（sentiment analysis 与 opinion mining） | Azure Vision、Content Safety、Document Intelligence | [Q162](#/q/ai-103/162) |
 
-#### R26 · 资源创建与连接信息（7 题）
+#### R26 · 资源创建与连接信息（8 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
 | "single key and endpoint… multiple services… consolidated billing" | ARM PUT + "kind": "CognitiveServices"（多服务） | PATCH/POST、ComputerVision、TextAnalytics | [Q113](#/q/ai-103/113) |
+| "sentiment analysis and OCR… single key and endpoint"，补全 ARM 请求 URI | management.azure.com/subscriptions/{subscription ID}/resourceGroups/…/providers/Microsoft.CognitiveServices/accounts/CS1 | tenant/…、把 tenant ID 当 subscription ID；Microsoft.ApiManagement、Microsoft.ContainerService、Microsoft.KeyVault | [Q180](#/q/ai-103/180) |
 | "Speech and Language APIs… single endpoint and credential" | Microsoft Foundry service（多服务资源） | 单服务 Language/Speech、Content Safety | [Q131](#/q/ai-103/131) |
 | "generate fictional stories… customer-managed key" | az cognitiveservices account create --kind OpenAI … --encryption '{…keyVaultProperties…}' | AIServices、LanguageAuthoring；--assign-identity（无值）、--api-properties | [Q103](#/q/ai-103/103) |
 | "configure App1 to connect to AI1"（Azure OpenAI SDK） | deployment name + endpoint + key | model name、model type | [Q125](#/q/ai-103/125) |
@@ -1015,18 +1035,24 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | "notify users that their data has been processed" | transparency | [Q109](#/q/ai-103/109) |
 | "Sentiment Analysis results… calculate bonuses for staff" | 加入人工复核与审批步骤（accountability/fairness） | [Q141](#/q/ai-103/141) |
 
-#### R28 · 多模态请求格式与异步生成（2 题）
+#### R28 · 请求与输出格式：多模态内容数组、结构化输出、异步生成（4 题）
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
 | "image URLs as plain text… model cannot recognize them as images" | content 数组：{type: text} + {type: image_url} | base64 塞进字符串、metadata、system message | [Q89](#/q/ai-103/89) |
 | 视频生成（case，Project2） | client.videos.create(...) 启动；循环 client.videos.retrieve(video.id) 轮询直到 completed/failed/cancelled | list、download_content | [Q66](#/q/ai-103/66) |
+| Structured outputs schema：strict True，全部字段列进 required，discount_code 写成 anyOf string/null，每层 additionalProperties False | "requires a discount_code value" No（可以是 null）；"can be used as is" Yes；输出保留 schema 的属性顺序 Yes | — | [Q163](#/q/ai-103/163) |
+| request_a = embeddings 端点（text-embedding-ada-002）；request_b = chat completions + response_format json_schema | request_a 返回向量 Yes；request_b 返回 JSON Yes；"always includes risks" No（required 只保证 keyRisks 数组存在，数组可以为空） | — | [Q172](#/q/ai-103/172) |
 
-#### R29 · 密钥轮换顺序（1 题）
+结构化输出的规则：strict 模式下每个属性都要列进 required，可选字段用"与 null 的 union"表示；每层对象 additionalProperties 设为 false；输出键的顺序与 schema 一致；schema 只约束结构，不保证数组有内容。
+
+#### R29 · 密钥轮换：顺序与 regenerateKey（2 题）
 
 "query key is compromised… minimize app downtime" → Add a new query key → Change the app to use the new key → Delete the compromised key（reviewed；展示为先删除，争议）。admin key 与只读访问无关（[Q112](#/q/ai-103/112)）。
 
-#### R30 · 代码补全速查表（14 题 + 读代码 6 题）
+ARM POST …/accounts/contoso1/regenerateKey，body {"keyName":"Key2"} → 重新生成 secondary subscription key（Key1 照常可用；一次只轮换一个；query key 是 AI Search 的概念，与 Key Vault 无关）（[Q177](#/q/ai-103/177)）。
+
+#### R30 · 代码补全速查表（17 题 + 读代码 11 题）
 
 | 场景 | 考试期望的类/方法/参数 | 干扰写法 | 题号 |
 |---|---|---|---|
@@ -1041,8 +1067,10 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | Power Fx | Not(IsBlank(Local.Var01))；{Upper(Local.Var01)} | IsEmpty、{Upper(Var01)} | [Q7](#/q/ai-103/7) |
 | Bicep 连接 | Microsoft.CognitiveServices/accounts/connections；category: 'AzureKeyVault'；authType: 'AccountManagedIdentity' | 'AccountKey'、'ApiKey' | [Q98](#/q/ai-103/98) |
 | az CLI 建 OpenAI 资源 + CMK | --kind OpenAI；--encryption '{"keySource":"Microsoft.KeyVault",…}' | --assign-identity、--api-properties | [Q103](#/q/ai-103/103) |
-| ARM 建多服务资源 | PUT …/Microsoft.CognitiveServices/accounts/CS1；"kind": "CognitiveServices" | PATCH、ComputerVision | [Q113](#/q/ai-103/113) |
+| ARM 建多服务资源 | PUT https://management.azure.com/subscriptions/{subscription ID}/…/providers/Microsoft.CognitiveServices/accounts/CS1；"kind": "CognitiveServices" | PATCH、ComputerVision、tenant/{tenant ID} | [Q113](#/q/ai-103/113) [Q180](#/q/ai-103/180) |
 | Content Safety 文本 | AnalyzeTextOptions(text=…, blocklist_names=[…], halt_on_blocklist_hit=False)；client.analyze_text(request) | moderate_text、analyze_image、path().post | [Q104](#/q/ai-103/104) [Q148](#/q/ai-103/148) |
+| Language analyze-text 遮蔽 PII | "kind": "PiiEntityRecognition"；"parameters": {"piiCategories": ["Person"]} | EntityRecognition、LanguageDetection；["Organization"] | [Q170](#/q/ai-103/170) |
+| Agent Service REST 建带自定义函数的 agent | POST https://….services.ai.azure.com/assistants；body 里 tools=[{"type": "function", "function": {…}}] | threads、completions、embeddings；tool_resources、functions | [Q174](#/q/ai-103/174) |
 | Vision v3.2 分析 | POST …/vision/v3.2/analyze?visualFeatures=imageType | GET、tags | [Q134](#/q/ai-103/134) |
 | docker run Language 容器 | mcr.microsoft.com/azure-cognitive-services/textanalytics/sentiment Eula=accept Billing={endpoint} ApiKey={key} | blob URL 作镜像、keyphrase 镜像 | [Q161](#/q/ai-103/161) [Q130](#/q/ai-103/130) |
 | Document Intelligence Markdown | output_content_format=ContentFormat.MARKDOWN | content=markdown | [Q63](#/q/ai-103/63) |
@@ -1051,7 +1079,7 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | 多模态消息 | content=[{"type":"text",…},{"type":"image_url",…}] | base64 in string | [Q89](#/q/ai-103/89) |
 | 图像生成保真 / 局部编辑 | input_fidelity="high"；mode mask_inpainting + image + mask | image_variation、image_to_image | [Q48](#/q/ai-103/48) [Q45](#/q/ai-103/45) |
 | 遥测 | configure_azure_monitor(connection_string=…)；AzureAIOpenTelemetryTracer(enable_content_recording=False)；OTEL_SERVICE_NAME | — | [Q4](#/q/ai-103/4) |
-| 读代码题 | brands.rectangle x/y/w/h（[Q101](#/q/ai-103/101)）；piiCategories 限定检测（[Q107](#/q/ai-103/107)）；recognize_entities 只出实体（[Q120](#/q/ai-103/120)）；linked entity url ≠ Bing（[Q121](#/q/ai-103/121)）；ChatCompletion 歧义 prompt（[Q124](#/q/ai-103/124)）；容器 /status /swagger（[Q130](#/q/ai-103/130)） | — | — |
+| 读代码题 | brands.rectangle x/y/w/h（[Q101](#/q/ai-103/101)）；piiCategories 限定检测（[Q107](#/q/ai-103/107)）；recognize_entities 只出实体（[Q120](#/q/ai-103/120)）；linked entity url ≠ Bing（[Q121](#/q/ai-103/121)）；ChatCompletion 歧义 prompt（[Q124](#/q/ai-103/124)）；容器 /status /swagger（[Q130](#/q/ai-103/130)）；structured outputs 的 required + null union 与键序（[Q163](#/q/ai-103/163)）；Image Analysis tags/description 不含人脸识别（[Q169](#/q/ai-103/169)）；embeddings 返回向量、json_schema 不保证数组非空（[Q172](#/q/ai-103/172)）；SSML 多 voice、locale 决定口音、express-as 改语气（[Q173](#/q/ai-103/173)）；regenerateKey Key2 = 新 secondary key（[Q177](#/q/ai-103/177)） | — | — |
 
 ---
 
@@ -1062,16 +1090,16 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 
 | 套路 | 做法 | 例题（正确 vs 干扰） |
 |---|---|---|
-| 相邻服务 | 把同一大类里功能重叠的服务并列 | [Q56](#/q/ai-103/56) CU vs Document Intelligence；[Q52](#/q/ai-103/52)/Q53 CU vs Azure Language；[Q128](#/q/ai-103/128)/Q132/Q160 Document Intelligence vs Vision vs AI Search；[Q62](#/q/ai-103/62) AI Search vs Translator/Bing/DI；[Q143](#/q/ai-103/143) Spatial Analysis vs Video Indexer/Custom Vision；[Q129](#/q/ai-103/129) Custom Vision vs Vision vs Azure ML；[Q131](#/q/ai-103/131) 多服务 vs 单服务 |
-| 对的功能，错的模式/层级 | 服务对了，但 mode、tier、template、shield 类型错 | [Q5](#/q/ai-103/5)/Q87 standard vs pro；[Q47](#/q/ai-103/47)/Q81 prebuilt-layout vs documentSearch vs read；[Q1](#/q/ai-103/1) Standard vs Global Standard；[Q97](#/q/ai-103/97)/Q122 serverless vs managed compute；[Q23](#/q/ai-103/23)/Q25/Q51 user-prompt shield vs document shield；[Q8](#/q/ai-103/8)/Q49 Annotate vs Block；[Q118](#/q/ai-103/118)/Q150 Classification vs Object detection、compact vs 非 compact；[Q79](#/q/ai-103/79) sequential vs group chat |
-| 对的方法，错的参数 | 方法名对，值或键错 | [Q14](#/q/ai-103/14)/Q73 tool_choice auto/required/{type}；[Q43](#/q/ai-103/43)/Q74 temperature 升 vs 降；[Q41](#/q/ai-103/41) max_tokens；[Q68](#/q/ai-103/68) get vs get_version vs create_version；[Q66](#/q/ai-103/66) create/retrieve/list/download_content；[Q76](#/q/ai-103/76)/Q77 {{$userId}} vs {{$conversationId}} vs session；[Q7](#/q/ai-103/7) IsBlank vs IsEmpty、Local.Var01 vs Var01；[Q92](#/q/ai-103/92) Secrets User vs access policy；[Q104](#/q/ai-103/104) analyze_text vs moderate_text；[Q103](#/q/ai-103/103) --encryption vs --assign-identity；[Q113](#/q/ai-103/113) PUT vs POST/PATCH |
-| 新旧名称混排 | 题干统一改成 "Azure X in Foundry Tools" / "Content Safety in Foundry Control Plane" / "Microsoft Foundry Service resource"，但选项里仍出现旧工具名当干扰 | [Q152](#/q/ai-103/152) Vision Studio、Azure ML studio vs Custom Vision portal；[Q102](#/q/ai-103/102) Azure ML studio；[Q106](#/q/ai-103/106) Speech Studio（此处反而是过度方案）；[Q78](#/q/ai-103/78) Foundry Local；[Q113](#/q/ai-103/113) kind 仍叫 CognitiveServices；[Q133](#/q/ai-103/133) Docker Hub vs MCR |
+| 相邻服务 | 把同一大类里功能重叠的服务并列 | [Q56](#/q/ai-103/56) CU vs Document Intelligence；[Q52](#/q/ai-103/52)/Q53 CU vs Azure Language；[Q128](#/q/ai-103/128)/Q132/Q160 Document Intelligence vs Vision vs AI Search；[Q62](#/q/ai-103/62) AI Search vs Translator/Bing/DI；[Q143](#/q/ai-103/143) Spatial Analysis vs Video Indexer/Custom Vision；[Q129](#/q/ai-103/129) Custom Vision vs Vision vs Azure ML；[Q131](#/q/ai-103/131) 多服务 vs 单服务；[Q181](#/q/ai-103/181) Document Intelligence vs Vision/Custom Vision/Immersive Reader；[Q183](#/q/ai-103/183) Spatial Analysis vs Video Indexer/Image Analysis；[Q186](#/q/ai-103/186) Face vs Vision/Video Analyzer for Media；[Q162](#/q/ai-103/162) Language vs Content Safety；[Q179](#/q/ai-103/179) Content Safety Studio vs Vision Studio |
+| 对的功能，错的模式/层级 | 服务对了，但 mode、tier、template、shield 类型错 | [Q5](#/q/ai-103/5)/Q87 standard vs pro；[Q47](#/q/ai-103/47)/Q81 prebuilt-layout vs documentSearch vs read；[Q1](#/q/ai-103/1) Standard vs Global Standard；[Q97](#/q/ai-103/97)/Q122 serverless vs managed compute；[Q23](#/q/ai-103/23)/Q25/Q51 user-prompt shield vs document shield；[Q8](#/q/ai-103/8)/Q49 Annotate vs Block；[Q118](#/q/ai-103/118)/Q150 Classification vs Object detection、compact vs 非 compact；[Q79](#/q/ai-103/79) sequential vs group chat；[Q164](#/q/ai-103/164) General vs General (compact)；[Q170](#/q/ai-103/170) PiiEntityRecognition vs EntityRecognition；[Q171](#/q/ai-103/171) recognize_entities vs recognize_pii_entities/CustomEntityRecognition；[Q27](#/q/ai-103/27)/Q187 单个 groundedness evaluator vs RAG evaluator |
+| 对的方法，错的参数 | 方法名对，值或键错 | [Q14](#/q/ai-103/14)/Q73 tool_choice auto/required/{type}；[Q43](#/q/ai-103/43)/Q74 temperature 升 vs 降；[Q41](#/q/ai-103/41) max_tokens；[Q68](#/q/ai-103/68) get vs get_version vs create_version；[Q66](#/q/ai-103/66) create/retrieve/list/download_content；[Q76](#/q/ai-103/76)/Q77 {{$userId}} vs {{$conversationId}} vs session；[Q7](#/q/ai-103/7) IsBlank vs IsEmpty、Local.Var01 vs Var01；[Q92](#/q/ai-103/92) Secrets User vs access policy；[Q104](#/q/ai-103/104) analyze_text vs moderate_text；[Q103](#/q/ai-103/103) --encryption vs --assign-identity；[Q113](#/q/ai-103/113) PUT vs POST/PATCH；[Q180](#/q/ai-103/180) subscriptions vs tenant、subscription ID vs tenant ID；[Q174](#/q/ai-103/174) assistants vs threads、tools vs tool_resources |
+| 新旧名称混排 | 题干统一改成 "Azure X in Foundry Tools" / "Content Safety in Foundry Control Plane" / "Microsoft Foundry Service resource"，但选项里仍出现旧工具名当干扰 | [Q152](#/q/ai-103/152) Vision Studio、Azure ML studio vs Custom Vision portal；[Q102](#/q/ai-103/102) Azure ML studio；[Q106](#/q/ai-103/106) Speech Studio（此处反而是过度方案）；[Q78](#/q/ai-103/78) Foundry Local；[Q113](#/q/ai-103/113) kind 仍叫 CognitiveServices；[Q133](#/q/ai-103/133) Docker Hub vs MCR；[Q179](#/q/ai-103/179) "Content Safety in Foundry Control Plane Studio" vs Vision Studio/Visual Studio；[Q186](#/q/ai-103/186) "Azure Video Analyzer for Media (formerly Video Indexer)" |
 | 安全加固代替所问 | 问"集中管理/联通"，给 RBAC、禁 key、私有端点等加固项 | [Q3](#/q/ai-103/3)（connection vs RBAC/disable keys/private endpoint）；[Q127](#/q/ai-103/127)（IAM vs VNet 设置） |
-| 过度方案 | 需要训练/自定义/更大模型的选项，在"minimize effort/cost"题里必错 | [Q106](#/q/ai-103/106) custom neural voice；[Q53](#/q/ai-103/53)/Q129 Azure ML；[Q27](#/q/ai-103/27) fine-tuning；[Q45](#/q/ai-103/45) custom model；[Q151](#/q/ai-103/151) GPT-4-32k；[Q111](#/q/ai-103/111) MI + X.509 |
-| "调大数字"诱惑 | 增大 max_tokens / temperature / quota 作为万能药 | [Q17](#/q/ai-103/17) [Q41](#/q/ai-103/41) [Q43](#/q/ai-103/43) [Q95](#/q/ai-103/95)（increase tenant-wide quotas 被"remain within limits"排除） |
-| 只解决一半 | Yes/No 系列里每个方案只覆盖问题的一个组成部分 | [Q23](#/q/ai-103/23)–26 四个全 No；[Q44](#/q/ai-103/44) 阻断 ≠ 改进 |
+| 过度方案 | 需要训练/自定义/更大模型的选项，在"minimize effort/cost"题里必错 | [Q106](#/q/ai-103/106) custom neural voice；[Q53](#/q/ai-103/53)/Q129 Azure ML；[Q27](#/q/ai-103/27) fine-tuning；[Q45](#/q/ai-103/45) custom model；[Q151](#/q/ai-103/151) GPT-4-32k；[Q111](#/q/ai-103/111) MI + X.509；[Q168](#/q/ai-103/168) Custom Vision classification（Image Analysis 预建即可）；[Q186](#/q/ai-103/186) Video Indexer（定期抽查用 Face 单图检测） |
+| "调大数字"诱惑 | 增大 max_tokens / temperature / top_p / presence_penalty / quota 作为万能药 | [Q17](#/q/ai-103/17) [Q41](#/q/ai-103/41) [Q43](#/q/ai-103/43) [Q95](#/q/ai-103/95)（increase tenant-wide quotas 被"remain within limits"排除）[Q166](#/q/ai-103/166) [Q185](#/q/ai-103/185) |
+| 只解决一半 | 每个方案只覆盖问题的一个组成部分（Yes/No 系列最常见） | [Q23](#/q/ai-103/23)–26 四个全 No；[Q44](#/q/ai-103/44) 阻断 ≠ 改进；[Q27](#/q/ai-103/27)/Q187 groundedness evaluator 只管 accurate，漏了 relevant 与 complete |
 | 看似合理的运维动作 | 重启、升版本、加 Log Analytics、发告警、锁分支 | [Q80](#/q/ai-103/80)（restart/new version/Log Analytics vs enable App Insights）；[Q40](#/q/ai-103/40)（alert/lock vs Fail） |
-| 顺序题里的假步骤 | 列表里混入不存在或不必要的步骤 | [Q108](#/q/ai-103/108) "Initialize the training dataset"；[Q158](#/q/ai-103/158) "Retrain the model"、"Configure disk logging"；[Q133](#/q/ai-103/133) "isolated from the internet"、"App ID and Client Secret" |
+| 顺序题里的假步骤 | 列表里混入不存在或不必要的步骤 | [Q108](#/q/ai-103/108) "Initialize the training dataset"；[Q158](#/q/ai-103/158) "Retrain the model"、"Configure disk logging"；[Q133](#/q/ai-103/133) "isolated from the internet"、"App ID and Client Secret"；[Q164](#/q/ai-103/164) "Change the classification type"、"Create a new classification model" |
 
 ---
 
@@ -1082,70 +1110,74 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 
 | 大类 | 题数 | 占比 | 官方权重 | 偏差 |
 |---|---|---|---|---|
-| A. Plan and manage | 53 | 33% | 25–30% | 偏多（A3.4 安全 11 题、A2.1 资源/容器 7 题、A4.1 Content Safety 8 题拉高） |
-| B. Generative AI & agents | 47 | 29% | 30–35% | 略少 |
-| C. Computer vision | 28 | 17% | 10–15% | 偏多（C2.8 Custom Vision 旧题 7 题、C3.2 prompt shields 7 题） |
-| D. Text analysis | 15 | 9% | 10–15% | 偏少 |
-| E. Information extraction | 18 | 11% | 10–15% | 符合 |
+| A. Plan and manage | 52 | 28% | 25–30% | 符合（A3.4 安全 13 题最热） |
+| B. Generative AI & agents | 57 | 30% | 30–35% | 符合（贴着下限） |
+| C. Computer vision | 37 | 20% | 10–15% | 偏多（C2.8 识别对象 11 题多为 Custom Vision/Face 旧题、C3.2 prompt shields 8 题拉高） |
+| D. Text analysis | 20 | 11% | 10–15% | 符合 |
+| E. Information extraction | 21 | 11% | 10–15% | 符合 |
 
-题库自带的 kp 标签分布（供对照）：Planning & managing 44、Generative AI & agentic 48、Computer vision 27、Information extraction 24、Text analysis 18。
+题库自带的 kp 标签分布（供对照）：Planning & managing 48、Generative AI & agentic 56、Computer vision 34、Information extraction 27、Text analysis 22。
 
 #### 按子领域
 
 | 子领域 | 题数 | 题号 | 判断 |
 |---|---|---|---|
-| A3.4 安全（MI、private networking、keyless、RBAC） | 11 | [Q3](#/q/ai-103/3) [Q13](#/q/ai-103/13) [Q31](#/q/ai-103/31) [Q92](#/q/ai-103/92) [Q111](#/q/ai-103/111) [Q112](#/q/ai-103/112) [Q115](#/q/ai-103/115) [Q126](#/q/ai-103/126) [Q127](#/q/ai-103/127) [Q136](#/q/ai-103/136) [Q156](#/q/ai-103/156) | 最热 |
-| A4.1 安全过滤/护栏/内容审核 | 8 | [Q8](#/q/ai-103/8) [Q93](#/q/ai-103/93) [Q104](#/q/ai-103/104) [Q137](#/q/ai-103/137) [Q138](#/q/ai-103/138) [Q139](#/q/ai-103/139) [Q140](#/q/ai-103/140) [Q148](#/q/ai-103/148) | 热 |
-| A2.1 基础设施（资源创建、Bicep、容器） | 7 | [Q98](#/q/ai-103/98) [Q103](#/q/ai-103/103) [Q113](#/q/ai-103/113) [Q130](#/q/ai-103/130) [Q131](#/q/ai-103/131) [Q133](#/q/ai-103/133) [Q161](#/q/ai-103/161) | 热（多为旧题） |
-| B3.2 reflection / self-critique | 7 | [Q38](#/q/ai-103/38) [Q41](#/q/ai-103/41) [Q42](#/q/ai-103/42) [Q43](#/q/ai-103/43) [Q44](#/q/ai-103/44) [Q100](#/q/ai-103/100) [Q153](#/q/ai-103/153) | 热（同一场景反复出） |
-| C2.8 识别对象/部件（Custom Vision 为主） | 7 | [Q101](#/q/ai-103/101) [Q108](#/q/ai-103/108) [Q118](#/q/ai-103/118) [Q129](#/q/ai-103/129) [Q144](#/q/ai-103/144) [Q150](#/q/ai-103/150) [Q152](#/q/ai-103/152) | 热（旧题） |
-| C3.2 图像内嵌文字的间接注入 | 7 | [Q2](#/q/ai-103/2) [Q23](#/q/ai-103/23) [Q25](#/q/ai-103/25) [Q26](#/q/ai-103/26) [Q49](#/q/ai-103/49) [Q51](#/q/ai-103/51) [Q145](#/q/ai-103/145) | 热 |
-| B1.4 评估（幻觉、相关性、安全） | 6 | [Q27](#/q/ai-103/27) [Q69](#/q/ai-103/69) [Q71](#/q/ai-103/71) [Q72](#/q/ai-103/72) [Q114](#/q/ai-103/114) [Q135](#/q/ai-103/135) | 热 |
-| B2.2 检索 + 函数调用 + 记忆 | 6 | [Q14](#/q/ai-103/14) [Q30](#/q/ai-103/30) [Q76](#/q/ai-103/76) [Q77](#/q/ai-103/77) [Q99](#/q/ai-103/99) [Q119](#/q/ai-103/119) | 热 |
-| B3.1 prompt 工程与参数 | 6 | [Q28](#/q/ai-103/28) [Q35](#/q/ai-103/35) [Q74](#/q/ai-103/74) [Q75](#/q/ai-103/75) [Q124](#/q/ai-103/124) [Q151](#/q/ai-103/151) | 热 |
-| B3.3 可观测性 | 6 | [Q4](#/q/ai-103/4) [Q15](#/q/ai-103/15) [Q19](#/q/ai-103/19) [Q22](#/q/ai-103/22) [Q33](#/q/ai-103/33) [Q78](#/q/ai-103/78) | 热 |
-| E1.3 enrichment skills | 6 | [Q55](#/q/ai-103/55) [Q61](#/q/ai-103/61) [Q84](#/q/ai-103/84) [Q85](#/q/ai-103/85) [Q116](#/q/ai-103/116) [Q117](#/q/ai-103/117) | 热 |
-| A1.1 选模型 | 5 | [Q29](#/q/ai-103/29) [Q96](#/q/ai-103/96) [Q122](#/q/ai-103/122) [Q123](#/q/ai-103/123) [Q149](#/q/ai-103/149) | 中 |
-| A1.4 记忆/工具/知识集成 | 4 | [Q32](#/q/ai-103/32) [Q37](#/q/ai-103/37) [Q67](#/q/ai-103/67) [Q146](#/q/ai-103/146) | 中 |
-| D2.1 STT/TTS | 4 | [Q58](#/q/ai-103/58) [Q59](#/q/ai-103/59) [Q90](#/q/ai-103/90) [Q106](#/q/ai-103/106) | 中 |
-| E2.1 OCR + 版面 + 字段提取 | 4 | [Q53](#/q/ai-103/53) [Q56](#/q/ai-103/56) [Q63](#/q/ai-103/63) [Q132](#/q/ai-103/132) | 中 |
+| A3.4 安全（MI、private networking、keyless、RBAC、密钥） | 13 | [Q3](#/q/ai-103/3) [Q13](#/q/ai-103/13) [Q20](#/q/ai-103/20) [Q92](#/q/ai-103/92) [Q98](#/q/ai-103/98) [Q112](#/q/ai-103/112) [Q115](#/q/ai-103/115) [Q126](#/q/ai-103/126) [Q127](#/q/ai-103/127) [Q136](#/q/ai-103/136) [Q156](#/q/ai-103/156) [Q177](#/q/ai-103/177) [Q178](#/q/ai-103/178) | 最热 |
+| C2.8 识别对象/部件（Custom Vision、Face、Image Analysis） | 11 | [Q101](#/q/ai-103/101) [Q108](#/q/ai-103/108) [Q114](#/q/ai-103/114) [Q118](#/q/ai-103/118) [Q129](#/q/ai-103/129) [Q135](#/q/ai-103/135) [Q150](#/q/ai-103/150) [Q152](#/q/ai-103/152) [Q164](#/q/ai-103/164) [Q169](#/q/ai-103/169) [Q186](#/q/ai-103/186) | 热（旧题为主） |
+| B3.2 reflection / self-critique | 9 | [Q38](#/q/ai-103/38) [Q41](#/q/ai-103/41) [Q42](#/q/ai-103/42) [Q43](#/q/ai-103/43) [Q44](#/q/ai-103/44) [Q100](#/q/ai-103/100) [Q153](#/q/ai-103/153) [Q166](#/q/ai-103/166) [Q167](#/q/ai-103/167) | 热（同一场景反复出） |
+| B1.6 应用连接 Foundry 项目（端点、凭据、connection） | 8 | [Q6](#/q/ai-103/6) [Q31](#/q/ai-103/31) [Q68](#/q/ai-103/68) [Q111](#/q/ai-103/111) [Q125](#/q/ai-103/125) [Q154](#/q/ai-103/154) [Q155](#/q/ai-103/155) [Q165](#/q/ai-103/165) | 热（旧题多） |
+| B3.1 prompt 工程与参数 | 8 | [Q28](#/q/ai-103/28) [Q35](#/q/ai-103/35) [Q74](#/q/ai-103/74) [Q75](#/q/ai-103/75) [Q124](#/q/ai-103/124) [Q151](#/q/ai-103/151) [Q176](#/q/ai-103/176) [Q185](#/q/ai-103/185) | 热 |
+| C3.2 图像内嵌文字的间接注入 | 8 | [Q2](#/q/ai-103/2) [Q23](#/q/ai-103/23) [Q24](#/q/ai-103/24) [Q25](#/q/ai-103/25) [Q26](#/q/ai-103/26) [Q49](#/q/ai-103/49) [Q51](#/q/ai-103/51) [Q145](#/q/ai-103/145) | 热 |
+| B2.2 检索 + 函数调用 + 记忆 | 7 | [Q14](#/q/ai-103/14) [Q30](#/q/ai-103/30) [Q76](#/q/ai-103/76) [Q77](#/q/ai-103/77) [Q99](#/q/ai-103/99) [Q146](#/q/ai-103/146) [Q174](#/q/ai-103/174) | 热 |
+| A1.1 选模型 | 6 | [Q29](#/q/ai-103/29) [Q96](#/q/ai-103/96) [Q122](#/q/ai-103/122) [Q123](#/q/ai-103/123) [Q149](#/q/ai-103/149) [Q175](#/q/ai-103/175) | 热 |
+| B1.4 评估（幻觉、相关性、安全） | 6 | [Q15](#/q/ai-103/15) [Q27](#/q/ai-103/27) [Q69](#/q/ai-103/69) [Q71](#/q/ai-103/71) [Q72](#/q/ai-103/72) [Q187](#/q/ai-103/187) | 热 |
+| E2.1 OCR + 版面 + 字段提取 | 6 | [Q53](#/q/ai-103/53) [Q56](#/q/ai-103/56) [Q63](#/q/ai-103/63) [Q132](#/q/ai-103/132) [Q144](#/q/ai-103/144) [Q181](#/q/ai-103/181) | 热 |
+| A2.1 基础设施（资源创建、ARM、容器） | 5 | [Q103](#/q/ai-103/103) [Q113](#/q/ai-103/113) [Q131](#/q/ai-103/131) [Q133](#/q/ai-103/133) [Q180](#/q/ai-103/180) | 中（多为旧题） |
+| A4.1 安全过滤/护栏/内容审核 | 5 | [Q137](#/q/ai-103/137) [Q138](#/q/ai-103/138) [Q139](#/q/ai-103/139) [Q140](#/q/ai-103/140) [Q148](#/q/ai-103/148) | 中 |
+| B2.3 agent 工具集成 | 5 | [Q16](#/q/ai-103/16) [Q21](#/q/ai-103/21) [Q32](#/q/ai-103/32) [Q73](#/q/ai-103/73) [Q119](#/q/ai-103/119) | 中 |
+| B3.3 可观测性 | 5 | [Q4](#/q/ai-103/4) [Q19](#/q/ai-103/19) [Q22](#/q/ai-103/22) [Q33](#/q/ai-103/33) [Q78](#/q/ai-103/78) | 中 |
+| D1.1 实体/摘要/结构化 JSON | 5 | [Q120](#/q/ai-103/120) [Q121](#/q/ai-103/121) [Q160](#/q/ai-103/160) [Q163](#/q/ai-103/163) [Q171](#/q/ai-103/171) | 中（旧题为主） |
+| D1.2 情感、敏感内容（sentiment、PII） | 5 | [Q104](#/q/ai-103/104) [Q107](#/q/ai-103/107) [Q128](#/q/ai-103/128) [Q162](#/q/ai-103/162) [Q170](#/q/ai-103/170) | 中（旧题为主） |
+| E1.3 enrichment skills | 5 | [Q55](#/q/ai-103/55) [Q61](#/q/ai-103/61) [Q84](#/q/ai-103/84) [Q116](#/q/ai-103/116) [Q117](#/q/ai-103/117) | 中 |
+| D2.1 STT/TTS | 4 | [Q58](#/q/ai-103/58) [Q59](#/q/ai-103/59) [Q106](#/q/ai-103/106) [Q173](#/q/ai-103/173) | 中 |
+| D2.2 语音作为 agent 模态、自定义语音模型 | 4 | [Q10](#/q/ai-103/10) [Q12](#/q/ai-103/12) [Q90](#/q/ai-103/90) [Q158](#/q/ai-103/158) | 中 |
 | E2.3 CU analyzer 结构化/Markdown 输出 | 4 | [Q47](#/q/ai-103/47) [Q52](#/q/ai-103/52) [Q64](#/q/ai-103/64) [Q81](#/q/ai-103/81) | 中 |
-| A2.2 部署选项 | 3 | [Q1](#/q/ai-103/1) [Q97](#/q/ai-103/97) [Q102](#/q/ai-103/102) | 中 |
+| A2.3 配置模型与 agent 部署 | 3 | [Q102](#/q/ai-103/102) [Q130](#/q/ai-103/130) [Q161](#/q/ai-103/161) | 中 |
 | A2.4 CI/CD | 3 | [Q40](#/q/ai-103/40) [Q91](#/q/ai-103/91) [Q142](#/q/ai-103/142) | 中 |
-| A3.1 配额/限流/成本 | 3 | [Q18](#/q/ai-103/18) [Q39](#/q/ai-103/39) [Q95](#/q/ai-103/95) | 中 |
-| B1.6 连接 Foundry 项目 | 3 | [Q125](#/q/ai-103/125) [Q154](#/q/ai-103/154) [Q155](#/q/ai-103/155) | 中（旧题） |
-| B2.3 agent 工具集成 | 3 | [Q16](#/q/ai-103/16) [Q21](#/q/ai-103/21) [Q73](#/q/ai-103/73) | 中 |
-| D1.1 实体/摘要/结构化 JSON | 3 | [Q120](#/q/ai-103/120) [Q121](#/q/ai-103/121) [Q160](#/q/ai-103/160) | 中（旧题） |
-| D2.2 自定义语音模型 | 3 | [Q10](#/q/ai-103/10) [Q12](#/q/ai-103/12) [Q158](#/q/ai-103/158) | 中 |
-| A1.2 / A4.2 / A4.4 / B1.5 / B2.1 / B2.4 / C1.3 / C2.1 / C2.6 / C2.7 / C3.1 / D1.2 / D1.4 / E1.2 | 各 2 | [Q62](#/q/ai-103/62) [Q110](#/q/ai-103/110) / [Q109](#/q/ai-103/109) [Q141](#/q/ai-103/141) / [Q20](#/q/ai-103/20) [Q147](#/q/ai-103/147) / [Q6](#/q/ai-103/6) [Q68](#/q/ai-103/68) / [Q34](#/q/ai-103/34) [Q70](#/q/ai-103/70) / [Q9](#/q/ai-103/9) [Q79](#/q/ai-103/79) / [Q45](#/q/ai-103/45) [Q46](#/q/ai-103/46) / [Q89](#/q/ai-103/89) [Q134](#/q/ai-103/134) / [Q86](#/q/ai-103/86) [Q143](#/q/ai-103/143) / [Q5](#/q/ai-103/5) [Q87](#/q/ai-103/87) / [Q24](#/q/ai-103/24) [Q50](#/q/ai-103/50) / [Q107](#/q/ai-103/107) [Q128](#/q/ai-103/128) / [Q105](#/q/ai-103/105) [Q159](#/q/ai-103/159) / [Q82](#/q/ai-103/82) [Q83](#/q/ai-103/83) | 温 |
-| A1.3 / A3.2 / A4.3 / B1.3 / B2.5 / B2.6 / B3.4 / C1.1 / C1.2 / C1.4 / C2.2 / D1.3 / E1.4 / E2.2 | 各 1 | [Q36](#/q/ai-103/36) / [Q65](#/q/ai-103/65) / [Q94](#/q/ai-103/94) / [Q7](#/q/ai-103/7) / [Q11](#/q/ai-103/11) / [Q80](#/q/ai-103/80) / [Q17](#/q/ai-103/17) / [Q48](#/q/ai-103/48) / [Q66](#/q/ai-103/66) / [Q88](#/q/ai-103/88) / [Q157](#/q/ai-103/157) / [Q60](#/q/ai-103/60) / [Q54](#/q/ai-103/54) / [Q57](#/q/ai-103/57) | 冷 |
+| C2.1 多模态模型分析视觉内容 | 3 | [Q89](#/q/ai-103/89) [Q134](#/q/ai-103/134) [Q157](#/q/ai-103/157) | 中 |
+| C2.6 视频分析 | 3 | [Q86](#/q/ai-103/86) [Q143](#/q/ai-103/143) [Q183](#/q/ai-103/183) | 中 |
+| C3.1 不安全视觉内容过滤 | 3 | [Q8](#/q/ai-103/8) [Q50](#/q/ai-103/50) [Q179](#/q/ai-103/179) | 中 |
+| E1.4 RAG 摄取与 OCR | 3 | [Q54](#/q/ai-103/54) [Q85](#/q/ai-103/85) [Q182](#/q/ai-103/182) | 中 |
+| A1.2 / A1.3 / A1.4 / A2.2 / A3.1 / A3.2 / A4.2 / A4.3 / B2.1 / B2.5 / C1.1 / C1.3 / C2.7 / E1.2 | 各 2 | [Q110](#/q/ai-103/110) [Q159](#/q/ai-103/159) / [Q36](#/q/ai-103/36) [Q62](#/q/ai-103/62) / [Q37](#/q/ai-103/37) [Q67](#/q/ai-103/67) / [Q1](#/q/ai-103/1) [Q97](#/q/ai-103/97) / [Q39](#/q/ai-103/39) [Q95](#/q/ai-103/95) / [Q18](#/q/ai-103/18) [Q65](#/q/ai-103/65) / [Q93](#/q/ai-103/93) [Q109](#/q/ai-103/109) / [Q94](#/q/ai-103/94) [Q141](#/q/ai-103/141) / [Q34](#/q/ai-103/34) [Q70](#/q/ai-103/70) / [Q11](#/q/ai-103/11) [Q79](#/q/ai-103/79) / [Q48](#/q/ai-103/48) [Q184](#/q/ai-103/184) / [Q45](#/q/ai-103/45) [Q46](#/q/ai-103/46) / [Q5](#/q/ai-103/5) [Q87](#/q/ai-103/87) / [Q82](#/q/ai-103/82) [Q83](#/q/ai-103/83) | 温 |
+| A4.4 / B1.1 / B1.3 / B2.4 / B2.6 / B3.4 / C1.2 / C1.4 / C2.2 / D1.3 / D1.4 / E2.2 | 各 1 | [Q147](#/q/ai-103/147) / [Q172](#/q/ai-103/172) / [Q7](#/q/ai-103/7) / [Q9](#/q/ai-103/9) / [Q80](#/q/ai-103/80) / [Q17](#/q/ai-103/17) / [Q66](#/q/ai-103/66) / [Q88](#/q/ai-103/88) / [Q168](#/q/ai-103/168) / [Q60](#/q/ai-103/60) / [Q105](#/q/ai-103/105) / [Q57](#/q/ai-103/57) | 冷 |
 
-#### 考纲中未被命中的 bullet（0 题）
+#### 考纲中未被命中的 bullet（主归属 0 题）
 
 | bullet | 内容 | 备注 |
 |---|---|---|
-| A2.3 | Configure model and agent deployments | [Q1](#/q/ai-103/1) 的版本升级策略勉强相关，无独立题 |
 | A3.3 | Monitor data ingestion quality, search index health, relevance performance | 仅作为干扰项出现（[Q65](#/q/ai-103/65) "indexer status and failure history"） |
-| B1.1 | Deploy and consume LLMs, SLMs, code models, multimodal models | 被 [Q6](#/q/ai-103/6)/Q66/Q89 间接覆盖，无直接题 |
-| B1.2 | Implement RAG in an application | 全部通过 AI Search/CU/评估题间接考，无"在应用中实现 RAG"的直接题 |
-| C1.5 | Generation and editing controls | 仅 [Q48](#/q/ai-103/48) input_fidelity 擦边 |
+| B1.2 | Implement RAG in an application | 只是 [Q36](#/q/ai-103/36) 的次要归属；全部通过 AI Search/CU/评估题间接考，无"在应用中实现 RAG"的直接题 |
+| B1.5 | Integrate generative workflows by using Foundry SDKs and connectors | 只是 [Q6](#/q/ai-103/6) [Q68](#/q/ai-103/68) 的次要归属（两题主归属 B1.6），无独立题 |
+| C1.5 | Generation and editing controls | 只是 [Q45](#/q/ai-103/45) [Q48](#/q/ai-103/48) [Q184](#/q/ai-103/184) 的次要归属（mask_inpainting、input_fidelity） |
 | C2.3 | Visual question-answering grounded in visual evidence | 无 |
-| C2.4 | Alt-text / extended descriptions aligned to accessibility | 无 |
-| C2.5 | Content Understanding 提取视觉特征 | 仅 [Q86](#/q/ai-103/86)（视频）擦边 |
-| C3.3 | Watermarks, prohibited symbols, brand usage | [Q46](#/q/ai-103/46)/Q88 是"去掉 logo/水印"的编辑题，[Q101](#/q/ai-103/101) 是旧版品牌检测；无策略执行题 |
-| D2.3 | Multimodal reasoning from audio inputs | [Q90](#/q/ai-103/90) GPT realtime 擦边 |
-| D2.4 | Speech translation | 仅作 [Q58](#/q/ai-103/58)/Q59 的干扰项 |
-| E1.1 | Ingest and index documents, images, audio, video | 音频/视频索引无题 |
-| E1.5 | Connect retrieval pipelines to workflows and agent tools | [Q14](#/q/ai-103/14)/Q119 的 MCP knowledge base、[Q73](#/q/ai-103/73) azure_ai_search 工具擦边 |
+| C2.4 | Alt-text / extended descriptions aligned to accessibility | 无（[Q168](#/q/ai-103/168) 的 image descriptions 是普通 caption，归 C2.2） |
+| C2.5 | Content Understanding 提取视觉特征 | 只是 [Q86](#/q/ai-103/86)（视频）的次要归属 |
+| C3.3 | Watermarks, prohibited symbols, brand usage | [Q46](#/q/ai-103/46) 是"去掉 logo"的编辑题，[Q101](#/q/ai-103/101) 是旧版品牌检测，都只是次要归属；无策略执行题 |
+| D2.3 | Multimodal reasoning from audio inputs | 无（[Q90](#/q/ai-103/90) GPT realtime 归 D2.2） |
+| D2.4 | Speech translation | 只是 [Q60](#/q/ai-103/60) 的次要归属，另作 [Q58](#/q/ai-103/58)/Q59 的干扰项 |
+| E1.1 | Ingest and index documents, images, audio, video | [Q54](#/q/ai-103/54) [Q55](#/q/ai-103/55) [Q61](#/q/ai-103/61) [Q84](#/q/ai-103/84) [Q115](#/q/ai-103/115) [Q182](#/q/ai-103/182) 的次要归属；音频/视频索引无题 |
+| E1.5 | Connect retrieval pipelines to workflows and agent tools | 只是 [Q99](#/q/ai-103/99) [Q165](#/q/ai-103/165) 的次要归属；[Q14](#/q/ai-103/14)/Q119 的 MCP knowledge base、[Q73](#/q/ai-103/73) azure_ai_search 工具擦边 |
+
+和 161 题时相比：B1.1 第一次有主归属题（新题 [Q172](#/q/ai-103/172)，embeddings 加结构化输出的请求）；A2.3 现有 3 题主归属（[Q102](#/q/ai-103/102) [Q130](#/q/ai-103/130) [Q161](#/q/ai-103/161)，属于重新归属，不是新题）；新题给 C1.5（[Q184](#/q/ai-103/184)）、E1.1（[Q182](#/q/ai-103/182)）、E1.5（[Q165](#/q/ai-103/165)）带来了次要命中，但它们仍没有主归属题；B1.5 按主归属计没有题，所以列进本表。
 
 #### 旧题比例
 
-52 题（32%）是 AI-102 时代的题目换了产品名（[Q101](#/q/ai-103/101)–[Q115](#/q/ai-103/115)、[Q117](#/q/ai-103/117)、[Q118](#/q/ai-103/118)、[Q120](#/q/ai-103/120)、[Q121](#/q/ai-103/121)、[Q123](#/q/ai-103/123)–[Q144](#/q/ai-103/144)、[Q149](#/q/ai-103/149)–[Q152](#/q/ai-103/152)、[Q154](#/q/ai-103/154)、[Q155](#/q/ai-103/155)、[Q157](#/q/ai-103/157)–[Q161](#/q/ai-103/161)）：Custom Vision、Language 容器、TextAnalyticsClient、Vision v3.2 REST、QnA、Immersive Reader、az cognitiveservices、VNet 规则、Content Safety Studio。其余 109 题（[Q1](#/q/ai-103/1)–[Q100](#/q/ai-103/100)、[Q116](#/q/ai-103/116)、[Q119](#/q/ai-103/119)、[Q122](#/q/ai-103/122)、[Q145](#/q/ai-103/145)–[Q148](#/q/ai-103/148)、[Q153](#/q/ai-103/153)、[Q156](#/q/ai-103/156)）是以 "You have a Microsoft Foundry project" 开头的新版题。两类题的知识体系不同，需分别复习。
+69 题（37%）是 AI-102 时代的题目换了产品名（[Q101](#/q/ai-103/101)–[Q115](#/q/ai-103/115)、[Q117](#/q/ai-103/117)、[Q118](#/q/ai-103/118)、[Q120](#/q/ai-103/120)、[Q121](#/q/ai-103/121)、[Q123](#/q/ai-103/123)–[Q144](#/q/ai-103/144)、[Q149](#/q/ai-103/149)–[Q152](#/q/ai-103/152)、[Q154](#/q/ai-103/154)、[Q155](#/q/ai-103/155)、[Q157](#/q/ai-103/157)–[Q162](#/q/ai-103/162)、[Q164](#/q/ai-103/164)、[Q168](#/q/ai-103/168)–[Q171](#/q/ai-103/171)、[Q173](#/q/ai-103/173)–[Q181](#/q/ai-103/181)、[Q183](#/q/ai-103/183)、[Q186](#/q/ai-103/186)）：Custom Vision（含导出）、Language 容器、TextAnalyticsClient 与 analyze-text REST、Vision v3.2 REST 与 Image Analysis 客户端库、QnA、Immersive Reader、az cognitiveservices、ARM 资源创建 URI 与 regenerateKey、VNet 规则、Content Safety Studio、Speech SSML 与 Entra 认证、Spatial Analysis、Face、Document Intelligence 发票、GPT-3.5 时代的 embedding 与 priming、经典 Agent Service REST（assistants 端点）。其余 118 题（[Q1](#/q/ai-103/1)–[Q100](#/q/ai-103/100)、[Q116](#/q/ai-103/116)、[Q119](#/q/ai-103/119)、[Q122](#/q/ai-103/122)、[Q145](#/q/ai-103/145)–[Q148](#/q/ai-103/148)、[Q153](#/q/ai-103/153)、[Q156](#/q/ai-103/156)、[Q163](#/q/ai-103/163)、[Q165](#/q/ai-103/165)–[Q167](#/q/ai-103/167)、[Q172](#/q/ai-103/172)、[Q182](#/q/ai-103/182)、[Q184](#/q/ai-103/184)、[Q185](#/q/ai-103/185)、[Q187](#/q/ai-103/187)）是以 Microsoft Foundry project、agent 或新版 Azure OpenAI API 为背景的新版题；其中 [Q165](#/q/ai-103/165) [Q166](#/q/ai-103/166) [Q167](#/q/ai-103/167) [Q182](#/q/ai-103/182) [Q184](#/q/ai-103/184) [Q185](#/q/ai-103/185) [Q187](#/q/ai-103/187) 是已有新版题换选项或换问法的版本。两类题的知识体系不同，需分别复习。
 
 ---
 
 
-### Case study 怎么读（Contoso, Ltd，12 题）
+### Case study 怎么读（Contoso, Ltd，13 题）
 
 每道 case 题的题干会点名需求块（"meet the technical requirements" / "security and compliance requirements" / "business requirements" / "planned changes" / "issue reported by the finance department"），答案就是该块里某一行的功能别名。整个题库对需求行的复用如下：
 
@@ -1154,7 +1186,7 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 | Technical："scalable, high-throughput… dynamically scale… **without requiring reserved throughput capacity**" + "data processed by the model must remain **within the EU**" | Deployment type = Standard（不选 Global Standard） | [Q1](#/q/ai-103/1) |
 | Technical："model version… must remain **consistent**" / Planned："standardize the model version" | Opt out of automatic model version upgrades | [Q1](#/q/ai-103/1) |
 | Security："product sheets might contain **images that include embedded text**… protected from **malicious instructions hidden within the images**" | prompt shields | [Q2](#/q/ai-103/2) [Q145](#/q/ai-103/145)（同题换干扰项） |
-| Technical："Responses… must be **relevant, complete, and accurate**" | groundedness evaluator | [Q27](#/q/ai-103/27) |
+| Technical："Responses… must be **relevant, complete, and accurate**" | a Retrieval Augmented Generation (RAG) evaluator（groundedness + relevance + response completeness；单个 groundedness evaluator 只覆盖 accurate） | [Q27](#/q/ai-103/27) [Q187](#/q/ai-103/187)（同题换干扰项） |
 | Business："answer questions **only about the products sold by Contoso**" | Modify the system message instructions | [Q28](#/q/ai-103/28) |
 | Problem："invoices contain **tables, logos, and varied layouts**" / Planned："evaluating **both the visual layout and the textual content**… verified against the vendor **contract terms**" | Azure Content Understanding in Foundry Tools | [Q56](#/q/ai-103/56) |
 | Technical："indexing pipeline that enables **semantic and vector search**" | Text Split + Azure OpenAI Embedding skills；Azure AI Search | [Q61](#/q/ai-103/61) [Q62](#/q/ai-103/62) |
@@ -1166,8 +1198,8 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 
 读法：
 1. 先读题干点名的需求块名，只回到那一块找行。
-2. 找带加粗感的"硬词"（EU、NOT、only、consistent、embedded text、semantic and vector、personalized）——每个硬词固定对应一个功能。
-3. 同一行会被出两次（[Q2](#/q/ai-103/2)/Q145、[Q67](#/q/ai-103/67)/Q146），干扰项换了但答案不变；这说明每条需求行只映射一个"官方答案"。
+2. 找带加粗感的"硬词"（EU、NOT、only、consistent、embedded text、relevant + complete + accurate、semantic and vector、personalized）——每个硬词固定对应一个功能。
+3. 同一行会被出两次（[Q2](#/q/ai-103/2)/Q145、[Q67](#/q/ai-103/67)/Q146、[Q27](#/q/ai-103/27)/Q187），干扰项换了但答案不变；这说明每条需求行只映射一个"官方答案"。
 4. hotspot 两个槽位往往来自同一块的两行（[Q1](#/q/ai-103/1)：吞吐 + 版本；[Q68](#/q/ai-103/68)：Entra + 取 agent）。
 
 ---
@@ -1175,17 +1207,17 @@ Fabrikam 架构行原先只有"去掉公司名"的孪生题，新增的 [Q80](#/
 
 ### 答题策略
 
-1. **先找 "You need to… must…" 的那一句，把它翻译成功能名**，再看选项。第 2 节的 29 条规则覆盖了 161 题中约 150 题的决定因素；题干的名词几乎就是答案的同义词（"supported by retrieved documents" = groundedness；"embedded text" = prompt shields for documents；"across separate conversations" = memory；"same case days later" = conversation；"deterministically" = tool_choice）。
-2. **数需求 bullet，逐条对应选项特征。** 18 题带 2–3 条 "must meet the following requirements"；正确选项必须同时满足全部条，干扰项通常只满足一条（[Q31](#/q/ai-103/31)、[Q97](#/q/ai-103/97)、[Q116](#/q/ai-103/116)）。hotspot 里每条 bullet 对应一个槽位（[Q1](#/q/ai-103/1)、[Q20](#/q/ai-103/20)、[Q37](#/q/ai-103/37)、[Q92](#/q/ai-103/92)、[Q99](#/q/ai-103/99)、[Q122](#/q/ai-103/122)、[Q156](#/q/ai-103/156)）。
+1. **先找 "You need to… must…" 的那一句，把它翻译成功能名**，再看选项。第 2 节的 29 条规则覆盖了 187 题中约 176 题的决定因素；题干的名词几乎就是答案的同义词（"supported by retrieved documents" = groundedness；"relevant, complete, and accurate" = RAG evaluator；"embedded text" = prompt shields for documents；"across separate conversations" = memory；"same case days later" = conversation；"deterministically" = tool_choice）。
+2. **数需求 bullet，逐条对应选项特征。** 21 题带 2–3 条 "must meet the following requirements"；正确选项必须同时满足全部条，干扰项通常只满足一条（[Q31](#/q/ai-103/31)、[Q97](#/q/ai-103/97)、[Q116](#/q/ai-103/116)）。hotspot 里每条 bullet 对应一个槽位（[Q1](#/q/ai-103/1)、[Q20](#/q/ai-103/20)、[Q37](#/q/ai-103/37)、[Q92](#/q/ai-103/92)、[Q99](#/q/ai-103/99)、[Q122](#/q/ai-103/122)、[Q156](#/q/ai-103/156)）。
 3. **看到 NOT / without / only / even when 先停一下，它们是在排除默认答案**：without reserved capacity 排除 Provisioned；NOT vCPU quota 排除 managed compute；without modifying the prompt 排除 system message；even when clauses are present 排除 max_tokens；without regenerating 排除改 prompt/seed。
-4. **"minimize development effort" 选托管/预建；"minimize administrative effort" 且题干无安全要求时选 key**（[Q111](#/q/ai-103/111)、[Q154](#/q/ai-103/154) 都是 key 胜出）；一旦出现 "API keys must NOT / keyless / Entra / least privilege"，立刻切到 DefaultAzureCredential + system-assigned MI + 最窄角色（Cognitive Services OpenAI User、Key Vault Secrets User、Storage Blob Data Reader/Contributor）。
-5. **Yes/No 系列：先判断问题有几个组成部分，再看提议方案覆盖了几个。** 全覆盖才 Yes；"阻断"不等于"改进"（[Q44](#/q/ai-103/44)）；一组四题通常 0–1 个 Yes（[Q23](#/q/ai-103/23)–26 全 No；[Q41](#/q/ai-103/41)–44 只 [Q42](#/q/ai-103/42)；[Q137](#/q/ai-103/137)–140 只 [Q137](#/q/ai-103/137)）。
-6. **排序题先剔除假步骤再排序。** 固定模板：Custom Vision = 建项目 → 上传标注 → 训练 → 发布（[Q108](#/q/ai-103/108) [Q152](#/q/ai-103/152)）；密钥轮换 = 新建 → 切换 → 删除（[Q112](#/q/ai-103/112)）；容器 = 有网集群 → MCR 拉镜像 → 带 key + endpoint 运行（[Q133](#/q/ai-103/133)）；语音容器 = 申请批准 → 导出模型 → 运行（[Q158](#/q/ai-103/158)）。
-7. **代码补全看动词：** create = 发送/启动（responses.create、videos.create），retrieve = 轮询结果（videos.retrieve），get = 取已存在对象（agents.get）；凭据类只要题干提 Entra/MI 就是 DefaultAzureCredential；强制工具就是 "tool_choice": "required"；记忆作用域跨会话就是 "{{$userId}}"。
-8. **观测类题三分法：** 要看单次运行的调用顺序和耗时 → tracing；要拆成本构成 → token usage；要判断回答质量 → evaluation（groundedness / relevance / retrieval / protected material / risk and safety）；控制面空白 → Enable Application Insights。
-9. **文档类题默认 Content Understanding**，只有题干点名 Document Intelligence（[Q63](#/q/ai-103/63)）或旧题"从 PDF/扫描件提取文字"（[Q128](#/q/ai-103/128)、[Q132](#/q/ai-103/132)）才选 Document Intelligence；CU 内部再按 standalone/高量 → standard、跨文档/参考数据 → pro、保版面 + 二维码 → prebuilt-layout、RAG Markdown → prebuilt-documentSearch、自定义字段 + 置信度 → custom analyzer 细分。
-10. **三分之一是旧 AI-102 题换名**（[Q101](#/q/ai-103/101)–[Q161](#/q/ai-103/161) 为主）：看到 "Azure Vision/Language/Speech in Foundry Tools"、"Content Safety in Foundry Control Plane"、"Microsoft Foundry Service resource"、kind CognitiveServices、Custom Vision、docker run，就切换到 AI-102 知识（Custom Vision 域、容器计费、VNet 规则、TextAnalyticsClient、Content Safety Studio）。
-11. **争议题（题库展示答案 ≠ reviewed answer）复习时以 reviewed 为准并核对 Learn：** [Q8](#/q/ai-103/8)（Storage Blob Data Reader vs Contributor）、[Q79](#/q/ai-103/79)（human-in-the-loop template + Condition vs sequential + Ask a question）、[Q108](#/q/ai-103/108)（object detection vs classifier）、[Q112](#/q/ai-103/112)（删除顺序）、[Q117](#/q/ai-103/117)（File vs Object projection）、[Q121](#/q/ai-103/121)（linked entity url 是否 Bing）、[Q130](#/q/ai-103/130)（/status 是否调 Azure）、[Q133](#/q/ai-103/133)（Docker Hub/隔离集群 vs MCR/联网集群）、[Q152](#/q/ai-103/152)（Vision Studio vs Custom Vision portal）、[Q154](#/q/ai-103/154)（bearer token/deployment endpoint vs API key/deployment name）、[Q156](#/q/ai-103/156)（key authentication vs Azure roles）、[Q158](#/q/ai-103/158)（Retrain vs Export）、[Q160](#/q/ai-103/160)（AI Search vs Language）。另 [Q76](#/q/ai-103/76) 的 "session" 作用域在 Learn 中未见记载，题库按选项集作答。
+4. **"minimize development effort" 选托管/预建；"minimize administrative effort" 且题干无安全要求时选 key**（[Q111](#/q/ai-103/111)、[Q154](#/q/ai-103/154) 都是 key 胜出）；一旦出现 "API keys must NOT / keyless / Entra / least privilege"，立刻切到 DefaultAzureCredential + system-assigned MI + 最窄角色（Cognitive Services OpenAI User、Key Vault Secrets User、Storage Blob Data Reader/Contributor）；Speech 用 Entra ID token 认证先要 custom subdomain（[Q178](#/q/ai-103/178)）。
+5. **Yes/No 系列：先判断问题有几个组成部分，再看提议方案覆盖了几个。** 全覆盖才 Yes；"阻断"不等于"改进"（[Q44](#/q/ai-103/44)）；一组四五题通常 0–1 个 Yes（[Q23](#/q/ai-103/23)–26 全 No；[Q41](#/q/ai-103/41)–44 与 [Q185](#/q/ai-103/185) 只 [Q42](#/q/ai-103/42)；[Q137](#/q/ai-103/137)–140 只 [Q137](#/q/ai-103/137)）。
+6. **排序题先剔除假步骤再排序。** 固定模板：Custom Vision = 建项目 → 上传标注 → 训练 → 发布（[Q108](#/q/ai-103/108) [Q152](#/q/ai-103/152)）；密钥轮换 = 新建 → 切换 → 删除（[Q112](#/q/ai-103/112)）；容器 = 有网集群 → MCR 拉镜像 → 带 key + endpoint 运行（[Q133](#/q/ai-103/133)）；语音容器 = 申请批准 → 导出模型 → 运行（[Q158](#/q/ai-103/158)）；Custom Vision 离线导出 = 切 General (compact) → 重训 → 导出（[Q164](#/q/ai-103/164)）。
+7. **代码补全看动词：** create = 发送/启动（responses.create、videos.create），retrieve = 轮询结果（videos.retrieve），get = 取已存在对象（agents.get）；凭据类只要题干提 Entra/MI 就是 DefaultAzureCredential；强制工具就是 "tool_choice": "required"；记忆作用域跨会话就是 "{{$userId}}"；ARM 路径用 subscriptions/{subscription ID}（不是 tenant），provider 是 Microsoft.CognitiveServices（[Q180](#/q/ai-103/180)）。
+8. **观测类题三分法：** 要看单次运行的调用顺序和耗时 → tracing；要拆成本构成 → token usage；要判断回答质量 → evaluation（groundedness / relevance / retrieval / RAG evaluator 一组 / protected material / risk and safety）；控制面空白 → Enable Application Insights。
+9. **文档类题默认 Content Understanding**，只有题干点名 Document Intelligence（[Q63](#/q/ai-103/63)）或旧题"从 PDF/扫描件提取文字、从扫描发票提取字段"（[Q128](#/q/ai-103/128)、[Q132](#/q/ai-103/132)、[Q181](#/q/ai-103/181)）才选 Document Intelligence；CU 内部再按 standalone/高量 → standard、跨文档/参考数据 → pro、保版面 + 二维码 → prebuilt-layout、RAG Markdown → prebuilt-documentSearch、自定义字段 + 置信度 → custom analyzer 细分。
+10. **三分之一以上（69 题）是旧 AI-102 题换名**（[Q101](#/q/ai-103/101)–[Q186](#/q/ai-103/186) 为主）：看到 "Azure Vision/Language/Speech in Foundry Tools"、"Content Safety in Foundry Control Plane"、"Microsoft Foundry Service resource"、kind CognitiveServices、Custom Vision、docker run，就切换到 AI-102 知识（Custom Vision 域与导出、容器计费、VNet 规则、TextAnalyticsClient、Content Safety Studio、Image Analysis 功能、Face 属性、Spatial Analysis、SSML、ARM 请求）。
+11. **争议题（题库展示答案 ≠ reviewed answer）复习时以 reviewed 为准并核对 Learn：** [Q8](#/q/ai-103/8)（Storage Blob Data Reader vs Contributor）、[Q79](#/q/ai-103/79)（human-in-the-loop template + Condition vs sequential + Ask a question）、[Q108](#/q/ai-103/108)（object detection vs classifier）、[Q112](#/q/ai-103/112)（删除顺序）、[Q117](#/q/ai-103/117)（File vs Object projection）、[Q121](#/q/ai-103/121)（linked entity url 是否 Bing）、[Q130](#/q/ai-103/130)（/status 是否调 Azure）、[Q132](#/q/ai-103/132)（Vision Read API vs Document Intelligence）、[Q133](#/q/ai-103/133)（Docker Hub/隔离集群 vs MCR/联网集群）、[Q152](#/q/ai-103/152)（Vision Studio vs Custom Vision portal）、[Q154](#/q/ai-103/154)（bearer token/deployment endpoint vs API key/deployment name）、[Q156](#/q/ai-103/156)（key authentication vs Azure roles）、[Q158](#/q/ai-103/158)（Retrain vs Export）、[Q160](#/q/ai-103/160)（AI Search vs Language）。另 [Q76](#/q/ai-103/76) 的 "session" 作用域在 Learn 中未见记载，题库按选项集作答。
 
 ---
 

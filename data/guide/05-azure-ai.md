@@ -2,7 +2,7 @@
 id: 05-azure-ai
 title: Azure AI 词汇：Foundry、模型、RAG、Agent Service、Foundry Tools
 short: Azure AI
-intro: AI-103 的 161 道题几乎全部落在 Microsoft Foundry 和它周围的 Azure 服务上。这一章按"平台结构 → 模型与部署 → RAG → agent → 评估 → 安全 → 预训练服务"的顺序把词汇讲一遍。
+intro: AI-103 的 187 道题几乎全部落在 Microsoft Foundry 和它周围的 Azure 服务上。这一章按"平台结构 → 模型与部署 → RAG → agent → 评估 → 安全 → 预训练服务"的顺序把词汇讲一遍。
 exams: AI-103 | AB-100 | AB-620 | AI-500
 practice:
   ai-103: Planning & managing Azure AI solutions | Generative AI & agentic solutions | Information extraction solutions | Computer vision solutions | Text analysis solutions

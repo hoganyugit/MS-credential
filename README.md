@@ -1,7 +1,7 @@
 # Cert Prep
 
 An offline study app for the ExamTopics question sets listed in `EXAM_SOURCES.example.md`:
-AB-620 (116 questions), AB-100 (129), AI-103 (161) and AI-500 (107), with ExamTopics answers,
+AB-620 (116 questions), AB-100 (129), AI-103 (187) and AI-500 (107), with ExamTopics answers,
 community vote counts, discussion threads, and all 418 question and answer images stored locally.
 
 ## Open it
@@ -118,7 +118,7 @@ spells it out. An all-caps token that is in neither the list nor its `ignore:` l
 A chapter whose front matter says `skills: <exam slug>` follows that exam's official outline:
 its sections are the sub-areas (`{#a1}`, `{#b2}`…), the build checks that none is missing, and the
 app adds a practice row to every section with the bank questions on that sub-area. Chapter 7
-(出题规律) is the pattern analysis of all 513 questions: for each exam, the question formats and
+(出题规律) is the pattern analysis of all 539 questions: for each exam, the question formats and
 stem formulas, the recurring "requirement wording → correct answer" decision rules, distractor
 patterns, hot and cold objectives, how case-study requirement lines become questions, and
 tactics; every question number in it links to the question. Chapters 8–10 and 12 walk the official
