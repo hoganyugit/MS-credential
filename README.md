@@ -1,7 +1,7 @@
 # Cert Prep
 
 An offline study app for the ExamTopics question sets listed in `EXAM_SOURCES.example.md`:
-AB-620 (116 questions), AB-100 (129), AI-103 (187) and AI-500 (107), with ExamTopics answers,
+AB-620 (116 questions), AB-100 (115), AI-103 (187) and AI-500 (107), with ExamTopics answers,
 community vote counts, discussion threads, and all 418 question and answer images stored locally.
 
 ## Open it
@@ -63,16 +63,20 @@ sent anywhere and progress stays in the browser as before.
 all of that into plain lines; `tools/examtopics.py` rebuilds the structure.
 
 **Copies of a question.** ExamTopics lists many questions more than once with reshuffled,
-partly different choices and sometimes a different answer (for example AB-100 #40, #41, #42,
-#43, #104, #116 and #126 are one question). The build links such copies; the app shows an
-"Also #…" chip that opens them side by side, and pools their votes, counting each copy's
-ExamTopics answer as one vote.
+partly different choices and sometimes a different answer. The build links such copies; the app
+shows an "Also #…" chip that opens them side by side, and pools the votes of the copies that offer
+the question's answer, counting each such copy's ExamTopics answer as one vote. Listings that differ
+only in their distractors are folded into one question (`MERGED` in `tools/examtopics.py`: AB-100's
+#33/#39/#44 into #25, #28/#35–#38 into #34, #40–#43/#104/#126 into #116): the copy leaves the bank,
+and its choice set, ExamTopics key, votes and discussion appear under the kept question's answer
+key, so the question is asked once and its reviewed explanation says what the other choice sets
+keyed. `python3 tools/examtopics.py fold` applies the table to `data/bank.js` without a download.
 
 **Reviewed answers.** Every question was re-judged against Microsoft product behaviour and
 documentation and given an explanation, a confidence level and a knowledge-point tag
-(`data/reviewed.js`). The review confirms ExamTopics on 443 questions and corrects it on 70;
-11 answers are marked low confidence. Answers that hinge on product details were checked against
-the current Microsoft Learn pages, and 176 entries link the page they rely on. AI-500 has almost no
+(`data/reviewed.js`). The review confirms ExamTopics on 454 questions and corrects it on 71;
+10 answers are marked low confidence. Answers that hinge on product details were checked against
+the current Microsoft Learn pages, and 206 entries link the page they rely on. AI-500 has almost no
 community votes or comments, and the review corrects 25 of its 107 ExamTopics answers. By default the app
 grades against the reviewed answer and
 shows all three keys (reviewed, ExamTopics, community vote) on every question. The review was

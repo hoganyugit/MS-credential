@@ -899,6 +899,7 @@ pre code { padding: 0; border-radius: 0; background: none; font-size: inherit; }
 .nav-grid button.locked { border-style: dashed; opacity: 0.6; }
 a.chip.variants { text-decoration: none; background: var(--accent-wash); color: var(--accent-ink); }
 a.chip.variants:hover { background: var(--accent-wash-2); text-decoration: none; }
+.chip.copies { background: var(--accent-wash); color: var(--accent-ink); max-width: 100%; white-space: normal; height: auto; min-height: 24px; padding: 2px 9px; }
 .terms { gap: 8px; }
 .terms a.chip { text-decoration: none; height: auto; min-height: 28px; max-width: 100%; white-space: normal; padding: 3px 11px; font-size: 12.5px; color: var(--ink); background: var(--raised); border: 1px solid var(--line-strong); }
 .terms a.chip:hover { border-color: var(--accent); color: var(--accent-ink); text-decoration: none; }
@@ -921,6 +922,19 @@ details.originals summary { cursor: pointer; font-size: 13.5px; font-weight: 600
 details.originals summary svg { width: 16px; height: 16px; }
 details.originals[open] summary { margin-bottom: 10px; }
 details.originals .rich { font-size: 14px; }
+details.copies { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; background: var(--surface); }
+details.copies summary { cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--ink-2); display: flex; align-items: center; gap: 8px; }
+details.copies summary svg { width: 16px; height: 16px; }
+details.copies[open] summary { margin-bottom: 10px; }
+.copy + .copy { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.copy-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13.5px; }
+.copy-choices { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; font-size: 13.5px; }
+.copy-choices li { display: flex; gap: 8px; }
+.copy-choices .letter { font-family: var(--mono); font-weight: 650; color: var(--ink-3); flex: none; width: 1.3em; }
+.copy-choices li.keyed { font-weight: 600; color: var(--accent-ink); }
+.copy-choices li.keyed .letter { color: var(--accent-ink); }
+.copy-thread { margin-top: 18px; display: grid; gap: 8px; }
+.copy-thread h4 { margin: 0; font-size: 14px; }
 
 .selfgrade-box { display: grid; gap: 10px; padding: 14px 16px; border-radius: 10px; background: var(--fill); }
 .selfgrade-box p { font-size: 14px; color: var(--ink-2); }

@@ -32,12 +32,6 @@ def load_bank(path):
     return text[text.index("{"):text.rindex("}") + 1]
 
 
-def write_bank(path, bank):
-    js = json.dumps(bank, ensure_ascii=False, separators=(",", ":"))
-    js = js.replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
-    path.write_text(f"window.BANK = {js};\n")
-
-
 def thread_hash(url):
     m = re.search(r"/comments/([0-9a-f]+)/?", url or "")
     return m.group(1) if m else None
@@ -54,8 +48,9 @@ def main():
     cookie, _ = et.read_sources(args.sources)
     bank = json.loads(load_bank(args.bank))
 
-    # Every (question -> thread hash) across all exams; dedupe threads so a shared one is fetched once.
-    items = [(q, thread_hash(q.get("thread"))) for e in bank["exams"] for q in e["questions"]]
+    # Every (question -> thread hash) across all exams, the copies folded into a question included; dedupe
+    # threads so a shared one is fetched once.
+    items = [(x, thread_hash(x.get("thread"))) for e in bank["exams"] for q in e["questions"] for x in [q, *q.get("copies", [])]]
     with_thread = [(q, h) for q, h in items if h]
     hashes = list(dict.fromkeys(h for _, h in with_thread))
     if args.limit:
@@ -95,10 +90,9 @@ def main():
             for c in new:
                 newest = max(newest, c.get("date", ""))
 
-    write_bank(args.bank, bank)
+    et.write_bank(args.bank, bank)
     et.log(f"updated {len(hashes)} threads, {changed} questions' comments changed; "
            f"top-level comments {before} -> {after}; newest comment date now {newest or 'n/a'}")
-    et.log(f"wrote {args.bank}")
 
 
 if __name__ == "__main__":

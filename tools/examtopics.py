@@ -9,6 +9,7 @@ data/bank.js and stores every question/answer image under data/img/.
     python3 tools/examtopics.py --cache .cache       # keep raw pages: re-runs resume / re-parse offline
     python3 tools/examtopics.py build --cache .cache # re-parse cached pages only
     python3 tools/examtopics.py --exam AI-500 --cache .cache  # one exam only; the others in bank.js are kept
+    python3 tools/examtopics.py fold                 # no download: re-link the copies in data/bank.js and fold MERGED
 
 If the cookie expires mid-run, paste a fresh one into EXAM_SOURCES.md and re-run with the same --cache.
 Cached pages are never re-downloaded, so delete the cache folder (or omit --cache) to pick up new questions and votes.
@@ -541,12 +542,20 @@ def merge_case_variants(questions, cases):
         del cases[key]
 
 
+# The instructions every drag & drop / hotspot stem ends with; two different questions can share all of them.
+BOILERPLATE = re.compile(
+    r"To answer, (?:drag|select|move)[^.]*\.|Each \w+ may be used once[^.]*\.|You may need to drag the split bar[^.]*\.|"
+    r"NOTE: Each correct selection is worth one point\.|Each correct answer presents part of the solution\.", re.I)
+
+
 def link_variants(questions):
     """ExamTopics often lists the same question several times with reshuffled (and partly different) choices,
     each copy with its own answer and votes. Record each question's near-identical siblings (same exam, same
-    type, >= 90% similar text, not part of a solution series) so the app can pool their evidence."""
+    type, >= 90% similar text and >= 85% once the shared drag & drop / hotspot instructions are stripped, not
+    part of a solution series) so the app can pool their evidence."""
     pool = [q for q in questions if not q.get("series")]
     texts = {q["n"]: re.sub(r"\s+", " ", text_of(q["stem"])) for q in pool}
+    gists = {n: re.sub(r"\s+", " ", BOILERPLATE.sub(" ", t)) for n, t in texts.items()}
     group = {q["n"]: q["n"] for q in pool}
 
     def root(n):
@@ -559,7 +568,8 @@ def link_variants(questions):
             if a["type"] != b["type"] or abs(len(texts[a["n"]]) - len(texts[b["n"]])) > 80:
                 continue
             m = difflib.SequenceMatcher(None, texts[a["n"]], texts[b["n"]], autojunk=False)
-            if m.quick_ratio() >= 0.9 and m.ratio() >= 0.9:
+            if m.quick_ratio() >= 0.9 and m.ratio() >= 0.9 and \
+                    difflib.SequenceMatcher(None, gists[a["n"]], gists[b["n"]], autojunk=False).ratio() >= 0.85:
                 group[root(b["n"])] = root(a["n"])
     members = {}
     for q in pool:
@@ -570,6 +580,70 @@ def link_variants(questions):
             q["variants"] = sorted(others)
         else:
             q.pop("variants", None)
+
+
+# Copies that differ from another listing of the same question only in their distractors are folded into one
+# question by fold_copies(): the copy leaves the bank, and its choices, answer, votes, thread and comments move
+# under the kept question's "copies", so the app asks the question once but still pools the votes and shows
+# every choice set with its discussion. {exam code: {question id of the copy to fold: id of the copy to keep}}
+MERGED = {
+    "AB-100": {
+        # "ensure that the data ingested by the agent is clean": #33, #39, #44 -> #25
+        999649: 994142, 1012339: 994142, 1012344: 994142,
+        # "evaluate the potential cost of the solution to support ROAI": #28, #35, #36, #37, #38 -> #34
+        994145: 999650, 999651: 999650, 999652: 999650, 1012337: 999650, 1012338: 999650,
+        # "monitoring solution that provides comprehensive telemetry": #40, #41, #42, #43, #104, #126 -> #116
+        1012340: 994172, 1012341: 994172, 1012342: 994172, 1012343: 994172, 984487: 994172, 999657: 994172,
+    },
+}
+COPY_FIELDS = ("n", "id", "choices", "answer", "votes", "thread", "comments")
+
+
+def fold_copies(code, questions):
+    """Fold the copies MERGED lists for this exam into the question each duplicates. questions is {n: question};
+    the folded copies are removed from it and their variant links dropped. Returns the folded numbers."""
+    merged = MERGED.get(code, {})
+    by_id = {q["id"]: q for q in questions.values()}
+    folded = []
+    for q in list(questions.values()):
+        if q["id"] not in merged:
+            continue
+        keep = by_id.get(merged[q["id"]])
+        if keep is None:
+            log(f"  {code}: #{q['n']} folds into question id {merged[q['id']]}, which is not in the bank; kept as is")
+            continue
+        keep.setdefault("copies", []).append({k: q[k] for k in COPY_FIELDS if k in q})
+        keep["copies"].sort(key=lambda c: c["n"])
+        del questions[q["n"]]
+        folded.append(q["n"])
+    gone = set(folded)
+    for q in questions.values():
+        if "variants" in q:
+            q["variants"] = [n for n in q["variants"] if n not in gone]
+            if not q["variants"]:
+                del q["variants"]
+    return sorted(folded)
+
+
+def write_bank(path, bank):
+    js = json.dumps(bank, ensure_ascii=False, separators=(",", ":"))
+    js = js.replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
+    path.write_text(f"window.BANK = {js};\n")
+    log(f"wrote {path} ({len(js) // 1024} KB)")
+
+
+def fold_bank(path):
+    """The fold step: re-derive the variant links in an existing bank.js and fold the copies in MERGED, with no
+    download. Run it after adding to MERGED; a full build does the same."""
+    text = path.read_text()
+    bank = json.loads(text[text.index("{"):text.rindex("}") + 1])
+    for exam in bank["exams"]:
+        questions = {q["n"]: q for q in exam["questions"]}
+        link_variants(questions.values())
+        folded = fold_copies(exam["code"], questions)
+        exam["questions"] = [questions[n] for n in sorted(questions)]
+        log(f"{exam['code']}: {len(exam['questions'])} questions" + (f", folded #{', #'.join(map(str, folded))}" if folded else ""))
+    write_bank(path, bank)
 
 
 # ---------------------------------------------------------------- build
@@ -616,6 +690,10 @@ def build(exams, cache, out, keep_others=False):
         missing = sorted(set(range(1, (nums[-1] if nums else 0) + 1)) - set(nums))
         if missing or len(nums) != exam["expected"]:
             log(f"  {exam['code']}: WARNING {len(nums)} questions (expected {exam['expected']}), missing {missing[:20]}")
+        folded = fold_copies(exam["code"], questions)
+        if folded:
+            log(f"  {exam['code']}: folded #{', #'.join(map(str, folded))} into the questions they duplicate")
+            nums = sorted(questions)
         types = {}
         for q in questions.values():
             types[q["type"]] = types.get(q["type"], 0) + 1
@@ -647,15 +725,12 @@ def build(exams, cache, out, keep_others=False):
         if i % 50 == 0:
             log(f"  images {i}/{len(pending)}")
 
-    js = json.dumps(bank, ensure_ascii=False, separators=(",", ":"))
-    js = js.replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
-    (out / "bank.js").write_text(f"window.BANK = {js};\n")
-    log(f"wrote {out / 'bank.js'} ({len(js) // 1024} KB)")
+    write_bank(out / "bank.js", bank)
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("step", nargs="?", choices=["all", "fetch", "build"], default="all")
+    ap.add_argument("step", nargs="?", choices=["all", "fetch", "build", "fold"], default="all")
     ap.add_argument("--sources", type=pathlib.Path, default=ROOT / "EXAM_SOURCES.md")
     ap.add_argument("--cache", type=pathlib.Path, help="directory for raw HTML (default: temporary)")
     ap.add_argument("--out", type=pathlib.Path, default=ROOT / "data")
@@ -663,6 +738,8 @@ def main():
                     help="only fetch and rebuild this exam (repeatable); the other exams in bank.js are kept as they are")
     args = ap.parse_args()
 
+    if args.step == "fold":
+        return fold_bank(args.out / "bank.js")
     if args.step == "build" and not args.cache:
         ap.error("the build step re-parses cached pages, so it needs --cache")
     cookie, exams = read_sources(args.sources)

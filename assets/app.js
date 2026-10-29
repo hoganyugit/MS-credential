@@ -132,6 +132,8 @@
       q.exam = exam;
       q.votes = q.votes || [];
       q.comments = q.comments || [];
+      q.copies = q.copies || []; // the listings the build folded into this question: choices, answer, votes, thread, comments
+      for (const c of q.copies) { c.votes = c.votes || []; c.comments = c.comments || []; }
       QUESTIONS.set(q.id, q);
     }
   }
@@ -141,7 +143,8 @@
   const examByCode = code => EXAMS.find(e => e.code === code);
 
   // data/tags.js adds skill areas to an exam whose source has no topics; data/bank.js links each question to
-  // its variants (the same question listed again with reshuffled, partly different choices).
+  // its variants (the same question listed again with reshuffled, partly different choices) and carries, as
+  // q.copies, the listings the build folded into it (their choices, ExamTopics answer, votes and discussion).
   const TAGS = window.TAGS || {};
   for (const exam of EXAMS) {
     const t = TAGS[exam.code];
@@ -226,7 +229,7 @@
     if (!deep) return q._text;
     if (q._deep == null) {
       const walk = list => list.flatMap(c => [c.text, ...walk(c.replies || [])]);
-      q._deep = walk(q.comments).join(' ').toLowerCase();
+      q._deep = walk([...q.comments, ...q.copies.flatMap(c => c.comments)]).join(' ').toLowerCase();
     }
     return q._text + ' ' + q._deep;
   }
@@ -387,27 +390,36 @@
   const MIN_VOTES = 3;
   const choiceText = c => plain(c.html).toLowerCase().replace(/[\s.]+$/, '').replace(/\s+/g, ' ');
 
-  // The votes on this question, plus the votes and the ExamTopics answer of each variant, translated into
-  // this question's letters by matching the choice text. The variants' ExamTopics answers count one vote each.
+  // The votes on this question, plus the votes and the ExamTopics answer of each variant and each folded copy,
+  // translated into this question's letters by matching the choice text. Their ExamTopics answers count one
+  // vote each.
   function votesFor(q) {
     if (q._votes) return q._votes;
-    if (!q.siblings.length || !q.choices.length) return (q._votes = q.votes);
+    const others = [...q.siblings, ...q.copies];
+    if (!others.length || !q.choices.length) return (q._votes = q.votes);
     const mine = new Map(q.choices.map(c => [choiceText(c), c.k]));
     const tally = new Map();
     const add = (letters, n) => { const key = sortLetters(letters); tally.set(key, (tally.get(key) || 0) + n); };
     for (const v of q.votes) if (/^[A-Z]+$/.test(v.a)) add(v.a, v.n);
+    // A copy's votes count only when it offers this question's answer: voters on a copy that lacks it had no
+    // way to pick it, so their votes would only inflate a distractor here.
+    const key = [...((q.review && q.review.answer) || q.answer || '')].map(l => choiceText(q.choices.find(c => c.k === l) || { html: '' }));
     q.pooledFrom = [];
-    for (const sib of q.siblings) {
+    for (const sib of others) {
       const theirs = Object.fromEntries(sib.choices.map(c => [c.k, choiceText(c)]));
+      const offered = new Set(Object.values(theirs));
+      const comparable = key.length > 0 && key.every(t => t && offered.has(t));
       const translate = letters => { const out = [...letters].map(l => mine.get(theirs[l])); return out.every(Boolean) ? sortLetters(out.join('')) : null; };
       let used = 0;
-      for (const v of sib.votes) {
-        const t = /^[A-Z]+$/.test(v.a) && translate(v.a);
-        if (t) { add(t, v.n); used += v.n; }
+      if (comparable) {
+        for (const v of sib.votes) {
+          const t = /^[A-Z]+$/.test(v.a) && translate(v.a);
+          if (t) { add(t, v.n); used += v.n; }
+        }
       }
-      const official = sib.answer && translate(sib.answer);
+      const official = comparable && sib.answer ? translate(sib.answer) : null;
       if (official) { add(official, 1); used += 1; }
-      q.pooledFrom.push({ q: sib, official, used });
+      q.pooledFrom.push({ q: sib, official, used, skipped: !comparable });
     }
     const total = [...tally.values()].reduce((a, b) => a + b, 0);
     q._votes = [...tally].map(([a, n]) => ({ a, n, p: pct(n, total) })).sort((x, y) => y.n - x.n);
@@ -752,26 +764,37 @@
   }
 
   function discussion(q) {
-    const LIMIT = 3;
     const sec = h('section', { class: 'section', id: 'discussion' },
       h('div', { class: 'section-head' },
         h('h3', { text: `Discussion (${countComments(q.comments)})` }),
         h('span', { class: 'spacer' }),
-        q.thread ? h('a', { class: 'small', href: q.thread, target: '_blank', rel: 'noopener noreferrer' }, 'Open on ExamTopics ', icon('external')) : null));
-    if (!q.comments.length) {
-      sec.append(h('p', { class: 'muted small', text: 'No one has commented on this question yet.' }));
-      return sec;
-    }
-    const list = h('div', { class: 'comments' }, q.comments.slice(0, LIMIT).map(commentNode));
-    sec.append(list);
-    if (q.comments.length > LIMIT) {
-      const more = h('button', {
-        class: 'btn sm', type: 'button',
-        onclick: () => { list.replaceChildren(...q.comments.map(commentNode)); more.remove(); },
-      }, `Show all ${q.comments.length} threads`);
-      sec.append(h('div', null, more));
+        q.thread ? h('a', { class: 'small', href: q.thread, target: '_blank', rel: 'noopener noreferrer' }, 'Open on ExamTopics ', icon('external')) : null),
+      q.comments.length ? commentList(q.comments) : h('p', { class: 'muted small', text: 'No one has commented on this question yet.' }));
+    // The discussions of the listings folded into this question, each under its own choice set, because the
+    // letters in those comments refer to it.
+    for (const c of q.copies) {
+      if (!c.comments.length) continue;
+      sec.append(h('div', { class: 'copy-thread' },
+        h('div', { class: 'section-head' },
+          h('h4', { text: `Discussion of #${c.n} (${countComments(c.comments)})` }),
+          h('span', { class: 'spacer' }),
+          c.thread ? h('a', { class: 'small', href: c.thread, target: '_blank', rel: 'noopener noreferrer' }, 'Open on ExamTopics ', icon('external')) : null),
+        h('p', { class: 'small muted', text: `Its choices: ${c.choices.map(ch => `${ch.k}. ${plain(ch.html)}`).join(' · ')}` }),
+        commentList(c.comments)));
     }
     return sec;
+  }
+
+  // The first three threads, and a button that shows the rest.
+  function commentList(comments) {
+    const LIMIT = 3;
+    const list = h('div', { class: 'comments' }, comments.slice(0, LIMIT).map(commentNode));
+    if (comments.length <= LIMIT) return list;
+    const more = h('button', {
+      class: 'btn sm', type: 'button',
+      onclick: () => { list.replaceChildren(...comments.map(commentNode)); more.remove(); },
+    }, `Show all ${comments.length} threads`);
+    return [list, h('div', null, more)];
   }
 
   function notesSection(q) {
@@ -786,6 +809,24 @@
       h('span', { class: 'ans', text: v.a }),
       h('div', { class: 'track' }, h('div', { class: 'fill', style: `width:${v.p}%` })),
       h('span', { class: 'val' }, h('b', { text: `${v.p}%` }), ` · ${plural(v.n, 'vote')}`)));
+  }
+
+  // The choice sets of the ExamTopics listings folded into this question (q.copies), each with its ExamTopics
+  // key and vote split, so a reader who meets another copy on the exam knows what it offers and what was keyed.
+  function copiesBlock(q) {
+    return h('details', { class: 'copies' },
+      h('summary', null, icon('list'), `The other choice sets (${q.copies.map(c => `#${c.n}`).join(', ')})`),
+      q.copies.map(c => {
+        const total = c.votes.reduce((n, v) => n + v.n, 0);
+        const split = [...c.votes].sort((a, b) => b.n - a.n).map(v => `${v.a} ${v.p}%`).join(' · ');
+        return h('div', { class: 'copy' },
+          h('div', { class: 'copy-head' },
+            h('b', { text: `#${c.n}` }),
+            h('span', { class: 'chip code', text: `ExamTopics ${c.answer || '—'}` }),
+            h('span', { class: 'small muted', text: total ? `${plural(total, 'vote')}: ${split}` : 'No votes' })),
+          h('ol', { class: 'copy-choices' }, c.choices.map(ch => h('li', { class: c.answer && c.answer.includes(ch.k) ? 'keyed' : null },
+            h('span', { class: 'letter', text: ch.k }), h('span', { html: ch.html })))));
+      }));
   }
 
   // ================================================================== interactive answer areas: UI
@@ -1286,6 +1327,10 @@
         class: 'chip variants', href: `#/q/${q.exam.slug}/${q.n}`,
         title: 'ExamTopics lists this question again with reshuffled choices. Votes are pooled across the copies; click to read them side by side.',
       }, `Also #${q.siblings.map(x => x.n).join(', #')}`) : null,
+      q.copies.length && mode !== 'mock' ? h('span', {
+        class: 'chip copies',
+        title: `ExamTopics lists this question again as ${q.copies.map(c => `#${c.n}`).join(', ')}, with other choices. Those listings are folded into this one: their votes are pooled here, and their choice sets and discussions are shown below the answer key.`,
+      }, `Also listed as #${q.copies.map(c => c.n).join(', #')}`) : null,
       q.series ? h('span', { class: 'chip', text: 'Series', title: 'Part of a series: the same scenario with different proposed solutions. Judge each solution on its own.' }) : null,
       revealed && k && k.disputed ? h('span', { class: 'chip warn', title: area ? 'Upvoted comments disagree with the ExamTopics answer' : 'The community vote disagrees with the ExamTopics answer' }, icon('alert'), 'Disputed') : null,
       mode !== 'mock' ? statusChip(q) : null,
@@ -1573,14 +1618,21 @@
           h('span', { text: `${parts.join('. ')}. Grading uses ${why}. Read the explanation and the discussion and decide for yourself.` })));
       }
       if (q.pooledFrom && q.pooledFrom.length) {
+        const list = ps => ps.map(p => `#${p.q.n}`).join(', ');
+        const pooled = q.pooledFrom.filter(p => !p.skipped);
+        const skipped = q.pooledFrom.filter(p => p.skipped);
         const byKey = new Map();
-        for (const p of q.pooledFrom) if (p.official) byKey.set(p.official, [...(byKey.get(p.official) || []), `#${p.q.n}`]);
+        for (const p of pooled) if (p.official) byKey.set(p.official, [...(byKey.get(p.official) || []), `#${p.q.n}`]);
         const keys = [...byKey].map(([a, ns]) => `${a} for ${ns.join(', ')}`).join('; ');
-        const other = q.pooledFrom.filter(p => !p.official).length;
+        const other = pooled.filter(p => !p.official).length;
+        const folded = q.copies.length === q.pooledFrom.length;
         sec.append(h('p', { class: 'small muted' },
-          `ExamTopics lists this question again as ${q.pooledFrom.map(p => `#${p.q.n}`).join(', ')}, with the choices reshuffled. The votes here pool all copies, and each copy's ExamTopics answer counts as one vote` +
-          `${keys ? ` (${keys} in this question's letters` : ''}${other ? `${keys ? '; ' : ' ('}${other === 1 ? 'one copy answers' : `${other} copies answer`} with a choice this copy does not offer` : ''}${keys || other ? ')' : ''}. `,
-          h('a', { href: `#/q/${q.exam.slug}/${q.n}`, text: 'Read the copies side by side.' })));
+          `ExamTopics lists this question again as ${list(q.pooledFrom)}, with ${folded ? 'other choices; those listings are folded into this one' : 'the choices reshuffled'}. ` +
+          (pooled.length ? `The votes here also count ${skipped.length ? `the copies that offer this question's answer (${list(pooled)})` : 'every copy'}, and each copy's ExamTopics answer counts as one vote` +
+            `${keys ? ` (${keys} in this question's letters` : ''}${other ? `${keys ? '; ' : ' ('}${other === 1 ? 'one copy answers' : `${other} copies answer`} with a choice this copy does not offer` : ''}${keys || other ? ')' : ''}. ` : '') +
+          (skipped.length ? `${list(skipped)} ${skipped.length === 1 ? 'does' : 'do'} not offer this question's answer, so ${skipped.length === 1 ? 'its' : 'their'} votes are not pooled. ` : ''),
+          q.siblings.length ? h('a', { href: `#/q/${q.exam.slug}/${q.n}`, text: 'Read the copies side by side.' }) : null));
+        if (q.copies.length) sec.append(copiesBlock(q));
       }
       if (votesFor(q).length) sec.append(h('div', { class: 'votes', 'aria-label': 'Community vote distribution' }, voteRows(q, k)));
       return sec;
@@ -3148,7 +3200,7 @@
         h('h2', { text: 'Answer key used for grading' }),
         h('p', { class: 'small muted', text: 'ExamTopics publishes a suggested answer, its users vote on the answer they believe is right, and every question has also been re-judged against Microsoft product behaviour (the reviewed answer, with an explanation). All three are shown on every question.' }),
         option('key', 'reviewed', 'Reviewed answer (recommended)', `Grade against the reviewed answer. It corrects ExamTopics on ${Object.values(REVIEWED).filter(r => r.verdict === 'corrected').length} questions and marks its own confidence; where it says low confidence, read the explanation and the discussion.`),
-        option('key', 'community', 'Community vote when it is clear', `Use the most-voted answer once at least ${MIN_VOTES} votes are in and there is no tie; otherwise the ExamTopics answer. Votes are pooled across copies of the same question, and each copy's ExamTopics answer counts as one vote. Drag & drop and hotspot questions have no votes, so a box uses the answer the most-upvoted comments clearly agree on.`),
+        option('key', 'community', 'Community vote when it is clear', `Use the most-voted answer once at least ${MIN_VOTES} votes are in and there is no tie; otherwise the ExamTopics answer. Votes are pooled across the copies of a question that offer its answer, and each such copy's ExamTopics answer counts as one vote. Drag & drop and hotspot questions have no votes, so a box uses the answer the most-upvoted comments clearly agree on.`),
         option('key', 'official', 'ExamTopics answer', 'Always grade against the answer ExamTopics shows as correct.')),
       h('div', { class: 'card stack' },
         h('h2', { text: 'Practice' }),
