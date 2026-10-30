@@ -120,6 +120,7 @@
       q.extra = true;
       exam.questions.push(q);
     }
+    exam.questions.sort((a, b) => a.n - b.n);
     exam.cases = Object.assign(exam.cases || {}, ex.cases || {});
   }
   window.AREAS = Object.assign(window.AREAS || {}, EXTRA.areas || {});
@@ -2540,13 +2541,15 @@
     const groupBlock = g => {
       const qs = skillQuestions(exam, g.id);
       const st = stats(qs);
-      const share = mapped.length ? pct(qs.length, mapped.length) : 0;
+      // The first objective is a question's primary one, so these counts add up to the bank and the shares to 100%.
+      const main = mapped.filter(q => inScope(q.sk[0], g.id)).length;
+      const share = mapped.length ? pct(main, mapped.length) : 0;
       return h('details', { class: 'skill-group' },
         h('summary', null,
           h('span', { class: 'name' }, icon('chevDown'), h('span', { class: 'name-text', text: `${g.id}. ${g.title}` }), h('span', { class: 'chip accent', title: 'Official weight of this group on the exam', text: `${g.pct[0]}–${g.pct[1]}%` })),
           meter(st.seen, st.total, `${g.title}: ${st.seen} of ${st.total} seen`),
           h('span', { class: 'acc', text: accText(st) }),
-          h('div', { class: 'meta', text: `${plural(qs.length, 'question')} in the bank (${share}% of mapped questions vs ${g.pct[0]}–${g.pct[1]}% on the exam) · ${st.seen} seen · ${st.mastered} mastered` })),
+          h('div', { class: 'meta', text: `${main} mainly test this (${share}% of the bank vs ${g.pct[0]}–${g.pct[1]}% on the exam), ${qs.length} touch it · ${st.seen} seen · ${st.mastered} mastered` })),
         g.areas.map(areaBlock));
     };
     return h('div', { class: 'card stack' },
@@ -2558,6 +2561,7 @@
         h('p', { class: 'small muted', style: 'margin-top:4px' },
           `Microsoft's blueprint for ${exam.code}, as of ${fmtDay(parseDay(sk.asof))}. ${plural(mapped.length, 'question')} of ${exam.questions.length} are mapped to its ${plural(bullets.length, 'objective')}; ` +
           `${gaps ? `${gaps} objectives have no question in the bank yet, so study those from the Guide and Learn.` : 'every objective has at least one question.'} ` +
+          `A question can test several objectives, so the "touch it" counts overlap; the "mainly" counts add up to ${mapped.length}. ` +
           'Open a group to see each objective, practice it, or jump to where it is explained.')),
       h('div', { class: 'stack', style: 'gap:10px' }, sk.groups.map(groupBlock)));
   }
@@ -3046,7 +3050,7 @@
       const num = state.q.trim().match(/^#?(\d+)$/);
       const list = EXAMS.filter(e => !state.exam || e.code === state.exam).flatMap(e => e.questions).filter(q =>
         (!state.type || q.type === state.type) && (!state.kp || q.kp === state.kp) && statusMatch(q, state.status) &&
-        (num ? q.n === Number(num[1]) : terms.every(t => searchText(q, state.deep).includes(t))));
+        (num ? q.n === Number(num[1]) || (q.copies || []).some(c => c.n === Number(num[1])) : terms.every(t => searchText(q, state.deep).includes(t))));
       count.textContent = `${plural(list.length, 'question')}${terms.length ? ' match' : ''}`;
       const multiExam = !state.exam;
       results.replaceChildren(...(list.length ? list.slice(0, 400).map(q => h('button', {
@@ -3279,8 +3283,10 @@
   ];
 
   function viewVariants(exam, n) {
-    const q = exam && exam.questions.find(x => x.n === n);
+    // A folded copy's old number opens the question it was folded into.
+    const q = exam && (exam.questions.find(x => x.n === n) || exam.questions.find(x => (x.copies || []).some(c => c.n === n)));
     if (!q) return navigate('#/', true);
+    n = q.n;
     const group = [q, ...q.siblings].sort((a, b) => a.n - b.n);
     startSession(exam, { key: 'read', mode: 'read', title: q.siblings.length ? `Question ${n} and its ${plural(q.siblings.length, 'copy', 'copies')}` : `Question ${n}`, ids: group.map(x => x.id), i: group.indexOf(q), replace: true });
   }
