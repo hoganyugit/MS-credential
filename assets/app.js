@@ -141,17 +141,22 @@
   const examBySlug = slug => EXAMS.find(e => e.slug === slug);
   const topicLabel = (exam, n) => (exam.topicName[n] && exam.topicName[n] !== `Topic ${n}` ? `${n}. ${exam.topicName[n]}` : `Topic ${n}`);
   const multiTopic = exam => exam.topics.length > 1;
+  // The guide links by ExamTopics number, which never changes; a link's text shows the number the reader sees.
+  const questionLinks = html => html.replace(/(href="#\/q\/([\w-]+)\/(\d+)"[^>]*>)Q\d+/g, (m, open, slug, n) => {
+    const q = examBySlug(slug) && examBySlug(slug).questions.find(x => x.n === Number(n));
+    return q ? `${open}Q${q.no}` : m;
+  });
   const examByCode = code => EXAMS.find(e => e.code === code);
-  // Question numbers are ExamTopics' own, so they don't run 1..total: folded copies leave gaps and the
-  // supplementary questions are numbered from 1001. This says how the total and the numbers fit together.
+  // How the total and the numbers fit together: an exam with folded copies is numbered 1..total (see q.no).
   const countNote = exam => {
     const bank = exam.questions.filter(q => !q.extra);
     const extra = exam.questions.filter(q => q.extra);
-    const hosts = bank.filter(q => q.copies && q.copies.length);
-    const folded = hosts.reduce((n, q) => n + q.copies.length, 0);
-    return `${bank.length} from ExamTopics`
-      + (folded ? `, numbered up to #${Math.max(...bank.map(q => q.n))} because ${plural(folded, 'repeat listing')} ${folded === 1 ? 'is' : 'are'} folded into ${hosts.map(q => `#${q.n}`).join(', ')}` : '')
-      + (extra.length ? `; ${extra.length} supplementary, numbered from #${Math.min(...extra.map(q => q.n))}` : '') + '.';
+    const folded = bank.reduce((n, q) => n + q.copies.length, 0);
+    const range = qs => `#${qs[0].no}${qs.length > 1 ? `–${qs[qs.length - 1].no}` : ''}`;
+    return folded
+      ? `${bank.length} from ExamTopics (${range(bank)}, each showing its ExamTopics number; ${plural(folded, 'repeat listing')} ${folded === 1 ? 'is' : 'are'} folded in)` +
+        (extra.length ? ` and ${extra.length} supplementary (${range(extra)})` : '') + '.'
+      : `${bank.length} from ExamTopics` + (extra.length ? `; ${extra.length} supplementary, numbered from #${extra[0].no}` : '') + '.';
   };
 
   // data/tags.js adds skill areas to an exam whose source has no topics; data/bank.js links each question to
@@ -168,6 +173,13 @@
     }
     const byN = new Map(exam.questions.map(q => [q.n, q]));
     for (const q of exam.questions) q.siblings = (q.variants || []).map(n => byN.get(n)).filter(Boolean);
+    // Folded copies leave holes in ExamTopics' numbers, so such an exam shows its questions as 1..total. q.no is
+    // the number the reader sees; q.n stays the ExamTopics number that links, variants and the tools go by.
+    const renumbered = exam.questions.some(q => q.copies.length);
+    exam.questions.forEach((q, i) => {
+      q.no = renumbered ? i + 1 : q.n;
+      q.source = renumbered && !q.extra ? q.n : null;
+    });
   }
 
   // data/reviewed.js: every question re-judged against Microsoft product behaviour, with an explanation and a
@@ -788,7 +800,7 @@
       if (!c.comments.length) continue;
       sec.append(h('div', { class: 'copy-thread' },
         h('div', { class: 'section-head' },
-          h('h4', { text: `Discussion of #${c.n} (${countComments(c.comments)})` }),
+          h('h4', { text: `Discussion of ExamTopics #${c.n} (${countComments(c.comments)})` }),
           h('span', { class: 'spacer' }),
           c.thread ? h('a', { class: 'small', href: c.thread, target: '_blank', rel: 'noopener noreferrer' }, 'Open on ExamTopics ', icon('external')) : null),
         h('p', { class: 'small muted', text: `Its choices: ${c.choices.map(ch => `${ch.k}. ${plain(ch.html)}`).join(' · ')}` }),
@@ -827,13 +839,13 @@
   // key and vote split, so a reader who meets another copy on the exam knows what it offers and what was keyed.
   function copiesBlock(q) {
     return h('details', { class: 'copies' },
-      h('summary', null, icon('list'), `The other choice sets (${q.copies.map(c => `#${c.n}`).join(', ')})`),
+      h('summary', null, icon('list'), `The other choice sets (ExamTopics ${q.copies.map(c => `#${c.n}`).join(', ')})`),
       q.copies.map(c => {
         const total = c.votes.reduce((n, v) => n + v.n, 0);
         const split = [...c.votes].sort((a, b) => b.n - a.n).map(v => `${v.a} ${v.p}%`).join(' · ');
         return h('div', { class: 'copy' },
           h('div', { class: 'copy-head' },
-            h('b', { text: `#${c.n}` }),
+            h('b', { text: `ExamTopics #${c.n}` }),
             h('span', { class: 'chip code', text: `ExamTopics ${c.answer || '—'}` }),
             h('span', { class: 'small muted', text: total ? `${plural(total, 'vote')}: ${split}` : 'No votes' })),
           h('ol', { class: 'copy-choices' }, c.choices.map(ch => h('li', { class: c.answer && c.answer.includes(ch.k) ? 'keyed' : null },
@@ -1310,7 +1322,7 @@
     const flagged = mode === 'mock' ? !!e.flag : isFlagged(q);
     const flagWord = on => (mode === 'mock' ? (on ? 'Marked for review' : 'Mark for review') : (on ? 'Flagged' : 'Flag'));
 
-    const card = h('article', { class: 'qcard', 'aria-label': `Question ${q.n}` });
+    const card = h('article', { class: 'qcard', 'aria-label': `Question ${q.no}` });
     const body = h('div', { class: 'qcard-body' });
     card.append(body);
 
@@ -1319,7 +1331,7 @@
     }, icon('flag'), h('span', { text: flagWord(flagged) }));
 
     body.append(h('div', { class: 'qmeta' },
-      h('span', { class: 'qnum', text: `Question ${q.n}` }),
+      h('span', { class: 'qnum', text: `Question ${q.no}` }),
       ctx.pos ? h('span', { class: 'pos', text: ctx.pos }) : null,
       multiTopic(q.exam) && q.topic ? h('span', { class: 'chip', title: topicLabel(q.exam, q.topic), text: q.exam.tagged ? q.exam.topicName[q.topic] : `Topic ${q.topic}` }) : null,
       h('span', { class: 'chip', text: TYPE_LABEL[q.type] || q.type }),
@@ -1334,15 +1346,16 @@
           onclick: () => startSession(q.exam, { mode: 'practice', title: `${o.bullet.id} ${o.bullet.text}`, ids: skillQuestions(q.exam, id).map(x => x.id) }),
         });
       }) : null,
+      q.source && mode !== 'mock' ? h('span', { class: 'chip', title: "This question's number on ExamTopics", text: `ExamTopics #${q.source}` }) : null,
       q.extra && mode !== 'mock' ? h('span', { class: 'chip accent', title: 'Written for this app in the official style, for an objective ExamTopics does not cover; not an ExamTopics question', text: 'Supplement' }) : null,
       q.siblings.length && mode !== 'mock' ? h('a', {
         class: 'chip variants', href: `#/q/${q.exam.slug}/${q.n}`,
         title: 'ExamTopics lists this question again with reshuffled choices. Votes are pooled across the copies; click to read them side by side.',
-      }, `Also #${q.siblings.map(x => x.n).join(', #')}`) : null,
+      }, `Also #${q.siblings.map(x => x.no).join(', #')}`) : null,
       q.copies.length && mode !== 'mock' ? h('span', {
         class: 'chip copies',
         title: `ExamTopics lists this question again as ${q.copies.map(c => `#${c.n}`).join(', ')}, with other choices. Those listings are folded into this one: their votes are pooled here, and their choice sets and discussions are shown below the answer key.`,
-      }, `Also listed as #${q.copies.map(c => c.n).join(', #')}`) : null,
+      }, `Also listed as ExamTopics #${q.copies.map(c => c.n).join(', #')}`) : null,
       q.series ? h('span', { class: 'chip', text: 'Series', title: 'Part of a series: the same scenario with different proposed solutions. Judge each solution on its own.' }) : null,
       revealed && k && k.disputed ? h('span', { class: 'chip warn', title: area ? 'Upvoted comments disagree with the ExamTopics answer' : 'The community vote disagrees with the ExamTopics answer' }, icon('alert'), 'Disputed') : null,
       mode !== 'mock' ? statusChip(q) : null,
@@ -1882,7 +1895,7 @@
       ch.sections.map(s => h('section', { class: 'guide-section', id: `sec-${s.id}` },
         h('h2', null, h('a', { href: `#/guide/${ch.id}/${s.id}`, text: s.title })),
         skillPracticeRow(ch, s),
-        h('div', { class: 'guide-prose', html: s.html }))),
+        h('div', { class: 'guide-prose', html: questionLinks(s.html) }))),
       terms.length ? h('section', { class: 'guide-section' }, h('h2', { text: '本章术语' }),
         h('div', { class: 'row terms' }, terms.map(t => h('a', { class: 'chip term', 'data-term': t.id, href: `#/guide/glossary/${t.id}`, 'data-tip': t.zh }, t.term)))) : null,
       practiceSection(ch),
@@ -1991,10 +2004,10 @@
         const q = QUESTIONS.get(id);
         return h('button', {
           type: 'button', class: [cls(id, q), i === current ? 'current' : ''].join(' '),
-          'aria-label': `Question ${q.n}`, 'aria-current': i === current ? 'step' : null,
-          'data-tip': `Question ${q.n}`, 'data-tip-sub': TYPE_LABEL[q.type],
+          'aria-label': `Question ${q.no}`, 'aria-current': i === current ? 'step' : null,
+          'data-tip': `Question ${q.no}`, 'data-tip-sub': TYPE_LABEL[q.type],
           onclick: () => { nav.classList.remove('open'); jump(i); },
-        }, String(q.n));
+        }, String(q.no));
       }));
     }
 
@@ -2400,7 +2413,7 @@
         quickAction({
           iconName: live ? 'list' : 'play', primary: !live, onclick: () => continueInOrder(exam),
           title: firstNew ? (st.seen ? 'Continue in order' : 'Start in order') : 'Practice everything',
-          sub: firstNew ? `Next unseen: question ${firstNew.n}` : 'Every question seen at least once',
+          sub: firstNew ? `Next unseen: question ${firstNew.no}` : 'Every question seen at least once',
         }),
         quickAction({ iconName: 'repeat', title: 'Review due', sub: st.due ? `${plural(st.due, 'question')} ready` : 'Nothing due right now', onclick: () => startPool(exam, 'due'), disabled: !st.due }),
         quickAction({ iconName: 'target', title: 'Mistakes', sub: st.mistakes ? `${st.mistakes} last answered wrong` : 'No mistakes to fix', onclick: () => startPool(exam, 'mistakes'), disabled: !st.mistakes }),
@@ -2963,7 +2976,7 @@
         h('div', { class: 'list' }, items.map((it, i) => {
           const q = QUESTIONS.get(it.id);
           return h('button', { class: 'list-row', type: 'button', onclick: () => review(items, i, 'Mock exam review') },
-            h('span', { class: 'qn', text: `#${q.n}` }),
+            h('span', { class: 'qn', text: `#${q.no}` }),
             h('div', { style: 'min-width:0' },
               h('div', { class: 'snippet', text: stemText(q) }),
               h('div', { class: 'sub' }, h('span', { text: TYPE_LABEL[q.type] }),
@@ -3050,7 +3063,7 @@
       const num = state.q.trim().match(/^#?(\d+)$/);
       const list = EXAMS.filter(e => !state.exam || e.code === state.exam).flatMap(e => e.questions).filter(q =>
         (!state.type || q.type === state.type) && (!state.kp || q.kp === state.kp) && statusMatch(q, state.status) &&
-        (num ? q.n === Number(num[1]) || (q.copies || []).some(c => c.n === Number(num[1])) : terms.every(t => searchText(q, state.deep).includes(t))));
+        (num ? q.no === Number(num[1]) || q.n === Number(num[1]) || q.copies.some(c => c.n === Number(num[1])) : terms.every(t => searchText(q, state.deep).includes(t))));
       count.textContent = `${plural(list.length, 'question')}${terms.length ? ' match' : ''}`;
       const multiExam = !state.exam;
       results.replaceChildren(...(list.length ? list.slice(0, 400).map(q => h('button', {
@@ -3060,13 +3073,14 @@
           startSession(q.exam, { key: 'read', mode: 'read', title: state.q ? `Search: “${state.q}”` : `Browse ${q.exam.code}`, ids, i: ids.indexOf(q.id) });
         },
       },
-      h('span', { class: 'qn', text: `#${q.n}` }),
+      h('span', { class: 'qn', text: `#${q.no}` }),
       h('div', { style: 'min-width:0' },
         h('div', { class: 'snippet' }, snippet(stemText(q), terms)),
         h('div', { class: 'sub' },
           multiExam ? h('span', { class: 'chip code', text: q.exam.code }) : null,
           multiTopic(q.exam) ? h('span', { text: `Topic ${q.topic}` }) : null,
           h('span', { text: TYPE_LABEL[q.type] }),
+          q.source ? h('span', { text: `ExamTopics #${q.source}` }) : null,
           q.kp ? h('span', { text: q.kp }) : null,
           q.case ? h('span', { text: `Case: ${q.exam.cases[q.case].name}` }) : null)),
       h('span', { class: 'tags' }, isFlagged(q) ? h('span', { class: 'chip warn', title: 'Flagged' }, icon('flag')) : null, statusChip(q))))
@@ -3286,9 +3300,8 @@
     // A folded copy's old number opens the question it was folded into.
     const q = exam && (exam.questions.find(x => x.n === n) || exam.questions.find(x => (x.copies || []).some(c => c.n === n)));
     if (!q) return navigate('#/', true);
-    n = q.n;
     const group = [q, ...q.siblings].sort((a, b) => a.n - b.n);
-    startSession(exam, { key: 'read', mode: 'read', title: q.siblings.length ? `Question ${n} and its ${plural(q.siblings.length, 'copy', 'copies')}` : `Question ${n}`, ids: group.map(x => x.id), i: group.indexOf(q), replace: true });
+    startSession(exam, { key: 'read', mode: 'read', title: q.siblings.length ? `Question ${q.no} and its ${plural(q.siblings.length, 'copy', 'copies')}` : `Question ${q.no}`, ids: group.map(x => x.id), i: group.indexOf(q), replace: true });
   }
 
   function route() {
