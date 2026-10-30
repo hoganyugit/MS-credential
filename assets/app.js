@@ -141,6 +141,17 @@
   const topicLabel = (exam, n) => (exam.topicName[n] && exam.topicName[n] !== `Topic ${n}` ? `${n}. ${exam.topicName[n]}` : `Topic ${n}`);
   const multiTopic = exam => exam.topics.length > 1;
   const examByCode = code => EXAMS.find(e => e.code === code);
+  // Question numbers are ExamTopics' own, so they don't run 1..total: folded copies leave gaps and the
+  // supplementary questions are numbered from 1001. This says how the total and the numbers fit together.
+  const countNote = exam => {
+    const bank = exam.questions.filter(q => !q.extra);
+    const extra = exam.questions.filter(q => q.extra);
+    const hosts = bank.filter(q => q.copies && q.copies.length);
+    const folded = hosts.reduce((n, q) => n + q.copies.length, 0);
+    return `${bank.length} from ExamTopics`
+      + (folded ? `, numbered up to #${Math.max(...bank.map(q => q.n))} because ${plural(folded, 'repeat listing')} ${folded === 1 ? 'is' : 'are'} folded into ${hosts.map(q => `#${q.n}`).join(', ')}` : '')
+      + (extra.length ? `; ${extra.length} supplementary, numbered from #${Math.min(...extra.map(q => q.n))}` : '') + '.';
+  };
 
   // data/tags.js adds skill areas to an exam whose source has no topics; data/bank.js links each question to
   // its variants (the same question listed again with reshuffled, partly different choices) and carries, as
@@ -2371,7 +2382,8 @@
           h('div', { class: 'row', style: 'margin-bottom:8px' },
             h('span', { class: 'chip code accent', text: exam.code }),
             h('span', { class: 'small muted', text: multiTopic(exam) ? `${plural(st.total, 'question')} · ${plural(exam.topics.length, 'topic')}` : plural(st.total, 'question') })),
-          h('h1', { text: exam.title })),
+          h('h1', { text: exam.title }),
+          h('p', { class: 'small muted', text: countNote(exam) })),
         h('span', { class: 'spacer' }),
         h('a', { class: 'btn sm ghost', href: exam.url, target: '_blank', rel: 'noopener noreferrer' }, 'ExamTopics', icon('external'))),
       h('div', { class: 'tiles' },
@@ -3239,7 +3251,7 @@
         h('div', { class: 'row' }, resetScope, h('button', { class: 'btn bad', type: 'button', onclick: reset }, icon('trash'), 'Reset progress'))),
       h('div', { class: 'card stack' },
         h('h2', { text: 'Question bank' }),
-        h('p', { class: 'small muted', text: `Built ${fmtDay(parseDay(BANK.generated))} from ExamTopics: ${EXAMS.map(e => `${e.code} (${e.questions.length})`).join(', ')}.` }),
+        h('p', { class: 'small muted', text: `Built ${fmtDay(parseDay(BANK.generated))} from ExamTopics, plus supplementary questions: ${EXAMS.map(e => `${e.code} (${e.questions.filter(q => !q.extra).length} + ${e.questions.filter(q => q.extra).length})`).join(', ')}.` }),
         h('p', { class: 'small muted' }, 'To refresh it, update the cookie in EXAM_SOURCES.md and run ', h('code', { text: 'python3 tools/examtopics.py --cache .cache' }), '. Progress is keyed by question ID, so it carries over.'))));
   }
 
