@@ -56,7 +56,7 @@ sent anywhere and progress stays in the browser as before.
 | **Mock exam** | Random questions with a timer and no feedback until you finish. "Mark for review" and a question grid work like the real exam, case-study questions sit together, and series questions lock once you move on (optional). Everything is scored automatically; as on the real exam, drag & drop and hotspot questions earn partial credit per correct box. |
 | **Study plan** | On each exam page: set the exam date and a daily goal to get the pace needed for a first pass, today's progress, and a readiness verdict from your last three mock exams. |
 | **Read-through / Browse** | Answers shown up front; full-text search (optionally including discussions), plus filters by status, type and disputed answers. |
-| **Guide (指南)** | A concept guide, in Chinese with the English terms kept, to the Microsoft products and vocabulary the questions assume: seven concept chapters (the four product maps, identity and security, ALM, Copilot Studio, Azure AI and Foundry, AI business solutions, multi-agent systems) and a 303-term glossary with search, exam filter and A–Z index. Every section and glossary entry links the Microsoft Learn page it was checked against (October 2026). Glossary terms are marked in question text (first mention per card, never in mock exams); click one for its Chinese explanation, chapter and Learn link. Each chapter ends with practice sets by knowledge point. |
+| **Guide (指南)** | A concept guide, in Chinese with the English terms kept, to the Microsoft products and vocabulary the questions assume: seven concept chapters (the four product maps, identity and security, ALM, Copilot Studio, Azure AI and Foundry, AI business solutions, multi-agent systems) and a 303-term glossary with search, exam filter and A–Z index. Every section and glossary entry links the Microsoft Learn page it was checked against (October 2026). Glossary terms are marked in question text (first mention per card, never in mock exams); click one for its Chinese explanation, chapter and Learn link. Each chapter ends with practice sets by knowledge point. A question opened from a guide link shows a **回到指南** button that returns to the spot the link was on (the browser's Back does the same). |
 
 **Case studies.** The long scenario is stored once and opens beside the question
 (press **S**), with its headings, lists and "Label: value" facts restored. ExamTopics flattens
@@ -74,10 +74,10 @@ keyed. `python3 tools/examtopics.py fold` applies the table to `data/bank.js` wi
 
 **Reviewed answers.** Every question was re-judged against Microsoft product behaviour and
 documentation and given an explanation, a confidence level and a knowledge-point tag
-(`data/reviewed.js`). The review confirms ExamTopics on 454 questions and corrects it on 71;
-10 answers are marked low confidence. Answers that hinge on product details were checked against
-the current Microsoft Learn pages, and 206 entries link the page they rely on. AI-500 has almost no
-community votes or comments, and the review corrects 25 of its 107 ExamTopics answers. By default the app
+(`data/reviewed.js`). The review confirms ExamTopics on 455 questions and corrects it on 70;
+13 answers are marked low confidence. Answers that hinge on product details were checked against
+the current Microsoft Learn pages, and 219 entries link the page they rely on. AI-500 has almost no
+community votes or comments, and the review corrects 24 of its 107 ExamTopics answers. By default the app
 grades against the reviewed answer and
 shows all three keys (reviewed, ExamTopics, community vote) on every question. The review was
 done by an AI model reading the questions, not by Microsoft, so treat a low-confidence answer as
@@ -125,7 +125,7 @@ app adds a practice row to every section with the bank questions on that sub-are
 (出题规律) is the pattern analysis of all 539 questions: for each exam, the question formats and
 stem formulas, the recurring "requirement wording → correct answer" decision rules, distractor
 patterns, hot and cold objectives, how case-study requirement lines become questions, and
-tactics; every question number in it links to the question. Chapters 8–10 and 12 walk the official
+tactics; every question number in it links to the question, including the ExamTopics numbers of folded AB-100 copies. Chapters 8–10 and 12 walk the official
 outlines objective by objective, each bullet with what the examiner expects and its Learn sources;
 chapter 11 is the multi-agent map that AI-500 builds on (where agents run, orchestration patterns,
 MCP and A2A, memory tiers, agent identity, guardrail intervention points, evaluation, release).

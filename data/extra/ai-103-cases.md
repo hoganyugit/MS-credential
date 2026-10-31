@@ -176,11 +176,11 @@ You need to implement Listener Line to meet the technical requirements.
 
 What should you do?
 
-- *A. Deploy gpt-4o-audio-preview in Project1, and send a chat completions request whose user message contains a text part with the question and an input_audio part that contains the base64-encoded WAV data with the format set to wav.
+- *A. Deploy gpt-audio in Project1, and send a chat completions request whose user message contains a text part with the question and an input_audio part that contains the base64-encoded WAV data with the format set to wav.
 - B. Deploy whisper in Project1, transcribe each voicemail, and then send the transcript and the question to the gpt-4.1 deployment.
 - C. Use the Azure Speech fast transcription API to transcribe each voicemail, and then send the transcript and the question to the gpt-4.1 deployment.
 - D. Send a chat completions request to the gpt-4.1 deployment whose user message contains a text part with the question and an image_url part that references the WAV file.
 
-> why: 需求是"单次 chat completions 请求直接接收 WAV、没有单独的 speech-to-text 步骤"并要判断来电者的语气，只有音频模型能做到：gpt-4o-audio-preview（或 gpt-4o-mini-audio-preview）在 /chat/completions 上支持 audio → text 这一模态组合，消息 content 用 `{"type":"input_audio","input_audio":{"data":<base64>,"format":"wav"}}` 加文本提问即可，音频文件上限 20 MB、Litware 的 voicemail 都小于 10 MB。B、C 都先转写再提问，既是独立的 speech-to-text 步骤，又丢掉了语气等文字里没有的信息；D 错：gpt-4.1 不是音频模型，image_url 只接受图片。
+> why: 需求是"单次 chat completions 请求直接接收 WAV、没有单独的 speech-to-text 步骤"并要判断来电者的语气，只有音频模型能做到：GA 的 gpt-audio（或 gpt-audio-mini；两者取代了 gpt-4o-audio-preview 预览版）在 /chat/completions 上支持 audio → text 这一模态组合，消息 content 用 `{"type":"input_audio","input_audio":{"data":<base64>,"format":"wav"}}` 加文本提问即可，音频文件上限 20 MB、Litware 的 voicemail 都小于 10 MB。B、C 都先转写再提问，既是独立的 speech-to-text 步骤，又丢掉了语气等文字里没有的信息；D 错：gpt-4.1 不是音频模型，image_url 只接受图片。
 > ref: https://learn.microsoft.com/en-us/azure/ai-foundry/openai/audio-completions-quickstart
 > ref: https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/gpt-with-vision

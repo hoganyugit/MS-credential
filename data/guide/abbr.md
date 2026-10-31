@@ -8,7 +8,7 @@ tools/build_guide.py 和 tools/build_skills.py 用这张表展开缩写：每一
 
 keep: Cosmos DB | VS Code | Azure Cosmos DB for NoSQL | Entra ID V2 | F1 Score
 
-ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG | MP4 | TXT | MB | GB | VIP | NVIDIA | SAP | DALL | LINE | IQ | AND | NOT | MUST | NEVER | TEST | DEV | PROD | PREPROD | ENDPOINT | GET | POST | PUT | PATCH | DELETE | KEY1 | KEY2 | GENERIC | MEDICAL | ASP
+ignore: AI | PC | IT | CEO | US | EU | ID | IDs | PDF | PDFs | PNG | JPEG | JPG | MP4 | TXT | MB | GB | VIP | NVIDIA | SAP | DALL | LINE | IQ | AND | NOT | MUST | NEVER | TEST | DEV | PROD | PREPROD | ENDPOINT | GET | POST | PUT | PATCH | DELETE | KEY1 | KEY2 | GENERIC | MEDICAL | ASP | XO
 
 ## AI 与模型
 

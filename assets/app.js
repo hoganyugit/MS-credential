@@ -1643,11 +1643,13 @@
           h('span', { text: `${parts.join('. ')}. Grading uses ${why}. Read the explanation and the discussion and decide for yourself.` })));
       }
       if (q.pooledFrom && q.pooledFrom.length) {
-        const list = ps => ps.map(p => `#${p.q.n}`).join(', ');
+        // a variant is a question of its own (shown by its number, with the ExamTopics one where they differ); a folded copy has only its ExamTopics number
+        const label = x => (x.no == null ? `ExamTopics #${x.n}` : x.no !== x.n ? `#${x.no} (ExamTopics #${x.n})` : `#${x.n}`);
+        const list = ps => ps.map(p => label(p.q)).join(', ');
         const pooled = q.pooledFrom.filter(p => !p.skipped);
         const skipped = q.pooledFrom.filter(p => p.skipped);
         const byKey = new Map();
-        for (const p of pooled) if (p.official) byKey.set(p.official, [...(byKey.get(p.official) || []), `#${p.q.n}`]);
+        for (const p of pooled) if (p.official) byKey.set(p.official, [...(byKey.get(p.official) || []), label(p.q)]);
         const keys = [...byKey].map(([a, ns]) => `${a} for ${ns.join(', ')}`).join('; ');
         const other = pooled.filter(p => !p.official).length;
         const folded = q.copies.length === q.pooledFrom.length;
@@ -1891,7 +1893,7 @@
         h('div', { class: 'row', style: 'margin-bottom:8px' }, h('span', { class: 'chip accent', text: `第 ${ch.n} 章` }), ch.exams.map(examChip)),
         h('h1', { text: ch.title }),
         ch.intro ? h('p', { class: 'sub', text: ch.intro }) : null)),
-      ch.lead ? h('div', { class: 'guide-prose', html: ch.lead }) : null,
+      ch.lead ? h('div', { class: 'guide-prose', html: questionLinks(ch.lead) }) : null,
       ch.sections.map(s => h('section', { class: 'guide-section', id: `sec-${s.id}` },
         h('h2', null, h('a', { href: `#/guide/${ch.id}/${s.id}`, text: s.title })),
         skillPracticeRow(ch, s),
@@ -2011,9 +2013,10 @@
       }));
     }
 
-    const mobileBar = (label, title) => h('div', { class: 'row nav-toggle' },
+    const mobileBar = (label, title, extra) => h('div', { class: 'row nav-toggle' },
       h('button', { class: 'btn sm', type: 'button', 'aria-label': 'Show question list', onclick: () => nav.classList.toggle('open') }, icon('menu'), label),
-      h('span', { class: 'small muted', text: title }));
+      h('span', { class: 'small muted', text: title }),
+      extra ? h('span', { class: 'spacer' }) : null, extra || null);
 
     return { root, nav, stage, drawCase, navGrid, mobileBar };
   }
@@ -2024,12 +2027,12 @@
 
   const MODE_LABEL = { practice: 'Practice', read: 'Read-through', review: 'Mock exam review' };
 
-  function startSession(exam, { key = exam.code, mode, title, ids, i = 0, mockId, replace }) {
+  function startSession(exam, { key = exam.code, mode, title, ids, i = 0, mockId, replace, back }) {
     if (!ids.length) {
       toast('No questions match that selection.');
       return;
     }
-    S.sessions[key] = { code: exam.code, mode, title, ids, i, res: {}, mockId, created: Date.now() };
+    S.sessions[key] = { code: exam.code, mode, title, ids, i, res: {}, mockId, created: Date.now(), back: back || undefined };
     store.save();
     navigate(`#/s/${key === exam.code ? exam.slug : key}`, replace);
   }
@@ -2058,6 +2061,18 @@
       escape: () => setCase(false),
       live: () => S.sessions[key] === s && (!mock || S.mocks.includes(mock)), // untouched by a sync merge
     });
+    // A session opened from a guide link (viewVariants) offers the way back to that page. Drawn right after the
+    // #/q/ redirect, the previous history entry is that page, so Back returns to it at the same spot; otherwise
+    // (a reload, a synced session) the page is opened again and scrolled to where the link was.
+    if (s.back && /^#\/q\//.test(origin.hash)) history.replaceState({ ...history.state, from: s.back.hash }, '');
+    const guideBtn = () => (s.back ? h('button', {
+      class: 'btn sm ghost', type: 'button', title: '回到打开这道题的指南页面',
+      onclick: () => {
+        if (history.state && history.state.from === s.back.hash) return history.back();
+        restoreY = s.back.y;
+        navigate(s.back.hash);
+      },
+    }, icon('guide'), '回到指南') : null);
 
     const peek = id => (mock ? mock.items.find(it => it.id === id) : s.res[id]);
     const entry = id => (mock ? peek(id) : (s.res[id] = s.res[id] || {}));
@@ -2143,7 +2158,7 @@
         onChange: () => touch(e),
         onFlag: drawNav,
       });
-      L.stage.replaceChildren(L.mobileBar(`${s.i + 1} / ${s.ids.length}`, s.title), card);
+      L.stage.replaceChildren(L.mobileBar(`${s.i + 1} / ${s.ids.length}`, s.title, guideBtn()), card);
       hideTip();
       drawNav();
       L.drawCase(q);
@@ -2174,9 +2189,9 @@
           legendItem('Wrong', 'background:var(--bad-wash);border-color:var(--bad)'),
           s.ids.some(id => selfGraded(QUESTIONS.get(id))) ? legendItem('Needs your grade', 'border-color:var(--warn)') : null,
           legendItem('Flagged', 'background:var(--warn);border-color:var(--warn);border-radius:50%')),
-        mock
+        h('div', { class: 'row' }, guideBtn(), mock
           ? h('a', { class: 'btn sm', href: `#/result/${mock.id}` }, icon('left'), 'Back to results')
-          : h('button', { class: 'btn sm', type: 'button', onclick: () => jump(s.ids.length) }, 'End session'));
+          : h('button', { class: 'btn sm', type: 'button', onclick: () => jump(s.ids.length) }, 'End session')));
     }
 
     function summary() {
@@ -2203,6 +2218,7 @@
             onclick: () => startSession(exam, { mode: 'practice', title: 'Retry mistakes', ids: wrong }),
           }, icon('repeat'), `Retry the ${wrong.length} you missed`) : null,
           h('button', { class: 'btn', type: 'button', onclick: () => jump(0) }, 'Back to the first question'),
+          guideBtn(),
           h('a', { class: 'btn ghost', href: `#/exam/${exam.slug}` }, `${exam.code} overview`)))));
       scrollTo({ top: 0 });
     }
@@ -2964,7 +2980,8 @@
         h('span', { class: 'spacer' }),
         h('button', { class: 'btn sm primary', type: 'button', onclick: () => review(pending, 0, 'Self-grade') }, 'Grade them now')) : null,
       h('div', { class: 'grid-2' },
-        exam.skills ? breakdown('By official skill group', exam.skills.groups.map(g => [`${g.id}. ${g.title} (${g.pct[0]}–${g.pct[1]}%)`, q => q.sk.some(id => id[0] === g.id)])) : null,
+        // by each question's primary objective, as on the exam page, so the rows add up to the exam's questions
+        exam.skills ? breakdown('By official skill group', exam.skills.groups.map(g => [`${g.id}. ${g.title} (${g.pct[0]}–${g.pct[1]}%)`, q => !!q.sk.length && q.sk[0][0] === g.id])) : null,
         multiTopic(exam) && !exam.skills ? breakdown('By topic', exam.topics.map(t => [topicLabel(exam, t.n), q => q.topic === t.n])) : null,
         exam.kps.length ? breakdown('By knowledge point', exam.kps.map(kp => [kp, q => q.kp === kp])) : null,
         breakdown('By question type', [...new Set(items.map(it => QUESTIONS.get(it.id).type))].map(t => [TYPE_LABEL[t] || t, q => q.type === t]))),
@@ -3301,9 +3318,14 @@
     const q = exam && (exam.questions.find(x => x.n === n) || exam.questions.find(x => (x.copies || []).some(c => c.n === n)));
     if (!q) return navigate('#/', true);
     const group = [q, ...q.siblings].sort((a, b) => a.n - b.n);
-    startSession(exam, { key: 'read', mode: 'read', title: q.siblings.length ? `Question ${q.no} and its ${plural(q.siblings.length, 'copy', 'copies')}` : `Question ${q.no}`, ids: group.map(x => x.id), i: group.indexOf(q), replace: true });
+    // Opened from a guide page: the session offers the way back to that page, at the spot the link was on.
+    const back = /^#\/guide/.test(origin.hash) ? { hash: origin.hash, y: origin.y } : null;
+    startSession(exam, { key: 'read', mode: 'read', title: q.siblings.length ? `Question ${q.no} and its ${plural(q.siblings.length, 'copy', 'copies')}` : `Question ${q.no}`, ids: group.map(x => x.id), i: group.indexOf(q), replace: true, back });
   }
 
+  let current = ''; // the address drawn last
+  let origin = { hash: '', y: 0 }; // the page just left and how far it was scrolled: a #/q/ link remembers where it came from
+  let restoreY = null; // a scroll position for the page route() draws next (the way back from a question to its guide page)
   function route() {
     const leaving = view;
     view = {};
@@ -3312,12 +3334,15 @@
     closeTerm();
     if (!EXAMS.length) return viewMissingBank();
     clearTimeout(scrollSave); // a save still pending belongs to the page just left
+    if (location.hash !== current) origin = { hash: current, y: scrollY };
+    current = location.hash;
     scrollTo({ top: 0 });
     const hit = ROUTES.find(([re]) => re.test(location.hash));
     if (hit) hit[1](location.hash.match(hit[0]));
     else viewHome();
     // Back (or Forward) to a page left part-way down returns to that spot; a session keeps its own position.
-    const y = history.state && history.state.y;
+    const y = restoreY != null ? restoreY : history.state && history.state.y;
+    restoreY = null;
     if (y && !view.live) scrollTo({ top: y });
   }
 
@@ -3429,6 +3454,7 @@
   document.addEventListener('focusout', () => { if (stale) setTimeout(synced); });
 
   applyTheme();
+  if (matchMedia('(max-width: 560px)').matches) $('#searchInput').placeholder = 'Search'; // the long placeholder is cut off on a phone
   addEventListener('hashchange', route);
   if (window.SYNC) {
     SYNC.attach({

@@ -1128,7 +1128,7 @@ dialog::backdrop { background: var(--scrim); }
 @media (max-width: 860px) {
   .topbar { gap: 10px; padding: 0 12px; }
   .brand-name { display: none; }
-  .search input { width: 150px; }
+  .search input { width: 150px; padding-right: 12px; }
   .search kbd { display: none; }
   main { padding: 20px 16px 96px; }
   .session, .session.case-open { grid-template-columns: minmax(0, 1fr); }
@@ -1154,7 +1154,7 @@ dialog::backdrop { background: var(--scrim); }
 
 @media (max-width: 560px) {
   .exam-tabs { display: none; }
-  .search input { width: 120px; }
+  .search input { width: 150px; }
   .exam-cards, .grid-2 { grid-template-columns: minmax(0, 1fr); }
   .exam-card-stats b { font-size: 16px; }
   .list-row { grid-template-columns: 44px minmax(0, 1fr); }
@@ -1162,6 +1162,12 @@ dialog::backdrop { background: var(--scrim); }
   .actions .btn { padding: 0 12px; }
   .actions .btn .label-long { display: none; }
 }
+
+/* A touch screen has no keyboard shortcuts to look up; the space goes to the search box instead. */
+@media (hover: none) and (pointer: coarse) {
+  #helpBtn { display: none; }
+}
+.search input::placeholder { text-overflow: ellipsis; }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; scroll-behavior: auto !important; }
