@@ -147,16 +147,15 @@
     return q ? `${open}Q${q.no}` : m;
   });
   const examByCode = code => EXAMS.find(e => e.code === code);
-  // How the total and the numbers fit together: an exam with folded copies is numbered 1..total (see q.no).
+  // How the total and the numbers fit together: an exam with folded copies numbers its ExamTopics questions 1..count (see q.no).
   const countNote = exam => {
     const bank = exam.questions.filter(q => !q.extra);
     const extra = exam.questions.filter(q => q.extra);
     const folded = bank.reduce((n, q) => n + q.copies.length, 0);
-    const range = qs => `#${qs[0].no}${qs.length > 1 ? `–${qs[qs.length - 1].no}` : ''}`;
-    return folded
-      ? `${bank.length} from ExamTopics (${range(bank)}, each showing its ExamTopics number; ${plural(folded, 'repeat listing')} ${folded === 1 ? 'is' : 'are'} folded in)` +
-        (extra.length ? ` and ${extra.length} supplementary (${range(extra)})` : '') + '.'
-      : `${bank.length} from ExamTopics` + (extra.length ? `; ${extra.length} supplementary, numbered from #${extra[0].no}` : '') + '.';
+    const from = folded
+      ? `${bank.length} from ExamTopics (#${bank[0].no}–${bank[bank.length - 1].no}, each showing its ExamTopics number; ${plural(folded, 'repeat listing')} ${folded === 1 ? 'is' : 'are'} folded in)`
+      : `${bank.length} from ExamTopics`;
+    return from + (extra.length ? `; ${extra.length} supplementary, numbered from #${extra[0].no}` : '') + '.';
   };
 
   // data/tags.js adds skill areas to an exam whose source has no topics; data/bank.js links each question to
@@ -173,11 +172,12 @@
     }
     const byN = new Map(exam.questions.map(q => [q.n, q]));
     for (const q of exam.questions) q.siblings = (q.variants || []).map(n => byN.get(n)).filter(Boolean);
-    // Folded copies leave holes in ExamTopics' numbers, so such an exam shows its questions as 1..total. q.no is
-    // the number the reader sees; q.n stays the ExamTopics number that links, variants and the tools go by.
+    // Folded copies leave holes in ExamTopics' numbers, so such an exam shows its ExamTopics questions as 1..count.
+    // q.no is the number the reader sees; q.n stays the ExamTopics number that links, variants and the tools go by.
+    // Supplementary questions keep their four-digit numbers in every exam, which is what marks them as written here.
     const renumbered = exam.questions.some(q => q.copies.length);
     exam.questions.forEach((q, i) => {
-      q.no = renumbered ? i + 1 : q.n;
+      q.no = renumbered && !q.extra ? i + 1 : q.n;
       q.source = renumbered && !q.extra ? q.n : null;
     });
   }
@@ -2027,6 +2027,21 @@
 
   const MODE_LABEL = { practice: 'Practice', read: 'Read-through', review: 'Mock exam review' };
 
+  // A session keeps the question list it started with, and builds before the supplements were sorted stored an
+  // in-order run with them out of order. Put such a run back in order, staying on the same question.
+  const IN_ORDER = 'All questions, in order';
+  function tidyInOrder(s) {
+    if (!s || s.title !== IN_ORDER) return s;
+    const n = id => (QUESTIONS.has(id) ? QUESTIONS.get(id).n : Infinity);
+    const sorted = [...s.ids].sort((a, b) => (n(a) === n(b) ? 0 : n(a) - n(b)));
+    if (sorted.some((id, i) => id !== s.ids[i])) {
+      const at = s.ids[s.i];
+      s.ids = sorted;
+      if (at != null) s.i = sorted.indexOf(at);
+    }
+    return s;
+  }
+
   function startSession(exam, { key = exam.code, mode, title, ids, i = 0, mockId, replace, back }) {
     if (!ids.length) {
       toast('No questions match that selection.');
@@ -2044,6 +2059,7 @@
     if (!exam) return navigate('#/');
     const mock = s.mode === 'review' ? S.mocks.find(m => m.id === s.mockId) : null;
     if (s.mode === 'review' && !mock) return navigate(`#/exam/${exam.slug}`);
+    tidyInOrder(s);
     s.ids = s.ids.filter(id => QUESTIONS.has(id));
     if (!s.ids.length) {
       delete S.sessions[key];
@@ -2258,7 +2274,7 @@
   function examCard(exam) {
     const st = stats(exam.questions);
     const pl = planFor(exam);
-    const s = S.sessions[exam.code];
+    const s = tidyInOrder(S.sessions[exam.code]);
     const live = s && s.i < s.ids.length;
     const figure = (value, label) => h('div', null, h('b', { text: value }), h('span', { text: label }));
     return h('div', { class: 'card exam-card' },
@@ -2385,7 +2401,7 @@
 
   function continueInOrder(exam) {
     const i = exam.questions.findIndex(q => status(q) === 'new');
-    startSession(exam, { mode: 'practice', title: 'All questions, in order', ids: exam.questions.map(q => q.id), i: Math.max(0, i) });
+    startSession(exam, { mode: 'practice', title: IN_ORDER, ids: exam.questions.map(q => q.id), i: Math.max(0, i) });
   }
 
   function quickAction({ iconName, title, sub, onclick, href, primary, disabled }) {
@@ -2399,7 +2415,7 @@
     setTabs(exam.slug);
     setTitle(exam.code);
     const st = stats(exam.questions);
-    const s = S.sessions[exam.code];
+    const s = tidyInOrder(S.sessions[exam.code]);
     const live = s && s.i < s.ids.length;
     const mocks = finishedMocks(exam.code);
     const best = mocks.length ? Math.max(...mocks.map(m => m.score)) : null;
