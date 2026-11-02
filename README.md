@@ -26,7 +26,8 @@ a revision counter; all merging happens client-side in `sync.js` (`merge()`), wh
 (commutative, associative, idempotent), so devices converge whatever order they sync in. Each
 piece of progress carries its own clock and the newer write wins: a question's attempt record,
 its flag and its note separately; a session's position by its last use and each of its answers by
-its own; the session or mock exam started last replaces older ones. Day counters keep the larger
+its own; of two runs of the same set of questions, or two mock exams, the one started last replaces
+the other, and different sets stay side by side. Day counters keep the larger
 value. Deletions (an exam reset, a deleted mock result) travel as timestamps in `gone`, and a full
 reset or an import starts a new `epoch` that replaces the other devices' copies. Settings stay
 device-local. Codes with characters an HTTP header cannot carry (Chinese, emoji) travel
@@ -53,6 +54,7 @@ sent anywhere and progress stays in the browser as before.
 | **Drag & drop / hotspot** | Real interactive questions rebuilt from the ExamTopics screenshots: drag tiles into boxes (or click a tile, then a box), drag steps into order, pick from drop-down menus, answer Yes/No grids, fill blanks inside code. Each box is marked right or wrong, with the right answer shown in place. The original images are one click away under **Original ExamTopics images**. |
 | **Review due** | Spaced repetition. A wrong answer comes back after ten minutes; right answers come back after 1, 3, 7, then 21 days, most overdue first. A question counts as *mastered* after three spaced correct answers. |
 | **Mistakes / Flagged** | Questions you last got wrong, or flagged with **M**. |
+| **Resume session** | Every set of questions keeps its own session: start Flagged in the middle of the in-order run, and the exam page offers both, each at its own question with its own answers. Starting the same questions again carries on where they were left, and **End session** takes a set off the list. Each exam keeps the in-order run and the five other sets used last. |
 | **Mock exam** | Random questions with a timer and no feedback until you finish. "Mark for review" and a question grid work like the real exam, case-study questions sit together, and series questions lock once you move on (optional). Everything is scored automatically; as on the real exam, drag & drop and hotspot questions earn partial credit per correct box. |
 | **Study plan** | On each exam page: set the exam date and a daily goal to get the pace needed for a first pass, today's progress, and a readiness verdict from your last three mock exams. |
 | **Read-through / Browse** | Answers shown up front; full-text search (optionally including discussions), plus filters by status, type and disputed answers. |

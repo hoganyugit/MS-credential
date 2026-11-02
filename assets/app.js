@@ -315,6 +315,25 @@
   const STORE_KEY = 'certprep.v1';
   const DEFAULTS = { key: 'reviewed', theme: 'auto', mockSize: 50, mockMinutes: 100, mockImages: true, mockLock: true, mockWeighted: true, shuffle: true, terms: true };
 
+  // A set of questions keeps its session under a key made from what the set is, so the same set started on two
+  // devices merges into one, and short enough for an address (#/s/KEY).
+  function sessionKey(code, mode, title) {
+    let n = 7;
+    for (const c of `${mode} ${title}`) n = (Math.imul(n, 31) + c.codePointAt(0)) | 0;
+    return `${code.toLowerCase()}-${(n >>> 0).toString(36)}`;
+  }
+
+  // Two copies of what may be the same run. Different runs: the one started last. The same run: the copy used last,
+  // plus any answer the other copy holds a newer version of.
+  function joinRuns(a, b) {
+    if (!a) return b;
+    if ((a.created || 0) !== (b.created || 0)) return (a.created || 0) > (b.created || 0) ? a : b;
+    const [newer, older] = (b.u || 0) > (a.u || 0) ? [b, a] : [a, b];
+    const res = newer.res || {};
+    const fresher = Object.entries(older.res || {}).filter(([id, e]) => !res[id] || (e.u || 0) > (res[id].u || 0));
+    return fresher.length ? { ...newer, res: { ...res, ...Object.fromEntries(fresher) } } : newer;
+  }
+
   // The object in memory is the only copy the app writes; localStorage mirrors it, and progress
   // merged in from another device (assets/sync.js) is taken over in place rather than written
   // around it, so neither can overwrite the other.
@@ -343,6 +362,14 @@
       d.mock = d.mock || null;
       d.plan = d.plan || {};
       d.gone = d.gone || {}; // deletions, for sync: "exam:CODE" (reset), "mock:ID", "session:KEY" → when
+      // Sessions used to share one place per exam, under its code. One found there joins its set's own place. The old
+      // place is not marked as deleted: another device's copy there may be further along, and arrives through a merge.
+      for (const [k, s] of Object.entries(d.sessions)) {
+        if (k !== s.code) continue;
+        const key = sessionKey(s.code, s.mode, s.title);
+        d.sessions[key] = joinRuns(d.sessions[key], s);
+        delete d.sessions[k];
+      }
     }
     function swap(next, settings) {
       for (const k of Object.keys(data)) delete data[k];
@@ -2042,19 +2069,40 @@
     return s;
   }
 
-  function startSession(exam, { key = exam.code, mode, title, ids, i = 0, mockId, replace, back }) {
+  // Every set of questions (all of them in order, flagged, a custom selection…) keeps its own session, so starting one
+  // leaves the others where they were. 'read' and 'review' are single places, reused by whatever opens next: a question
+  // from a link or from Browse, a mock exam's answers. Nothing is lost by replacing what they hold.
+  const REUSED = new Set(['read', 'review']);
+  const MAX_SETS = 5; // kept per exam, besides the in-order run
+  const setsOf = exam => Object.entries(S.sessions).filter(([k, s]) => s.code === exam.code && !REUSED.has(k));
+  const lastUsed = s => s.u || s.created || 0;
+  // Left part-way. A set opened and left untouched doesn't count, so opening one by mistake doesn't take over Resume.
+  const isOpen = s => s.i < s.ids.length && !!(s.u || s.i);
+  const openSets = exam => setsOf(exam).filter(([, s]) => isOpen(tidyInOrder(s))).sort(([, a], [, b]) => lastUsed(b) - lastUsed(a));
+
+  function startSession(exam, { key, mode, title, ids, i = 0, mockId, replace, back }) {
     if (!ids.length) {
       toast('No questions match that selection.');
       return;
     }
-    S.sessions[key] = { code: exam.code, mode, title, ids, i, res: {}, mockId, created: Date.now(), back: back || undefined };
+    const k = key || sessionKey(exam.code, mode, title);
+    const was = S.sessions[k];
+    // The same questions left part-way: carry on from there. A list that has changed starts over.
+    if (!key && was && isOpen(was) && was.ids.length === ids.length && was.ids.every((id, n) => id === ids[n])) return navigate(`#/s/${k}`, replace);
+    S.sessions[k] = { code: exam.code, mode, title, ids, i, res: {}, mockId, created: Date.now(), back: back || undefined };
+    // Sets opened and abandoned would pile up: past a handful the finished ones go first, then the ones used longest ago.
+    const sets = setsOf(exam).filter(([, s]) => s.title !== IN_ORDER)
+      .sort(([oa, a], [ob, b]) => (ob === k) - (oa === k) || isOpen(b) - isOpen(a) || lastUsed(b) - lastUsed(a));
+    for (const [o, s] of sets.slice(MAX_SETS)) {
+      delete S.sessions[o];
+      S.gone['session:' + o] = Math.max(S.gone['session:' + o] || 0, s.created || 0);
+    }
     store.save();
-    navigate(`#/s/${key === exam.code ? exam.slug : key}`, replace);
+    navigate(`#/s/${k}`, replace);
   }
 
-  function viewSession(param) {
-    const key = param === 'read' || param === 'review' ? param : (examBySlug(param) || {}).code;
-    const s = key && S.sessions[key];
+  function viewSession(key) {
+    const s = S.sessions[key];
     const exam = s && examByCode(s.code);
     if (!exam) return navigate('#/');
     const mock = s.mode === 'review' ? S.mocks.find(m => m.id === s.mockId) : null;
@@ -2274,8 +2322,7 @@
   function examCard(exam) {
     const st = stats(exam.questions);
     const pl = planFor(exam);
-    const s = tidyInOrder(S.sessions[exam.code]);
-    const live = s && s.i < s.ids.length;
+    const [last] = openSets(exam);
     const figure = (value, label) => h('div', null, h('b', { text: value }), h('span', { text: label }));
     return h('div', { class: 'card exam-card' },
       h('div', { class: 'exam-card-head' },
@@ -2291,8 +2338,8 @@
           pl.goal ? `today ${pl.doneToday} of ${pl.goal}` : ''].filter(Boolean).join(' · '),
       })) : null,
       h('div', { class: 'card-actions' },
-        live
-          ? h('a', { class: 'btn primary', href: `#/s/${exam.slug}` }, icon('play'), 'Resume')
+        last
+          ? h('a', { class: 'btn primary', href: `#/s/${last[0]}`, title: `${last[1].title} · ${last[1].i + 1} of ${last[1].ids.length}` }, icon('play'), 'Resume')
           : h('button', { class: 'btn primary', type: 'button', onclick: () => continueInOrder(exam) }, icon('play'), st.seen ? 'Continue' : 'Start'),
         st.due ? h('button', { class: 'btn', type: 'button', onclick: () => startPool(exam, 'due') }, icon('repeat'), 'Review', h('span', { class: 'count', text: st.due })) : null,
         h('a', { class: 'btn', href: S.mock && S.mock.code === exam.code ? '#/mock' : `#/mock/${exam.slug}` }, icon('clock'), 'Mock exam'),
@@ -2415,8 +2462,7 @@
     setTabs(exam.slug);
     setTitle(exam.code);
     const st = stats(exam.questions);
-    const s = tidyInOrder(S.sessions[exam.code]);
-    const live = s && s.i < s.ids.length;
+    const open = openSets(exam);
     const mocks = finishedMocks(exam.code);
     const best = mocks.length ? Math.max(...mocks.map(m => m.score)) : null;
     const firstNew = exam.questions.find(q => status(q) === 'new');
@@ -2441,9 +2487,9 @@
       h('div', { class: 'grid-2' }, h('div', { class: 'card stack' }, h('h2', { text: 'Progress' }), masteryBar(st)), planCard(exam)),
       skillsCard(exam),
       h('section', { class: 'section' }, h('h2', { text: 'Study' }), h('div', { class: 'quick-actions' },
-        live ? quickAction({ iconName: 'play', title: 'Resume session', sub: `${s.title} · ${s.i + 1} of ${s.ids.length}`, href: `#/s/${exam.slug}`, primary: true }) : null,
-        quickAction({
-          iconName: live ? 'list' : 'play', primary: !live, onclick: () => continueInOrder(exam),
+        open.map(([key, s], n) => quickAction({ iconName: 'play', title: 'Resume session', sub: `${s.title} · ${s.i + 1} of ${s.ids.length}`, href: `#/s/${key}`, primary: !n })),
+        open.some(([, s]) => s.title === IN_ORDER) ? null : quickAction({
+          iconName: open.length ? 'list' : 'play', primary: !open.length, onclick: () => continueInOrder(exam),
           title: firstNew ? (st.seen ? 'Continue in order' : 'Start in order') : 'Practice everything',
           sub: firstNew ? `Next unseen: question ${firstNew.no}` : 'Every question seen at least once',
         }),
@@ -2456,7 +2502,7 @@
         }),
         quickAction({
           iconName: 'book', title: 'Read through', sub: 'Answers and discussion shown',
-          onclick: () => startSession(exam, { key: 'read', mode: 'read', title: `Read through ${exam.code}`, ids: exam.questions.map(q => q.id) }),
+          onclick: () => startSession(exam, { mode: 'read', title: `Read through ${exam.code}`, ids: exam.questions.map(q => q.id) }),
         }),
         quickAction({ iconName: 'list', title: 'Browse & search', sub: 'Filter the full question list', href: `#/browse/${exam.slug}` }),
         GUIDE ? quickAction({ iconName: 'guide', title: '概念指南', sub: 'Microsoft 术语的中文解释', href: '#/guide' }) : null)),
@@ -2522,7 +2568,7 @@
       ev.preventDefault();
       const f = read();
       const parts = [f.pool !== 'all' ? POOL_TITLE[f.pool] : 'Custom set', f.topic ? `Topic ${f.topic}` : '', f.kp || '', f.sk ? skillTitle(exam, f.sk) : '', f.type ? (TYPE_LABEL[f.type] || TYPE_GROUP[f.type]) : ''];
-      startSession(exam, { key: f.mode === 'read' ? 'read' : exam.code, mode: f.mode, title: parts.filter(Boolean).join(' · '), ids: buildPool(exam, f) });
+      startSession(exam, { mode: f.mode, title: parts.filter(Boolean).join(' · '), ids: buildPool(exam, f) });
     });
     update();
     return h('div', { class: 'card stack' }, h('div', { class: 'section-head' }, h('h2', { text: 'Custom practice' }), h('span', { class: 'spacer' }), count), form);
