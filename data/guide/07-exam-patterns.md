@@ -752,7 +752,7 @@ ExamTopics 把同一道题列了好几次，每次只给阶梯中的几个选项
 | "images that include embedded text… malicious instructions hidden within the images"（case） | prompt shields | self-harm / violence content filtering、PII Detection、protected material detection | [Q2](#/q/ai-103/2) [Q145](#/q/ai-103/145) |
 | "OCR output appended to the prompt… embedded text… prevent malicious instructions" | prompt shields for documents | prompt shields for user prompts（只管用户敲入的 jailbreak）、image moderation、protected material text | [Q51](#/q/ai-103/51) |
 | "screenshots contain potentially malicious embedded text… third-party content treated as lower trust" | Set action to block + Enable Spotlighting | annotate、custom blocklist、"OCR first" | [Q49](#/q/ai-103/49) |
-| Yes/No 系列："users can upload unsafe images AND embed hidden instructions" | 四个单项方案全部 No：user-prompt shield（[Q23](#/q/ai-103/23)）、image moderation（[Q24](#/q/ai-103/24)）、document shield（[Q25](#/q/ai-103/25)）、protected material（[Q26](#/q/ai-103/26)）各只覆盖一半 | — | [Q23](#/q/ai-103/23)–[Q26](#/q/ai-103/26) |
+| Yes/No 系列："users can upload unsafe images AND embed hidden instructions" | 四个单项方案全部 No：user-prompt shield（[Q23](#/q/ai-103/23)）、image moderation（[Q24](#/q/ai-103/24)）、document shield（[Q25](#/q/ai-103/25)）、protected material（[Q26](#/q/ai-103/26)）各只覆盖一半。ExamTopics 2026-11 起把 Q25 判为 Yes（票数 14:11），但 Learn 明说 Prompt Shields 不判断内容是否有害，复核仍判 No | — | [Q23](#/q/ai-103/23)–[Q26](#/q/ai-103/26) |
 | 对照："classify uploaded images for harmful content… block based on severity levels" | image moderation（Content Safety 图像审核） | prompt shields、blocklists、OCR keyword scanning | [Q50](#/q/ai-103/50) |
 
 记忆点：user prompt shield = 用户直接输入的 jailbreak；document shield = 第三方内容（文档、邮件、网页、OCR 文本）里的 indirect attack；image moderation = 不安全画面；protected material = 版权文本/代码（[Q26](#/q/ai-103/26) [Q71](#/q/ai-103/71) [Q93](#/q/ai-103/93) [Q139](#/q/ai-103/139)）。
@@ -884,7 +884,7 @@ ExamTopics 把同一道题列了好几次，每次只给阶梯中的几个选项
 
 | 题干触发词 | 正确答案 | 典型干扰项 | 题号 |
 |---|---|---|---|
-| "answers from the base model without invoking the knowledge base… deterministically force… on each run" | tool_choice="required"（加到 runs.create_and_process） | "auto"、{"type":"knowledge_base"}、{"type":"mcp"}、toolset、response_format、换 create_thread_and_process_run | [Q14](#/q/ai-103/14) [Q119](#/q/ai-103/119) |
+| "answers from the base model without invoking the knowledge base… deterministically force… on each run" | tool_choice="required"（加到 runs.create_and_process；ExamTopics 2026-11 起把 Q14 改判 {"type":"mcp"}，票数 20:19，复核仍按 Learn 的"要确定性就设 required"选 A） | "auto"、{"type":"knowledge_base"}、{"type":"mcp"}、toolset、response_format、换 create_thread_and_process_run | [Q14](#/q/ai-103/14) [Q119](#/q/ai-103/119) |
 | "responds without calling any tools, even when a tool is required"（拖放） | "tool_choice": "required" | "auto"、"tools"、"type"、"response_format" | [Q30](#/q/ai-103/30) |
 | "Each workflow run must include a retrieval step before generating a response" | tool_choice = required | auto、none | [Q20](#/q/ai-103/20) |
 | "deterministically retrieves information only from the internet"（两个工具） | tool_choice={"type": "bing_grounding"}（指定具体工具） | "required"（只保证调某个工具）、"auto"、azure_ai_search | [Q73](#/q/ai-103/73) |
@@ -1228,7 +1228,7 @@ ARM POST …/accounts/contoso1/regenerateKey，body {"keyName":"Key2"} → 重�
 
 ## AI-500 · 题型、问法与限定词 {#ai500-formats}
 
-AI-500（Designing and Implementing Multi-Agent AI Solutions）是四门里最新的一门：题库 107 题，ExamTopics 的 Topic 1–4 正好是官方四大板块（Architect / Develop / Evaluate, optimize, and monitor / Secure, govern, and deploy）。它和另外三门最大的不同是**社区数据几乎为零**：只有 6 道题有讨论、2 道有投票（各 1 票），ExamTopics 展示的答案没人纠错过。复核后有 **25 题** 的答案和 ExamTopics 不同（单选/多选 60 题里 9 题，拖放/hotspot 47 题里 16 题，超过三分之一），所以这门考试更要按规则和 Learn 原文判断，不能背题库答案。
+AI-500（Designing and Implementing Multi-Agent AI Solutions）是四门里最新的一门：题库 107 题，ExamTopics 的 Topic 1–4 正好是官方四大板块（Architect / Develop / Evaluate, optimize, and monitor / Secure, govern, and deploy）。它和另外三门最大的不同是**社区数据几乎为零**：只有 14 道题有讨论、9 道有投票（每题 1–3 票），ExamTopics 展示的答案很少有人纠错（[Q9](#/q/ai-500/9) 是 2026-11 按评论改过来的一题）。复核后有 **23 题** 的答案和 ExamTopics 不同（单选/多选 60 题里 8 题，拖放/hotspot 47 题里 15 题，接近三分之一），所以这门考试更要按规则和 Learn 原文判断，不能背题库答案。
 
 题目的场景和措辞大量取自微软的四条官方 AI-500 学习路径（[Architect production-grade multi-agent AI solutions](https://learn.microsoft.com/en-us/training/paths/aaai-1-architect-production-grade-multi-agent-ai-solutions/)、[Build production-grade multi-agent capabilities with Microsoft Foundry](https://learn.microsoft.com/en-us/training/paths/aaai-2-build-production-grade-multi-agent-capabilities-microsoft-foundry/)、[Deploy and govern enterprise agentic AI solutions on Azure](https://learn.microsoft.com/en-us/training/paths/aaai-3-deploy-govern-agentic-ai-solutions-azure/)、[Monitor, evaluate, and operate multi-agent AI solutions in Azure](https://learn.microsoft.com/en-us/training/paths/aaai-4-monitor-evaluate-operate-multi-agent-ai-solutions-azure/)，共 17 个模块），比如 [Q22](#/q/ai-500/22) 的状态设计、[Q21](#/q/ai-500/21) 的层级编排、[Q38](#/q/ai-500/38) 的跨会话记忆都能在模块单元里找到原型。遇到拿不准的题，先去这四条路径里找同名场景。
 
@@ -1310,7 +1310,7 @@ AI-500（Designing and Implementing Multi-Agent AI Solutions）是四门里最�
 | "primary agent must retain ownership… synthesize" + "least-privilege view" | Agent-as-tools orchestration + scoped claim data | handoff（交出所有权）、flat group chat、A2A task delegation | [Q30](#/q/ai-500/30) |
 | "clear owner for conflicts" + "validate outputs before downstream" + "adding a specialist affects only that domain" | 层级编排：claims supervisor 下的 domain-scoped sub-orchestrators，输出按结构化契约校验 | 扁平 hub、自然语言委派 + 叙述摘要、让消费方解决冲突 | [Q21](#/q/ai-500/21) |
 | "fixed order… pause at predefined points… resume from the last saved state" | Agent Framework workflow（agent executors）+ HITL gate + checkpoints | agents-as-tools、tool approval、AgentSession、retry | [Q25](#/q/ai-500/25) |
-| 并发上限 + 吞吐目标（每请求 3 个 agent、≤30 并发、120 请求/分钟） | 每批 10 个请求，各起一个 ConcurrentBuilder workflow（30 并发、约 5 秒一请求） | 10 个 sequential workflow（约 15 秒一请求，只有 40/分钟）、group chat、单个 90 executor 的 workflow | [Q9](#/q/ai-500/9)★ |
+| 并发上限 + 吞吐目标（每请求 3 个 agent、≤30 并发、120 请求/分钟） | 每批 10 个请求，各起一个 ConcurrentBuilder workflow（30 并发、约 5 秒一请求） | 10 个 sequential workflow（约 15 秒一请求，只有 40/分钟）、group chat、单个 90 executor 的 workflow | [Q9](#/q/ai-500/9) |
 
 口诀：先画依赖图。没有箭头 → 并发；一条链 → 顺序；同一时刻只能一个人说话、要换人 → handoff；要多人讨论 → group chat；目标开放、要边做边规划 → magentic；主 agent 不放权 → agent-as-tools。
 
@@ -1562,11 +1562,11 @@ AI-500（Designing and Implementing Multi-Agent AI Solutions）是四门里最�
 
 ### ExamTopics 答案的可靠性
 
-24 题的答案被复核纠正（下表加粗的是确定性高、能直接在 Learn 找到依据的）：
+23 题的答案被复核纠正（下表加粗的是确定性高、能直接在 Learn 找到依据的）：
 
 | 类别 | 题号 |
 |---|---|
-| 单选/多选 9 题 | **[Q1](#/q/ai-500/1)** **[Q3](#/q/ai-500/3)**（人工审批节点）、**[Q9](#/q/ai-500/9)**（吞吐计算）、[Q29](#/q/ai-500/29)（few-shot）、**[Q34](#/q/ai-500/34)**（A2A）、**[Q37](#/q/ai-500/37)**（Save）、**[Q43](#/q/ai-500/43)**（compact）、[Q73](#/q/ai-500/73)（治理评审）、**[Q88](#/q/ai-500/88)**（护栏测试） |
+| 单选/多选 8 题 | **[Q1](#/q/ai-500/1)** **[Q3](#/q/ai-500/3)**（人工审批节点）、[Q29](#/q/ai-500/29)（few-shot）、**[Q34](#/q/ai-500/34)**（A2A）、**[Q37](#/q/ai-500/37)**（Save）、**[Q43](#/q/ai-500/43)**（compact）、[Q73](#/q/ai-500/73)（治理评审）、**[Q88](#/q/ai-500/88)**（护栏测试） |
 | 拖放/hotspot 15 题 | **[Q4](#/q/ai-500/4)** **[Q5](#/q/ai-500/5)** **[Q16](#/q/ai-500/16)** [Q22](#/q/ai-500/22) [Q28](#/q/ai-500/28) [Q38](#/q/ai-500/38) **[Q51](#/q/ai-500/51)** **[Q53](#/q/ai-500/53)** **[Q55](#/q/ai-500/55)** **[Q66](#/q/ai-500/66)** **[Q81](#/q/ai-500/81)** **[Q89](#/q/ai-500/89)** [Q90](#/q/ai-500/90) **[Q96](#/q/ai-500/96)** **[Q97](#/q/ai-500/97)** |
 
 低置信度 1 题：[Q28](#/q/ai-500/28)（第二个格子题目本身有缺陷），看解析和讨论，不要死记。[Q58](#/q/ai-500/58) 第三条陈述（告警是否覆盖可靠性）原先按评论判 Yes，2026-11-01 复核后改回 ExamTopics 的 No：官方课程把可靠性告警定义为按 agent 的错误率告警，仅有延迟异常和工具调用失败两条告警覆盖不到。
@@ -1622,4 +1622,4 @@ AI-500（Designing and Implementing Multi-Agent AI Solutions）是四门里最�
 7. **上下文题先分清症状**：慢 → 压缩或增量（previous_response_id）；忘了早期内容 → 状态快照；张冠李戴 → 只存 ID、按需回源；用了过期需求 → 从事实来源重建。
 8. **发布题数环境**：两套全量 → blue-green；一套环境逐步放量 → canary + 特性开关；要回滚 agent → 把端点的版本选择器指回上一版本；IaC 预览 → what-if；质量门禁要能阻断，不能只记警告。
 9. **读图题逐项核对**：代码看执行顺序和默认值（[Q5](#/q/ai-500/5)），配置看键名是否带租户（[Q7](#/q/ai-500/7)），门禁看每条阈值（[Q53](#/q/ai-500/53)），指标表看三项是否同时领先、对比是否有效（[Q54](#/q/ai-500/54)）。
-10. **这门考试的题库答案错得多**：24 题被纠正，拖放/hotspot 里超过三分之一。复习时以 reviewed answer 为准，读解析里的 Learn 链接；低置信度的 [Q28](#/q/ai-500/28) 理解思路即可。
+10. **这门考试的题库答案错得多**：23 题被纠正，拖放/hotspot 里接近三分之一。复习时以 reviewed answer 为准，读解析里的 Learn 链接；低置信度的 [Q28](#/q/ai-500/28) 理解思路即可。
