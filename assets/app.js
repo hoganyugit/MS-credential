@@ -306,7 +306,7 @@
   // ================================================================== store
 
   const STORE_KEY = 'certprep.v1';
-  const DEFAULTS = { key: 'reviewed', theme: 'auto', mockSize: 50, mockMinutes: 100, mockImages: true, mockLock: true, mockWeighted: true, shuffle: true, terms: true };
+  const DEFAULTS = { key: 'reviewed', theme: 'auto', mockSize: 50, mockMinutes: 100, mockImages: true, mockExtra: true, mockLock: true, mockWeighted: true, shuffle: true, terms: true };
 
   // A set of questions keeps its session under a key made from what the set is, so the same set started on two
   // devices merges into one, and short enough for an address (#/s/KEY).
@@ -2853,6 +2853,7 @@
     const exhibits = exam.questions.filter(q => !q.choices.length).length;
     const manual = exam.questions.filter(selfGraded).length;
     const series = exam.questions.filter(q => q.series).length;
+    const extras = exam.questions.filter(q => q.extra).length;
     const other = S.mock ? examByCode(S.mock.code) : null;
     const form = h('form', { class: 'stack' },
       h('div', { class: 'builder' },
@@ -2862,6 +2863,8 @@
           h('option', { value: '' }, 'All topics'), exam.topics.map(t => h('option', { value: t.n }, topicLabel(exam, t.n))))) : null),
       h('label', { class: 'check' }, h('input', { type: 'checkbox', name: 'images', checked: S.settings.mockImages }),
         `Include drag & drop and hotspot questions (${exhibits} of ${total})${manual ? ` — ${manual} of them you grade yourself after the exam` : ''}`),
+      extras ? h('label', { class: 'check' }, h('input', { type: 'checkbox', name: 'extra', checked: S.settings.mockExtra !== false }),
+        `Include supplementary questions (${extras} of ${total}), written for this app in the official style for objectives ExamTopics does not cover`) : null,
       series ? h('label', { class: 'check' }, h('input', { type: 'checkbox', name: 'lock', checked: S.settings.mockLock }),
         `Lock series questions once you move on, as in the real exam (${series} in this exam)`) : null,
       exam.skills ? h('label', { class: 'check' }, h('input', { type: 'checkbox', name: 'weighted', checked: S.settings.mockWeighted !== false }),
@@ -2874,11 +2877,12 @@
       const size = clamp(Number(f.get('size')) || 1, 1, total);
       const minutes = clamp(Number(f.get('minutes')) || 0, 0, 600);
       const images = f.get('images') === 'on';
+      const extra = extras ? f.get('extra') === 'on' : S.settings.mockExtra !== false;
       const topic = f.get('topic');
       const lock = series ? f.get('lock') === 'on' : S.settings.mockLock;
       const weighted = !!exam.skills && f.get('weighted') === 'on';
-      Object.assign(S.settings, { mockSize: size, mockMinutes: minutes, mockImages: images, mockLock: lock, mockWeighted: exam.skills ? weighted : S.settings.mockWeighted });
-      const pool = exam.questions.filter(q => (images || q.choices.length) && (!topic || q.topic === Number(topic)));
+      Object.assign(S.settings, { mockSize: size, mockMinutes: minutes, mockImages: images, mockExtra: extra, mockLock: lock, mockWeighted: exam.skills ? weighted : S.settings.mockWeighted });
+      const pool = exam.questions.filter(q => (images || q.choices.length) && (extra || !q.extra) && (!topic || q.topic === Number(topic)));
       if (!pool.length) return toast('No questions match those options.');
       if (S.mock && !(await ask('Replace the unfinished mock exam?', 'Its answers will be discarded.', 'Start new exam'))) return;
       // as in the real exam, a case study's questions sit together, ahead of the rest
@@ -3283,6 +3287,8 @@
     };
     const images = h('input', { type: 'checkbox', checked: S.settings.mockImages });
     images.addEventListener('change', () => { S.settings.mockImages = images.checked; store.save(); });
+    const extraBox = h('input', { type: 'checkbox', checked: S.settings.mockExtra !== false });
+    extraBox.addEventListener('change', () => { S.settings.mockExtra = extraBox.checked; store.save(); });
     const lock = h('input', { type: 'checkbox', checked: S.settings.mockLock });
     lock.addEventListener('change', () => { S.settings.mockLock = lock.checked; store.save(); });
     const shuffleBox = h('input', { type: 'checkbox', checked: S.settings.shuffle });
@@ -3405,6 +3411,7 @@
         h('h2', { text: 'Mock exam defaults' }),
         h('div', { class: 'builder' }, number('Questions', 'mockSize', 1, 500), number('Minutes (0 = untimed)', 'mockMinutes', 0, 600)),
         h('label', { class: 'check' }, images, 'Include drag & drop and hotspot questions'),
+        h('label', { class: 'check' }, extraBox, 'Include supplementary questions (written for this app, not from ExamTopics)'),
         h('label', { class: 'check' }, lock, 'Lock series questions once you move on, as in the real exam')),
       syncCard,
       h('div', { class: 'card stack' },
