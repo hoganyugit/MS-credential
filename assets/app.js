@@ -133,34 +133,22 @@
       q.exam = exam;
       q.votes = q.votes || [];
       q.comments = q.comments || [];
-      q.copies = q.copies || []; // the listings the build folded into this question: choices, answer, votes, thread, comments
-      for (const c of q.copies) { c.votes = c.votes || []; c.comments = c.comments || []; }
       QUESTIONS.set(q.id, q);
     }
   }
   const examBySlug = slug => EXAMS.find(e => e.slug === slug);
   const topicLabel = (exam, n) => (exam.topicName[n] && exam.topicName[n] !== `Topic ${n}` ? `${n}. ${exam.topicName[n]}` : `Topic ${n}`);
   const multiTopic = exam => exam.topics.length > 1;
-  // The guide links by ExamTopics number, which never changes; a link's text shows the number the reader sees.
-  const questionLinks = html => html.replace(/(href="#\/q\/([\w-]+)\/(\d+)"[^>]*>)Q\d+/g, (m, open, slug, n) => {
-    const q = examBySlug(slug) && examBySlug(slug).questions.find(x => x.n === Number(n));
-    return q ? `${open}Q${q.no}` : m;
-  });
   const examByCode = code => EXAMS.find(e => e.code === code);
-  // How the total and the numbers fit together: an exam with folded copies numbers its ExamTopics questions 1..count (see q.no).
+  // How the total splits: the ExamTopics questions keep their numbers, the supplementary ones are numbered from 1001.
   const countNote = exam => {
     const bank = exam.questions.filter(q => !q.extra);
     const extra = exam.questions.filter(q => q.extra);
-    const folded = bank.reduce((n, q) => n + q.copies.length, 0);
-    const from = folded
-      ? `${bank.length} from ExamTopics (#${bank[0].no}–${bank[bank.length - 1].no}, each showing its ExamTopics number; ${plural(folded, 'repeat listing')} ${folded === 1 ? 'is' : 'are'} folded in)`
-      : `${bank.length} from ExamTopics`;
-    return from + (extra.length ? `; ${extra.length} supplementary, numbered from #${extra[0].no}` : '') + '.';
+    return `${bank.length} from ExamTopics` + (extra.length ? `; ${extra.length} supplementary, numbered from #${extra[0].no}` : '') + '.';
   };
 
   // data/tags.js adds skill areas to an exam whose source has no topics; data/bank.js links each question to
-  // its variants (the same question listed again with reshuffled, partly different choices) and carries, as
-  // q.copies, the listings the build folded into it (their choices, ExamTopics answer, votes and discussion).
+  // its variants (the same question listed again with reshuffled, partly different choices).
   const TAGS = window.TAGS || {};
   for (const exam of EXAMS) {
     const t = TAGS[exam.code];
@@ -171,15 +159,10 @@
       for (const q of exam.questions) q.topic = t.tags[q.id] || (q.extra ? q.topic : 0) || 0;
     }
     const byN = new Map(exam.questions.map(q => [q.n, q]));
-    for (const q of exam.questions) q.siblings = (q.variants || []).map(n => byN.get(n)).filter(Boolean);
-    // Folded copies leave holes in ExamTopics' numbers, so such an exam shows its ExamTopics questions as 1..count.
-    // q.no is the number the reader sees; q.n stays the ExamTopics number that links, variants and the tools go by.
-    // Supplementary questions keep their four-digit numbers in every exam, which is what marks them as written here.
-    const renumbered = exam.questions.some(q => q.copies.length);
-    exam.questions.forEach((q, i) => {
-      q.no = renumbered && !q.extra ? i + 1 : q.n;
-      q.source = renumbered && !q.extra ? q.n : null;
-    });
+    for (const q of exam.questions) {
+      q.siblings = (q.variants || []).map(n => byN.get(n)).filter(Boolean);
+      q.no = q.n; // the number the reader sees: ExamTopics' own, or 1001 and up for a supplementary question
+    }
   }
 
   // data/reviewed.js: every question re-judged against Microsoft product behaviour, with an explanation and a
@@ -220,6 +203,16 @@
       q.sk = ids.filter(id => exam.objective.has(id));
     }
   }
+  // data/families.js: questions that ExamTopics lists several times with different choice sets. Each listing stays a
+  // question of its own; q.family (with its members in number order) says how the answers of the sets relate.
+  for (const f of window.FAMILIES || []) {
+    const exam = examByCode(f.exam);
+    const members = exam ? f.ids.map(id => QUESTIONS.get(id)).filter(q => q && q.exam === exam).sort((a, b) => a.n - b.n) : [];
+    if (members.length < 2) continue;
+    Object.assign(f, { members, rungs: f.rungs || [], never: f.never || [], short: f.short || {} });
+    for (const q of members) q.family = f;
+  }
+
   // "A" matches every objective of group A, "A1" every bullet of sub-area A1, "A1.3" only itself.
   const inScope = (id, scope) => id === scope || (scope.length === 1 ? id[0] === scope : id.startsWith(scope + '.'));
   const skillQuestions = (exam, scope) => exam.questions.filter(q => q.sk.some(id => inScope(id, scope)));
@@ -253,7 +246,7 @@
     if (!deep) return q._text;
     if (q._deep == null) {
       const walk = list => list.flatMap(c => [c.text, ...walk(c.replies || [])]);
-      q._deep = walk([...q.comments, ...q.copies.flatMap(c => c.comments)]).join(' ').toLowerCase();
+      q._deep = walk(q.comments).join(' ').toLowerCase();
     }
     return q._text + ' ' + q._deep;
   }
@@ -441,12 +434,13 @@
   const MIN_VOTES = 3;
   const choiceText = c => plain(c.html).toLowerCase().replace(/[\s.]+$/, '').replace(/\s+/g, ' ');
 
-  // The votes on this question, plus the votes and the ExamTopics answer of each variant and each folded copy,
-  // translated into this question's letters by matching the choice text. Their ExamTopics answers count one
-  // vote each.
+  // The votes on this question, plus the votes and the ExamTopics answer of each variant, translated into this
+  // question's letters by matching the choice text. Their ExamTopics answers count one vote each. A family whose
+  // choice sets have different answers (data/families.js) keeps each set's votes to itself: its other sets asked
+  // for the best of other choices, and the family section shows how their answers relate instead.
   function votesFor(q) {
     if (q._votes) return q._votes;
-    const others = [...q.siblings, ...q.copies];
+    const others = q.family && q.family.kind === 'ladder' ? [] : q.siblings;
     if (!others.length || !q.choices.length) return (q._votes = q.votes);
     const mine = new Map(q.choices.map(c => [choiceText(c), c.k]));
     const tally = new Map();
@@ -821,18 +815,6 @@
         h('span', { class: 'spacer' }),
         q.thread ? h('a', { class: 'small', href: q.thread, target: '_blank', rel: 'noopener noreferrer' }, 'Open on ExamTopics ', icon('external')) : null),
       q.comments.length ? commentList(q.comments) : h('p', { class: 'muted small', text: 'No one has commented on this question yet.' }));
-    // The discussions of the listings folded into this question, each under its own choice set, because the
-    // letters in those comments refer to it.
-    for (const c of q.copies) {
-      if (!c.comments.length) continue;
-      sec.append(h('div', { class: 'copy-thread' },
-        h('div', { class: 'section-head' },
-          h('h4', { text: `Discussion of ExamTopics #${c.n} (${countComments(c.comments)})` }),
-          h('span', { class: 'spacer' }),
-          c.thread ? h('a', { class: 'small', href: c.thread, target: '_blank', rel: 'noopener noreferrer' }, 'Open on ExamTopics ', icon('external')) : null),
-        h('p', { class: 'small muted', text: `Its choices: ${c.choices.map(ch => `${ch.k}. ${plain(ch.html)}`).join(' · ')}` }),
-        commentList(c.comments)));
-    }
     return sec;
   }
 
@@ -862,22 +844,123 @@
       h('span', { class: 'val' }, h('b', { text: `${v.p}%` }), ` · ${plural(v.n, 'vote')}`)));
   }
 
-  // The choice sets of the ExamTopics listings folded into this question (q.copies), each with its ExamTopics
-  // key and vote split, so a reader who meets another copy on the exam knows what it offers and what was keyed.
-  function copiesBlock(q) {
-    return h('details', { class: 'copies' },
-      h('summary', null, icon('list'), `The other choice sets (ExamTopics ${q.copies.map(c => `#${c.n}`).join(', ')})`),
-      q.copies.map(c => {
-        const total = c.votes.reduce((n, v) => n + v.n, 0);
-        const split = [...c.votes].sort((a, b) => b.n - a.n).map(v => `${v.a} ${v.p}%`).join(' · ');
-        return h('div', { class: 'copy' },
-          h('div', { class: 'copy-head' },
-            h('b', { text: `ExamTopics #${c.n}` }),
-            h('span', { class: 'chip code', text: `ExamTopics ${c.answer || '—'}` }),
-            h('span', { class: 'small muted', text: total ? `${plural(total, 'vote')}: ${split}` : 'No votes' })),
-          h('ol', { class: 'copy-choices' }, c.choices.map(ch => h('li', { class: c.answer && c.answer.includes(ch.k) ? 'keyed' : null },
-            h('span', { class: 'letter', text: ch.k }), h('span', { html: ch.html })))));
-      }));
+  // ================================================================== families: one question, several choice sets
+  //
+  // A family (data/families.js) is one question that ExamTopics lists several times with different choices. Every
+  // set is answered and graded on its own; once it is answered, familySection() shows how the sets' answers relate.
+
+  // An option's comparison form: the choice text as choiceText() has it, with straightened quotes.
+  const famKey = text => choiceText({ html: text }).replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
+
+  // What each set of a family offers (option -> letter) and which of its options make up its answer.
+  function familySets(f) {
+    return (f._sets = f._sets || f.members.map(m => {
+      const letters = (m.review && m.review.answer) || m.answer || '';
+      return {
+        q: m,
+        offered: new Map(m.choices.map(c => [famKey(c.html), c.k])),
+        answer: new Set(m.choices.filter(c => letters.includes(c.k)).map(c => famKey(c.html))),
+      };
+    }));
+  }
+
+  // "Same question · set 2 of 6". It links to all the sets once the answer is out; before that they would give it away.
+  function familyChip(q, revealed) {
+    const f = q.family;
+    const props = {
+      class: 'chip family',
+      title: `ExamTopics lists this question ${f.members.length} times${q.choices.length ? ' with different choices' : ''}` +
+        `${f.kind === 'ladder' ? ', and which answer is right depends on the choices a set offers' : ''}. Once you have answered, the answer section shows how the sets relate.`,
+    };
+    const text = `Same question · set ${f.members.indexOf(q) + 1} of ${f.members.length}`;
+    return revealed ? h('a', { ...props, href: `#/q/${q.exam.slug}/${q.n}` }, text) : h('span', props, text);
+  }
+
+  const setLinks = (list, here) => list.map((x, i) => [i ? ', ' : null,
+    x === here ? h('b', { text: `#${x.no} (this set)` }) : h('a', { href: `#/q/${x.exam.slug}/${x.n}`, text: `#${x.no}` })]);
+
+  // A "same" family has the same answer in every set. A ladder ranks every option that is ever the answer, best
+  // first, and marks for this set what it offers (the option's letter here), its answer, the better options it lacks
+  // and the reader's pick; then come the options that are never the answer, and a table of every set and option,
+  // open in the read view (where the family chip and the "#n" links lead).
+  function familySection(q, pick, open) {
+    const f = q.family;
+    const n = f.members.length;
+    const sec = h('section', { class: 'section fam-section' });
+    if (f.kind !== 'ladder') {
+      const opts = f.rungs[0] ? f.rungs[0].options : [];
+      put(sec, h('h3', { text: `Same question, ${n} listings` }),
+        h('p', { class: 'small muted' }, `ExamTopics lists this question ${n} times (`, setLinks(f.members, q), ')',
+          q.choices.length ? ' with different choices; every set has the same answer' : '; every listing has the same answer',
+          opts.length ? [': ', h('b', { text: opts.join(' / ') })] : null, '.'),
+        f.note ? h('p', { class: 'small muted', text: f.note }) : null);
+      return sec;
+    }
+    const sets = familySets(f);
+    const mine = sets.find(s => s.q === q);
+    const want = Math.max(1, mine.answer.size);
+    const picked = new Set(q.choices.filter(c => (pick || '').includes(c.k)).map(c => famKey(c.html)));
+    // the lowest rung holding (part of) this set's answer: a missing option above it is one the set would have preferred
+    const last = f.rungs.reduce((m, r, i) => (r.options.some(o => mine.answer.has(famKey(o))) ? i : m), -1);
+    const opt = (o, full) => {
+      const k = famKey(o);
+      const letter = mine.offered.get(k);
+      return h('span', { class: 'fam-opt' + (letter ? '' : ' absent') + (picked.has(k) && !mine.answer.has(k) ? ' picked' : '') },
+        letter ? h('span', { class: 'fam-letter', text: letter }) : null, h('span', { text: full ? o : f.short[o] || o }));
+    };
+    const ladder = h('ol', { class: 'ladder' }, f.rungs.map((r, i) => {
+      const keys = r.options.map(famKey);
+      const isAnswer = keys.some(k => mine.answer.has(k));
+      const offered = keys.some(k => mine.offered.has(k));
+      const isPick = !isAnswer && keys.some(k => picked.has(k));
+      const state = isAnswer ? (want > 1 ? 'Part of this set’s answer' : 'This set’s answer')
+        : offered ? 'Offered here, but ranks lower' : i < last ? 'Ranks higher, but not offered here' : 'Not offered here';
+      const answeredIn = sets.filter(s => keys.some(k => s.answer.has(k))).map(s => s.q);
+      return h('li', { class: ['rung', isAnswer ? 'answer' : offered ? 'lower' : 'absent', isPick && 'picked'].filter(Boolean).join(' ') },
+        h('span', { class: 'rank', 'aria-label': `Rank ${i + 1}`, text: String(i + 1) }),
+        h('div', { class: 'rung-body' },
+          h('div', { class: 'rung-opts' }, r.options.map((o, j) => [j ? h('span', { class: 'tie', title: 'Interchangeable: no set offers both', text: '≈' }) : null, opt(o, true)])),
+          h('div', { class: 'rung-state' }, isAnswer ? icon('check') : null, state, isPick ? h('span', { class: 'your-pick', text: ' · your pick' }) : null),
+          r.why ? h('div', { class: 'rung-why' }, r.why, ' ', r.ref ? h('a', { href: r.ref, target: '_blank', rel: 'noopener noreferrer' }, 'Learn', icon('external')) : null) : null,
+          answeredIn.length ? h('div', { class: 'rung-where' }, 'The answer in ', setLinks(answeredIn, q)) : null));
+    }));
+    // the options this set offers first, so its distractors read with their letters
+    const never = [...f.never].sort((a, b) => mine.offered.has(famKey(b)) - mine.offered.has(famKey(a)));
+    put(sec,
+      h('h3', { text: `Same question, ${n} choice sets` }),
+      h('p', { class: 'small muted', text: `ExamTopics lists this question ${n} times with different choices. A set’s answer is the ` +
+        `${want > 1 ? `${want} highest-ranked options` : 'highest-ranked option'} it offers` +
+        `${f.rungs.some(r => r.options.length > 1) ? '; options joined by ≈ are interchangeable, and no set offers two of them' : ''}.` }),
+      ladder,
+      never.length ? h('p', { class: 'fam-never' }, h('span', { class: 'label', text: 'Never the answer: ' }), never.map((o, i) => [i ? ' · ' : null, opt(o, false)])) : null,
+      h('details', { class: 'fam-table', open: open || null },
+        h('summary', null, icon('list'), `All ${n} sets side by side`),
+        h('div', { class: 'fam-scroll' }, familyTable(f, sets, q)),
+        h('p', { class: 'fam-legend', text: '★ the answer in that set   ● offered   · not offered' })));
+    return sec;
+  }
+
+  // Rows: the ranked options, then the ones that are never the answer; columns: the sets, this one highlighted.
+  function familyTable(f, sets, here) {
+    const MARK = { ans: '★', on: '●', off: '·' };
+    const TIP = { ans: 'the answer', on: 'offered', off: 'not offered' };
+    const row = (o, rank) => {
+      const k = famKey(o);
+      return h('tr', null,
+        h('th', { scope: 'row' }, h('span', { class: 'rk', text: rank }), h('span', { text: f.short[o] || o })),
+        sets.map(s => {
+          const state = s.answer.has(k) ? 'ans' : s.offered.has(k) ? 'on' : 'off';
+          return h('td', { class: state + (s.q === here ? ' here' : ''), title: `#${s.q.no}: ${TIP[state]}`, 'aria-label': TIP[state], text: MARK[state] });
+        }));
+    };
+    return h('table', { class: 'fam-matrix' },
+      h('thead', null, h('tr', null, h('th', { scope: 'col' }, h('span', { class: 'sr-only', text: 'Option' })),
+        sets.map(s => h('th', { scope: 'col', class: s.q === here ? 'here' : null },
+          s.q === here ? `#${s.q.no}` : h('a', { href: `#/q/${s.q.exam.slug}/${s.q.n}`, text: `#${s.q.no}` }))))),
+      h('tbody', null,
+        f.rungs.flatMap((r, i) => r.options.map((o, j) => row(o, j ? '≈' : String(i + 1)))),
+        f.never.length ? h('tr', { class: 'group' }, h('th', { colspan: sets.length + 1, scope: 'colgroup', text: 'Never the answer' })) : null,
+        f.never.map(o => row(o, ''))));
   }
 
   // ================================================================== interactive answer areas: UI
@@ -1373,16 +1456,11 @@
           onclick: () => startSession(q.exam, { mode: 'practice', title: `${o.bullet.id} ${o.bullet.text}`, ids: skillQuestions(q.exam, id).map(x => x.id) }),
         });
       }) : null,
-      q.source && mode !== 'mock' ? h('span', { class: 'chip', title: "This question's number on ExamTopics", text: `ExamTopics #${q.source}` }) : null,
       q.extra && mode !== 'mock' ? h('span', { class: 'chip accent', title: 'Written for this app in the official style, for an objective ExamTopics does not cover; not an ExamTopics question', text: 'Supplement' }) : null,
-      q.siblings.length && mode !== 'mock' ? h('a', {
+      q.family && mode !== 'mock' ? familyChip(q, revealed) : q.siblings.length && mode !== 'mock' ? h('a', {
         class: 'chip variants', href: `#/q/${q.exam.slug}/${q.n}`,
         title: 'ExamTopics lists this question again with reshuffled choices. Votes are pooled across the copies; click to read them side by side.',
       }, `Also #${q.siblings.map(x => x.no).join(', #')}`) : null,
-      q.copies.length && mode !== 'mock' ? h('span', {
-        class: 'chip copies',
-        title: `ExamTopics lists this question again as ${q.copies.map(c => `#${c.n}`).join(', ')}, with other choices. Those listings are folded into this one: their votes are pooled here, and their choice sets and discussions are shown below the answer key.`,
-      }, `Also listed as ExamTopics #${q.copies.map(c => c.n).join(', #')}`) : null,
       q.series ? h('span', { class: 'chip', text: 'Series', title: 'Part of a series: the same scenario with different proposed solutions. Judge each solution on its own.' }) : null,
       revealed && k && k.disputed ? h('span', { class: 'chip warn', title: area ? 'Upvoted comments disagree with the ExamTopics answer' : 'The community vote disagrees with the ExamTopics answer' }, icon('alert'), 'Disputed') : null,
       mode !== 'mock' ? statusChip(q) : null,
@@ -1556,6 +1634,7 @@
       }
       if (area) f.append(areaKeySection());
       else if (graded) f.append(keySection());
+      if (q.family) f.append(familySection(q, mode === 'read' ? '' : e.pick, mode === 'read'));
       if (k && k.review) {
         const why = h('p', { text: k.review.why });
         if (termsOn) highlightTerms(why, seenTerms, q.exam.code);
@@ -1670,8 +1749,7 @@
           h('span', { text: `${parts.join('. ')}. Grading uses ${why}. Read the explanation and the discussion and decide for yourself.` })));
       }
       if (q.pooledFrom && q.pooledFrom.length) {
-        // a variant is a question of its own (shown by its number, with the ExamTopics one where they differ); a folded copy has only its ExamTopics number
-        const label = x => (x.no == null ? `ExamTopics #${x.n}` : x.no !== x.n ? `#${x.no} (ExamTopics #${x.n})` : `#${x.n}`);
+        const label = x => `#${x.no}`;
         const list = ps => ps.map(p => label(p.q)).join(', ');
         const pooled = q.pooledFrom.filter(p => !p.skipped);
         const skipped = q.pooledFrom.filter(p => p.skipped);
@@ -1679,14 +1757,12 @@
         for (const p of pooled) if (p.official) byKey.set(p.official, [...(byKey.get(p.official) || []), label(p.q)]);
         const keys = [...byKey].map(([a, ns]) => `${a} for ${ns.join(', ')}`).join('; ');
         const other = pooled.filter(p => !p.official).length;
-        const folded = q.copies.length === q.pooledFrom.length;
         sec.append(h('p', { class: 'small muted' },
-          `ExamTopics lists this question again as ${list(q.pooledFrom)}, with ${folded ? 'other choices; those listings are folded into this one' : 'the choices reshuffled'}. ` +
+          `ExamTopics lists this question again as ${list(q.pooledFrom)}, with the choices reshuffled. ` +
           (pooled.length ? `The votes here also count ${skipped.length ? `the copies that offer this question's answer (${list(pooled)})` : 'every copy'}, and each copy's ExamTopics answer counts as one vote` +
             `${keys ? ` (${keys} in this question's letters` : ''}${other ? `${keys ? '; ' : ' ('}${other === 1 ? 'one copy answers' : `${other} copies answer`} with a choice this copy does not offer` : ''}${keys || other ? ')' : ''}. ` : '') +
           (skipped.length ? `${list(skipped)} ${skipped.length === 1 ? 'does' : 'do'} not offer this question's answer, so ${skipped.length === 1 ? 'its' : 'their'} votes are not pooled. ` : ''),
-          q.siblings.length ? h('a', { href: `#/q/${q.exam.slug}/${q.n}`, text: 'Read the copies side by side.' }) : null));
-        if (q.copies.length) sec.append(copiesBlock(q));
+          h('a', { href: `#/q/${q.exam.slug}/${q.n}`, text: 'Read the copies side by side.' })));
       }
       if (votesFor(q).length) sec.append(h('div', { class: 'votes', 'aria-label': 'Community vote distribution' }, voteRows(q, k)));
       return sec;
@@ -1920,11 +1996,11 @@
         h('div', { class: 'row', style: 'margin-bottom:8px' }, h('span', { class: 'chip accent', text: `第 ${ch.n} 章` }), ch.exams.map(examChip)),
         h('h1', { text: ch.title }),
         ch.intro ? h('p', { class: 'sub', text: ch.intro }) : null)),
-      ch.lead ? h('div', { class: 'guide-prose', html: questionLinks(ch.lead) }) : null,
+      ch.lead ? h('div', { class: 'guide-prose', html: ch.lead }) : null,
       ch.sections.map(s => h('section', { class: 'guide-section', id: `sec-${s.id}` },
         h('h2', null, h('a', { href: `#/guide/${ch.id}/${s.id}`, text: s.title })),
         skillPracticeRow(ch, s),
-        h('div', { class: 'guide-prose', html: questionLinks(s.html) }))),
+        h('div', { class: 'guide-prose', html: s.html }))),
       terms.length ? h('section', { class: 'guide-section' }, h('h2', { text: '本章术语' }),
         h('div', { class: 'row terms' }, terms.map(t => h('a', { class: 'chip term', 'data-term': t.id, href: `#/guide/glossary/${t.id}`, 'data-tip': t.zh }, t.term)))) : null,
       practiceSection(ch),
@@ -2059,12 +2135,16 @@
   const IN_ORDER = 'All questions, in order';
   function tidyInOrder(s) {
     if (!s || s.title !== IN_ORDER) return s;
-    const n = id => (QUESTIONS.has(id) ? QUESTIONS.get(id).n : Infinity);
-    const sorted = [...s.ids].sort((a, b) => (n(a) === n(b) ? 0 : n(a) - n(b)));
-    if (sorted.some((id, i) => id !== s.ids[i])) {
-      const at = s.ids[s.i];
-      s.ids = sorted;
-      if (at != null) s.i = sorted.indexOf(at);
+    const exam = examByCode(s.code);
+    if (!exam) return s;
+    // The run always covers the whole exam in number order: it picks up questions the bank has gained since it
+    // started (AB-100's 14 repeat listings came back on 2026-11-03) and drops ones it has lost, staying on the
+    // question it was at, or on the next one still there; a finished run stays finished.
+    const ids = exam.questions.map(q => q.id);
+    if (ids.length !== s.ids.length || ids.some((id, i) => id !== s.ids[i])) {
+      const keep = s.ids.slice(s.i).find(id => QUESTIONS.has(id));
+      s.ids = ids;
+      s.i = keep == null ? ids.length : ids.indexOf(keep);
     }
     return s;
   }
@@ -3142,7 +3222,7 @@
       const num = state.q.trim().match(/^#?(\d+)$/);
       const list = EXAMS.filter(e => !state.exam || e.code === state.exam).flatMap(e => e.questions).filter(q =>
         (!state.type || q.type === state.type) && (!state.kp || q.kp === state.kp) && statusMatch(q, state.status) &&
-        (num ? q.no === Number(num[1]) || q.n === Number(num[1]) || q.copies.some(c => c.n === Number(num[1])) : terms.every(t => searchText(q, state.deep).includes(t))));
+        (num ? q.no === Number(num[1]) : terms.every(t => searchText(q, state.deep).includes(t))));
       count.textContent = `${plural(list.length, 'question')}${terms.length ? ' match' : ''}`;
       const multiExam = !state.exam;
       results.replaceChildren(...(list.length ? list.slice(0, 400).map(q => h('button', {
@@ -3159,7 +3239,6 @@
           multiExam ? h('span', { class: 'chip code', text: q.exam.code }) : null,
           multiTopic(q.exam) ? h('span', { text: `Topic ${q.topic}` }) : null,
           h('span', { text: TYPE_LABEL[q.type] }),
-          q.source ? h('span', { text: `ExamTopics #${q.source}` }) : null,
           q.kp ? h('span', { text: q.kp }) : null,
           q.case ? h('span', { text: `Case: ${q.exam.cases[q.case].name}` }) : null)),
       h('span', { class: 'tags' }, isFlagged(q) ? h('span', { class: 'chip warn', title: 'Flagged' }, icon('flag')) : null, statusChip(q))))
@@ -3309,7 +3388,7 @@
         h('h2', { text: 'Answer key used for grading' }),
         h('p', { class: 'small muted', text: 'ExamTopics publishes a suggested answer, its users vote on the answer they believe is right, and every question has also been re-judged against Microsoft product behaviour (the reviewed answer, with an explanation). All three are shown on every question.' }),
         option('key', 'reviewed', 'Reviewed answer (recommended)', `Grade against the reviewed answer. It corrects ExamTopics on ${Object.values(REVIEWED).filter(r => r.verdict === 'corrected').length} questions and marks its own confidence; where it says low confidence, read the explanation and the discussion.`),
-        option('key', 'community', 'Community vote when it is clear', `Use the most-voted answer once at least ${MIN_VOTES} votes are in and there is no tie; otherwise the ExamTopics answer. Votes are pooled across the copies of a question that offer its answer, and each such copy's ExamTopics answer counts as one vote. Drag & drop and hotspot questions have no votes, so a box uses the answer the most-upvoted comments clearly agree on.`),
+        option('key', 'community', 'Community vote when it is clear', `Use the most-voted answer once at least ${MIN_VOTES} votes are in and there is no tie; otherwise the ExamTopics answer. Votes are pooled across the copies of a question that offer its answer, and each such copy's ExamTopics answer counts as one vote; a question listed with choice sets that have different answers keeps each set's votes apart. Drag & drop and hotspot questions have no votes, so a box uses the answer the most-upvoted comments clearly agree on.`),
         option('key', 'official', 'ExamTopics answer', 'Always grade against the answer ExamTopics shows as correct.')),
       h('div', { class: 'card stack' },
         h('h2', { text: 'Practice' }),
@@ -3376,13 +3455,15 @@
   ];
 
   function viewVariants(exam, n) {
-    // A folded copy's old number opens the question it was folded into.
-    const q = exam && (exam.questions.find(x => x.n === n) || exam.questions.find(x => (x.copies || []).some(c => c.n === n)));
+    const q = exam && exam.questions.find(x => x.n === n);
     if (!q) return navigate('#/', true);
-    const group = [q, ...q.siblings].sort((a, b) => a.n - b.n);
+    // A family is read set by set, in number order; other copies are read alongside the question.
+    const group = q.family ? q.family.members : [q, ...q.siblings].sort((a, b) => a.n - b.n);
     // Opened from a guide page: the session offers the way back to that page, at the spot the link was on.
     const back = /^#\/guide/.test(origin.hash) ? { hash: origin.hash, y: origin.y } : null;
-    startSession(exam, { key: 'read', mode: 'read', title: q.siblings.length ? `Question ${q.no} and its ${plural(q.siblings.length, 'copy', 'copies')}` : `Question ${q.no}`, ids: group.map(x => x.id), i: group.indexOf(q), replace: true, back });
+    const title = q.family ? `Question ${q.no}: the ${group.length} sets of one question`
+      : q.siblings.length ? `Question ${q.no} and its ${plural(q.siblings.length, 'copy', 'copies')}` : `Question ${q.no}`;
+    startSession(exam, { key: 'read', mode: 'read', title, ids: group.map(x => x.id), i: group.indexOf(q), replace: true, back });
   }
 
   let current = ''; // the address drawn last

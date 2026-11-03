@@ -48,9 +48,8 @@ def main():
     cookie, _ = et.read_sources(args.sources)
     bank = json.loads(load_bank(args.bank))
 
-    # Every (question -> thread hash) across all exams, the copies folded into a question included; dedupe
-    # threads so a shared one is fetched once.
-    items = [(x, thread_hash(x.get("thread"))) for e in bank["exams"] for q in e["questions"] for x in [q, *q.get("copies", [])]]
+    # Every (question -> thread hash) across all exams; dedupe threads so a shared one is fetched once.
+    items = [(q, thread_hash(q.get("thread"))) for e in bank["exams"] for q in e["questions"]]
     with_thread = [(q, h) for q, h in items if h]
     hashes = list(dict.fromkeys(h for _, h in with_thread))
     if args.limit:

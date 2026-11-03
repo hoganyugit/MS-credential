@@ -899,7 +899,9 @@ pre code { padding: 0; border-radius: 0; background: none; font-size: inherit; }
 .nav-grid button.locked { border-style: dashed; opacity: 0.6; }
 a.chip.variants { text-decoration: none; background: var(--accent-wash); color: var(--accent-ink); }
 a.chip.variants:hover { background: var(--accent-wash-2); text-decoration: none; }
-.chip.copies { background: var(--accent-wash); color: var(--accent-ink); max-width: 100%; white-space: normal; height: auto; min-height: 24px; padding: 2px 9px; }
+.chip.family { background: var(--accent-wash); color: var(--accent-ink); max-width: 100%; white-space: normal; height: auto; min-height: 24px; padding: 2px 9px; }
+a.chip.family { text-decoration: none; }
+a.chip.family:hover { background: var(--accent-wash-2); text-decoration: none; }
 .terms { gap: 8px; }
 .terms a.chip { text-decoration: none; height: auto; min-height: 28px; max-width: 100%; white-space: normal; padding: 3px 11px; font-size: 12.5px; color: var(--ink); background: var(--raised); border: 1px solid var(--line-strong); }
 .terms a.chip:hover { border-color: var(--accent); color: var(--accent-ink); text-decoration: none; }
@@ -922,19 +924,50 @@ details.originals summary { cursor: pointer; font-size: 13.5px; font-weight: 600
 details.originals summary svg { width: 16px; height: 16px; }
 details.originals[open] summary { margin-bottom: 10px; }
 details.originals .rich { font-size: 14px; }
-details.copies { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; background: var(--surface); }
-details.copies summary { cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--ink-2); display: flex; align-items: center; gap: 8px; }
-details.copies summary svg { width: 16px; height: 16px; }
-details.copies[open] summary { margin-bottom: 10px; }
-.copy + .copy { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
-.copy-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13.5px; }
-.copy-choices { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; font-size: 13.5px; }
-.copy-choices li { display: flex; gap: 8px; }
-.copy-choices .letter { font-family: var(--mono); font-weight: 650; color: var(--ink-3); flex: none; width: 1.3em; }
-.copy-choices li.keyed { font-weight: 600; color: var(--accent-ink); }
-.copy-choices li.keyed .letter { color: var(--accent-ink); }
-.copy-thread { margin-top: 18px; display: grid; gap: 8px; }
-.copy-thread h4 { margin: 0; font-size: 14px; }
+/* A family: one question listed with several choice sets (data/families.js). */
+.fam-section .ladder { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.rung { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 4px 10px; padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--raised); }
+.rung .rank { width: 24px; height: 24px; border-radius: 999px; display: grid; place-items: center; font-size: 12.5px; font-weight: 650; background: var(--fill-2); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.rung-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; min-width: 0; }
+.rung-opts { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font-size: 14.5px; font-weight: 600; line-height: 1.45; overflow-wrap: anywhere; }
+.rung-state { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+.rung-state svg { width: 14px; height: 14px; }
+.rung-why, .rung-where { font-size: 13px; line-height: 1.5; color: var(--ink-2); overflow-wrap: anywhere; }
+.rung-why a { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+.rung-why a svg { width: 12px; height: 12px; }
+.rung.answer { border-color: var(--good); background: var(--good-wash); box-shadow: inset 0 0 0 1px var(--good); }
+.rung.answer .rank { background: var(--good); color: #fff; }
+.rung.answer .rung-state { color: var(--good-ink); }
+.rung.absent { background: var(--surface); border-style: dashed; }
+.rung.absent .rung-opts, .rung.absent .rank { opacity: 0.62; }
+.rung.picked { border-color: var(--bad); box-shadow: inset 0 0 0 1px var(--bad); }
+.your-pick { color: var(--bad-ink); }
+.fam-opt { display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; }
+.fam-opt.absent { font-weight: 500; color: var(--ink-3); }
+.fam-never .fam-opt.picked { color: var(--bad-ink); }
+.fam-letter { flex: none; font-family: var(--mono); font-size: 12px; font-weight: 650; padding: 0 6px; border-radius: 6px; background: var(--fill-2); color: var(--ink); }
+.rung.answer .fam-letter { background: var(--good); color: #fff; }
+.tie { color: var(--ink-3); font-weight: 650; }
+.fam-never { font-size: 13px; line-height: 1.7; color: var(--ink-2); overflow-wrap: anywhere; }
+.fam-never .label { color: var(--ink-3); font-weight: 600; }
+.fam-never .fam-opt { display: inline; }
+.fam-never .fam-letter { margin-right: 4px; }
+details.fam-table { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; background: var(--surface); }
+details.fam-table summary { cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--ink-2); display: flex; align-items: center; gap: 8px; }
+details.fam-table summary svg { width: 16px; height: 16px; }
+details.fam-table[open] summary { margin-bottom: 8px; }
+.fam-scroll { overflow-x: auto; }
+.fam-matrix { width: 100%; border-collapse: collapse; font-size: 13px; }
+.fam-matrix th, .fam-matrix td { padding: 5px 2px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.fam-matrix thead th { font-size: 12px; font-weight: 600; color: var(--ink-2); text-align: center; white-space: nowrap; }
+.fam-matrix th[scope="row"] { text-align: left; font-weight: 500; padding-right: 8px; overflow-wrap: anywhere; }
+.fam-matrix th[scope="row"] .rk { display: inline-block; min-width: 1.5em; color: var(--ink-3); font-weight: 650; }
+.fam-matrix td { width: 28px; min-width: 26px; text-align: center; color: var(--ink-3); }
+.fam-matrix td.on { color: var(--ink-2); }
+.fam-matrix td.ans { color: var(--good-ink); font-weight: 700; }
+.fam-matrix .here { background: var(--accent-wash); }
+.fam-matrix tr.group th { text-align: left; font-size: 12px; font-weight: 600; color: var(--ink-3); padding-top: 12px; }
+.fam-legend { margin: 8px 0 0; font-size: 12px; color: var(--ink-3); white-space: pre-wrap; }
 
 .selfgrade-box { display: grid; gap: 10px; padding: 14px 16px; border-radius: 10px; background: var(--fill); }
 .selfgrade-box p { font-size: 14px; color: var(--ink-2); }

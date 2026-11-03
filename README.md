@@ -1,8 +1,8 @@
 # Cert Prep
 
 An offline study app for the ExamTopics question sets listed in `EXAM_SOURCES.example.md`:
-AB-620 (116 questions), AB-100 (115), AI-103 (187) and AI-500 (107), with ExamTopics answers,
-community vote counts, discussion threads, and all 418 question and answer images stored locally.
+AB-620 (116 questions), AB-100 (129), AI-103 (187) and AI-500 (107), with ExamTopics answers,
+community vote counts, discussion threads, and all 439 question and answer images stored locally.
 
 ## Open it
 
@@ -67,18 +67,25 @@ all of that into plain lines; `tools/examtopics.py` rebuilds the structure.
 **Copies of a question.** ExamTopics lists many questions more than once with reshuffled,
 partly different choices and sometimes a different answer. The build links such copies; the app
 shows an "Also #…" chip that opens them side by side, and pools the votes of the copies that offer
-the question's answer, counting each such copy's ExamTopics answer as one vote. Listings that differ
-only in their distractors are folded into one question (`MERGED` in `tools/examtopics.py`: AB-100's
-#33/#39/#44 into #25, #28/#35–#38 into #34, #40–#43/#104/#126 into #116): the copy leaves the bank,
-and its choice set, ExamTopics key, votes and discussion appear under the kept question's answer
-key, so the question is asked once and its reviewed explanation says what the other choice sets
-keyed. `python3 tools/examtopics.py fold` applies the table to `data/bank.js` without a download.
+the question's answer, counting each such copy's ExamTopics answer as one vote.
+
+**One question, several choice sets.** Some copies ask the identical question with different choice
+sets, and which answer is right depends on the choices a set offers. `data/families.js`
+(hand-maintained) groups each such family (13 of them, 42 listings: for example AB-100 #28 and
+#34–#38) and ranks every option that is ever the answer, best first: a set's answer is the
+highest-ranked option it offers (AB-100's cost question: Azure pricing calculator > TCO Calculator
+> Cost Management + Billing). Each set stays a question of its own, graded on its own answer and
+keeping its own votes. A "Same question · set 2 of 6" chip marks it; after answering, the answer
+section shows the ladder with this set's place in it (the better options it lacks, the ones it
+offers that rank lower, the options that are never the answer) and a table of every set, and guide
+chapter 7 prints the same ladders. `python3 tools/check_families.py` checks every family against
+the bank and the reviewed answers; run it after editing the file or rebuilding the bank.
 
 **Reviewed answers.** Every question was re-judged against Microsoft product behaviour and
 documentation and given an explanation, a confidence level and a knowledge-point tag
-(`data/reviewed.js`). The review confirms ExamTopics on 455 questions and corrects it on 70;
-13 answers are marked low confidence. Answers that hinge on product details were checked against
-the current Microsoft Learn pages, and 219 entries link the page they rely on. AI-500 has almost no
+(`data/reviewed.js`). The review confirms ExamTopics on 469 questions and corrects it on 70;
+16 answers are marked low confidence. Answers that hinge on product details were checked against
+the current Microsoft Learn pages, and 220 entries link the page they rely on. AI-500 has almost no
 community votes or comments, and the review corrects 24 of its 107 ExamTopics answers. By default the app
 grades against the reviewed answer and
 shows all three keys (reviewed, ExamTopics, community vote) on every question. The review was
@@ -127,7 +134,7 @@ app adds a practice row to every section with the bank questions on that sub-are
 (出题规律) is the pattern analysis of all 539 questions: for each exam, the question formats and
 stem formulas, the recurring "requirement wording → correct answer" decision rules, distractor
 patterns, hot and cold objectives, how case-study requirement lines become questions, and
-tactics; every question number in it links to the question, including the ExamTopics numbers of folded AB-100 copies. Chapters 8–10 and 12 walk the official
+tactics; every question number in it links to the question. Chapters 8–10 and 12 walk the official
 outlines objective by objective, each bullet with what the examiner expects and its Learn sources;
 chapter 11 is the multi-agent map that AI-500 builds on (where agents run, orchestration patterns,
 MCP and A2A, memory tiers, agent identity, guardrail intervention points, evaluation, release).

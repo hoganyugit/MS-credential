@@ -351,9 +351,56 @@ def slugify_check(s, where):
         err(f'{where}: bad id {s!r}')
 
 
+FAMILIES_LINE = re.compile(r'^\{\{families ([A-Z]{2}-\d{3})\}\}[ \t]*$', re.M)
+_FAMILIES = []
+
+
+def families_table(code, where):
+    """The table a "{{families CODE}}" line stands for: every ladder family of the exam in data/families.js (one
+    question listed with different choice sets), with what it asks, its options best first (≈: interchangeable,
+    never offered together) and the ones that are never the answer, and which listing has which answer. The app
+    shows the same ladders on the questions, so the guide cannot drift from them."""
+    if not _FAMILIES:
+        def load(name, marker):
+            t = (ROOT / 'data' / name).read_text(encoding='utf-8')
+            return json.loads(t[t.index(marker) + len(marker):t.rindex(';')])
+        bank = load('bank.js', 'window.BANK = ')
+        reviewed = {m.group(1): json.loads(m.group(2)) for m in
+                    re.finditer(r'^"([^"]+)": (\{.*\}),?$', (ROOT / 'data' / 'reviewed.js').read_text(encoding='utf-8'), re.M)}
+        _FAMILIES.extend([load('families.js', 'window.FAMILIES = '),
+                          {q['id']: q for e in bank['exams'] for q in e['questions']}, reviewed])
+    families, questions, reviewed = _FAMILIES
+
+    def key(text):  # an option as tools/check_families.py compares it
+        s = re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', text)).replace('&amp;', '&').strip().lower()
+        return re.sub(r'[\s.]+$', '', s.replace('’', "'").replace('‘', "'").replace('“', '"').replace('”', '"'))
+
+    slug, rows = code.lower(), []
+    for f in families:
+        if f['exam'] != code or f['kind'] != 'ladder':
+            continue
+        short = f.get('short', {})
+        label = lambda o: short.get(o, o)
+        ladder = ' > '.join(' ≈ '.join(label(o) for o in r['options']) for r in f['rungs'])
+        never = ' / '.join(label(o) for o in f.get('never', []))
+        answered = {}
+        for qid, n in zip(f['ids'], f['n']):
+            q, r = questions[qid], reviewed[str(qid)]
+            for c in q['choices']:
+                if c['k'] in r['answer']:
+                    answered.setdefault(key(c['html']), []).append(n)
+        cells = [f'{label(o)}：' + ' '.join(f'[Q{n}](#/q/{slug}/{n})' for n in answered[key(o)])
+                 for r in f['rungs'] for o in r['options'] if key(o) in answered]
+        rows.append(f"| {f['topic']} | {ladder}{'；永远不选：' + never if never else ''} | {'；'.join(cells)} |")
+    if not rows:
+        err(f'{where}: {{{{families {code}}}}} matches no ladder family in data/families.js')
+    return '\n'.join(['| 题干 | 阶梯（高 → 低） | 各版的答案 |', '|---|---|---|', *rows])
+
+
 def parse_chapter(path, n):
     text = path.read_text(encoding='utf-8')
     meta, body = parse_front(text, path.name)
+    body = FAMILIES_LINE.sub(lambda m: families_table(m.group(1), path.name), body)
     cid = meta.get('id') or path.stem
     slugify_check(cid, path.name)
     sections = []
